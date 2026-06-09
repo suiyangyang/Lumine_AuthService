@@ -4,9 +4,9 @@ using Lumine.AuthPortal.ViewModels.Pages;
 
 namespace Lumine.AuthPortal.Views.Pages;
 
-public partial class AuditLogsPageView : UserControl
+public partial class TokensManagementPageView : UserControl
 {
-    public AuditLogsPageView()
+    public TokensManagementPageView()
     {
         InitializeComponent();
     }
@@ -18,7 +18,7 @@ public partial class AuditLogsPageView : UserControl
             return;
         }
 
-        if (DataContext is AuditLogsPageViewModel viewModel && viewModel.SearchCommand.CanExecute(null))
+        if (DataContext is TokensManagementPageViewModel viewModel && viewModel.SearchCommand.CanExecute(null))
         {
             viewModel.SearchCommand.Execute(null);
             e.Handled = true;

@@ -1,0 +1,106 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             xmlns:model="using:Lumine.AuthPortal.Models"
+             x:Class="Lumine.AuthPortal.Views.Pages.TokensManagementPageView"
+             x:Name="Root"
+             x:DataType="vm:TokensManagementPageViewModel">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <StackPanel Spacing="16">
+      <Border Classes="admin-panel">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+            <StackPanel Spacing="4">
+              <TextBlock Text="Token 管理" Classes="admin-card-title"/>
+              <TextBlock Text="查看 refresh token 的签发、到期与撤销状态，并支持即时撤销。" Classes="admin-hint"/>
+            </StackPanel>
+            <Button Grid.Column="1" Classes="admin-button" Content="刷新" Command="{Binding LoadCommand}"/>
+          </Grid>
+
+          <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+            <TextBox x:Name="SearchKeywordTextBox"
+                     Text="{Binding SearchKeyword}"
+                     Watermark="搜索 Token、用户或客户端"
+                     KeyDown="SearchKeywordTextBox_OnKeyDown"/>
+            <Button Grid.Column="1" Classes="admin-button" Content="搜索" Command="{Binding SearchCommand}"/>
+            <ComboBox Grid.Column="2" Width="96" ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding SelectedPageSize}"/>
+            <Button Grid.Column="3" Classes="admin-button" Content="上一页" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPreviousPage}"/>
+            <Button Grid.Column="4" Classes="admin-button" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
+          </Grid>
+
+          <Border Grid.Row="2" Classes="admin-status-banner">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+              <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
+              <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource StatusInfoBrush}" VerticalAlignment="Center"/>
+            </Grid>
+          </Border>
+
+          <Border Grid.Row="3" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
+            <Grid RowDefinitions="Auto,Auto,*">
+              <Grid ColumnDefinitions="120,130,140,170,120,120,*" ColumnSpacing="12" Margin="2,0,2,10">
+                <TextBlock Text="Token" Classes="admin-table-header"/>
+                <TextBlock Grid.Column="1" Text="用户" Classes="admin-table-header"/>
+                <TextBlock Grid.Column="2" Text="客户端" Classes="admin-table-header"/>
+                <TextBlock Grid.Column="3" Text="Scope" Classes="admin-table-header"/>
+                <TextBlock Grid.Column="4" Text="签发时间" Classes="admin-table-header"/>
+                <TextBlock Grid.Column="5" Text="到期时间" Classes="admin-table-header"/>
+                <TextBlock Grid.Column="6" Text="状态 / 操作" Classes="admin-table-header"/>
+              </Grid>
+
+              <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtleBrush}"/>
+
+              <Grid Grid.Row="2">
+                <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Background="Transparent" BorderThickness="0" Margin="0,10,0,0" IsVisible="{Binding HasTokens}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="model:RefreshTokenRecordDto">
+                      <Border Classes="admin-row-card" Margin="0,0,0,8">
+                        <Grid ColumnDefinitions="120,130,140,170,120,120,*" ColumnSpacing="12">
+                          <TextBlock Text="{Binding TokenPreview}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                          <TextBlock Grid.Column="1" Text="{Binding UserName}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                          <TextBlock Grid.Column="2" Text="{Binding ClientName}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                          <TextBlock Grid.Column="3" Text="{Binding Scopes}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                          <TextBlock Grid.Column="4" Text="{Binding CreatedAtUtc, StringFormat={}{0:MM-dd HH:mm}}" Classes="admin-muted" VerticalAlignment="Center"/>
+                          <TextBlock Grid.Column="5" Text="{Binding ExpiresAtUtc, StringFormat={}{0:MM-dd HH:mm}}" Classes="admin-muted" VerticalAlignment="Center"/>
+                          <Grid Grid.Column="6" ColumnDefinitions="Auto,Auto" ColumnSpacing="8">
+                            <Border Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
+                              <TextBlock Text="{Binding RevokedAtUtc, TargetNullValue=有效}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </Border>
+                            <Button Grid.Column="1" Classes="admin-button admin-danger admin-compact"
+                                    Content="撤销"
+                                    Command="{Binding DataContext.RevokeTokenCommand, ElementName=Root}"
+                                    CommandParameter="{Binding}"/>
+                          </Grid>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+
+                <Border Classes="info-card" IsVisible="{Binding ShowEmptyState}" VerticalAlignment="Center">
+                  <StackPanel Spacing="8" HorizontalAlignment="Center">
+                    <TextBlock Text="暂无 Token 记录" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="完成一次授权码换 Token 后，这里会显示真实的 refresh token 记录。" Classes="admin-hint" HorizontalAlignment="Center"/>
+                  </StackPanel>
+                </Border>
+              </Grid>
+            </Grid>
+          </Border>
+
+          <Border Grid.Row="4" Classes="admin-danger-banner" IsVisible="{Binding HasPendingRevoke}" HorizontalAlignment="Left">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+              <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" VerticalAlignment="Center"/>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <Button Classes="admin-icon-button admin-danger-solid" Command="{Binding ConfirmDeleteCommand}">
+                  <PathIcon Data="{Binding ConfirmDeleteIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Button Classes="admin-icon-button" Command="{Binding CancelDeleteCommand}">
+                  <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
+                </Button>
+              </StackPanel>
+            </Grid>
+          </Border>
+        </Grid>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

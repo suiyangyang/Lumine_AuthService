@@ -70,6 +70,24 @@ public sealed class PortalApiClient
         return SendAsync<AuthorizeResponseDto>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
+    public Task<ApiResult<AuthorizePreviewDto>> GetAuthorizePreviewAsync(string accessToken, AuthorizeRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var path = BuildQueryString("/connect/authorize", new Dictionary<string, string?>
+        {
+            ["response_type"] = request.ResponseType,
+            ["client_id"] = request.ClientId,
+            ["redirect_uri"] = request.RedirectUri,
+            ["scope"] = request.Scope,
+            ["state"] = request.State,
+            ["nonce"] = request.Nonce,
+            ["code_challenge"] = request.CodeChallenge,
+            ["code_challenge_method"] = request.CodeChallengeMethod,
+            ["response_mode"] = request.ResponseMode
+        });
+
+        return SendAsync<AuthorizePreviewDto>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
     public async Task<ApiResult<TokenResponseDto>> ExchangeCodeAsync(string clientId, string code, string redirectUri, string codeVerifier, CancellationToken cancellationToken = default)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, "/connect/token")
@@ -169,6 +187,57 @@ public sealed class PortalApiClient
         });
 
         return SendAsync<PagedResultDto<OidcClientDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
+    public Task<ApiResult<PagedResultDto<UserGroupDto>>> GetUserGroupsAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    {
+        var path = BuildQueryString("/api/usergroups", new Dictionary<string, string?>
+        {
+            ["pageIndex"] = pageIndex.ToString(),
+            ["pageSize"] = pageSize.ToString(),
+            ["keyword"] = string.IsNullOrWhiteSpace(keyword) ? null : keyword.Trim()
+        });
+
+        return SendAsync<PagedResultDto<UserGroupDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
+    public Task<ApiResult<PagedResultDto<RefreshTokenRecordDto>>> GetTokensAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    {
+        var path = BuildQueryString("/api/tokens", new Dictionary<string, string?>
+        {
+            ["pageIndex"] = pageIndex.ToString(),
+            ["pageSize"] = pageSize.ToString(),
+            ["keyword"] = string.IsNullOrWhiteSpace(keyword) ? null : keyword.Trim()
+        });
+
+        return SendAsync<PagedResultDto<RefreshTokenRecordDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
+    public Task<ApiResult<RefreshTokenRecordDto>> RevokeTokenAsync(string accessToken, Guid id, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<RefreshTokenRecordDto>(HttpMethod.Post, $"/api/tokens/{id}/revoke", bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
+    public Task<ApiResult<IReadOnlyList<PortalMenuItemDto>>> GetMenusAsync(string accessToken, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<IReadOnlyList<PortalMenuItemDto>>(HttpMethod.Get, "/api/menus", bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
+    public Task<ApiResult<PagedResultDto<AuditLogEntryDto>>> GetAuditLogsAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    {
+        var path = BuildQueryString("/api/auditlogs", new Dictionary<string, string?>
+        {
+            ["pageIndex"] = pageIndex.ToString(),
+            ["pageSize"] = pageSize.ToString(),
+            ["keyword"] = string.IsNullOrWhiteSpace(keyword) ? null : keyword.Trim()
+        });
+
+        return SendAsync<PagedResultDto<AuditLogEntryDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
+    public Task<ApiResult<SystemSettingsSummaryDto>> GetSystemSettingsSummaryAsync(string accessToken, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<SystemSettingsSummaryDto>(HttpMethod.Get, "/api/systemsettings/summary", bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
     public Task<ApiResult<DashboardSummaryDto>> GetDashboardSummaryAsync(string accessToken, CancellationToken cancellationToken = default)

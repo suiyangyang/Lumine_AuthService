@@ -28,7 +28,12 @@ public sealed record AuthorizeRequestDto(
     string Consent,
     string ResponseMode);
 
-public sealed record AuthorizeResponseDto(string Code, string? State, string RedirectUri, string RedirectUrl, int ExpiresIn);
+public sealed record AuthorizeResponseDto(
+    [property: JsonPropertyName("code")] string Code,
+    [property: JsonPropertyName("state")] string? State,
+    [property: JsonPropertyName("redirect_uri")] string RedirectUri,
+    [property: JsonPropertyName("redirect_url")] string RedirectUrl,
+    [property: JsonPropertyName("expires_in")] int ExpiresIn);
 
 public sealed record LoginRequestDto(string UserName, string Password, string? Scope, string? ClientId, string? Nonce);
 
@@ -86,7 +91,10 @@ public sealed record RegisterResponseDto(Guid Id, string UserName, string Email,
 
 public sealed record PagedResultDto<T>(IReadOnlyList<T> Items, int TotalCount, int PageIndex, int PageSize);
 
-public sealed record OidcClientDto(Guid Id, string ClientId, string ClientName, string ClientType, IReadOnlyList<string> AllowedScopes, IReadOnlyList<string> RedirectUris, bool RequirePkce, bool IsActive, string? Description);
+public sealed record OidcClientDto(Guid Id, string ClientId, string ClientName, string ClientType, IReadOnlyList<string> AllowedScopes, IReadOnlyList<string> RedirectUris, bool RequirePkce, bool IsActive, string? Description)
+{
+    public string StatusText => IsActive ? "启用" : "停用";
+}
 
 public sealed record CreateUserRequestDto(string UserName, string Email, string Password, string? NickName, string? PhoneNumber, bool IsActive, List<Guid>? RoleIds);
 
@@ -131,3 +139,87 @@ public sealed record DashboardSummaryDto(
     IReadOnlyList<DashboardTrendPointDto> TokenIssueTrend,
     IReadOnlyList<RecentLoginUserDto> RecentLoginUsers,
     DateTime GeneratedAtUtc);
+
+public sealed record UserGroupMemberDto(
+    Guid UserId,
+    string UserName,
+    string Email,
+    bool IsActive,
+    DateTime? LastLoginAtUtc,
+    IReadOnlyList<string> Roles);
+
+public sealed record UserGroupDto(
+    string Id,
+    string GroupName,
+    string GroupType,
+    int MemberCount,
+    int PermissionCount,
+    string RoleSummary,
+    string PermissionSummary,
+    IReadOnlyList<UserGroupMemberDto> Members);
+
+public sealed record RefreshTokenRecordDto(
+    Guid Id,
+    string TokenPreview,
+    Guid UserId,
+    string UserName,
+    string? UserEmail,
+    string ClientId,
+    string ClientName,
+    IReadOnlyList<string> Scopes,
+    DateTime CreatedAtUtc,
+    DateTime ExpiresAtUtc,
+    DateTime? RevokedAtUtc);
+
+public sealed record PortalMenuItemDto(
+    int Order,
+    string Key,
+    string Title,
+    string Section,
+    string Route,
+    bool IsImplemented,
+    IReadOnlyList<string> RequiredPermissions,
+    bool HasAccess,
+    string Description);
+
+public sealed record AuditLogEntryDto(
+    string Id,
+    string Category,
+    string Action,
+    string Actor,
+    string Target,
+    string Outcome,
+    string Details,
+    DateTime OccurredAtUtc);
+
+public sealed record SystemSettingsSummaryDto(
+    string Issuer,
+    string AuthorizationEndpoint,
+    string TokenEndpoint,
+    bool RefreshTokenGrantAdvertised,
+    bool SeedEnabled,
+    int UserCount,
+    int RoleCount,
+    int PermissionCount,
+    int ClientCount,
+    string DefaultClientId,
+    DateTime ServerTimeUtc);
+
+public sealed record AuthorizePreviewClientDto(
+    [property: JsonPropertyName("clientId")] string ClientId,
+    [property: JsonPropertyName("clientName")] string ClientName,
+    [property: JsonPropertyName("clientType")] string ClientType);
+
+public sealed record AuthorizePreviewUserDto(
+    [property: JsonPropertyName("id")] Guid Id,
+    [property: JsonPropertyName("userName")] string UserName,
+    [property: JsonPropertyName("email")] string Email);
+
+public sealed record AuthorizePreviewDto(
+    [property: JsonPropertyName("message")] string Message,
+    [property: JsonPropertyName("client")] AuthorizePreviewClientDto Client,
+    [property: JsonPropertyName("user")] AuthorizePreviewUserDto User,
+    [property: JsonPropertyName("scopes")] IReadOnlyList<string> Scopes,
+    [property: JsonPropertyName("state")] string? State,
+    [property: JsonPropertyName("approve_uri")] string ApproveUri,
+    [property: JsonPropertyName("deny_uri")] string DenyUri);

@@ -1,15 +1,20 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Lumine.AuthPortal.Models;
 using Lumine.AuthPortal.Services;
 
 namespace Lumine.AuthPortal.ViewModels.Pages;
 
 public partial class SystemSettingsPageViewModel : ViewModelBase
 {
+    private readonly PortalApiClient _apiClient;
+    private readonly PortalSession _session;
     private readonly ThemeService _themeService;
 
-    public SystemSettingsPageViewModel(ThemeService themeService)
+    public SystemSettingsPageViewModel(PortalApiClient apiClient, PortalSession session, ThemeService themeService)
     {
+        _apiClient = apiClient;
+        _session = session;
         _themeService = themeService;
         ThemeOptions = _themeService.ThemeOptions
             .Select(option => new ThemeOptionCardViewModel(option, option.Mode == _themeService.SelectedTheme))
@@ -22,6 +27,11 @@ public partial class SystemSettingsPageViewModel : ViewModelBase
                 RefreshThemeSelection();
             }
         };
+
+        if (_session.IsAuthenticated)
+        {
+            _ = LoadSummaryAsync();
+        }
     }
 
     public string Title => "系统配置";
@@ -36,11 +46,14 @@ public partial class SystemSettingsPageViewModel : ViewModelBase
 
     public string CurrentThemeDescription => _themeService.GetThemeOption(_themeService.SelectedTheme).Description;
 
+    public bool HasServerSummary => ServerSummary != null;
+
     public IReadOnlyList<SystemSettingCardItemViewModel> SettingCards =>
     [
         new("当前主题", CurrentThemeLabel, CurrentThemeDescription),
         new("管理列表默认分页", $"{DefaultManagementPageSize} 条 / 页", "用户、角色、权限、客户端等后台列表统一使用该默认值。"),
-        new("搜索交互", "按需展开", "列表页搜索框改为点击图标后展开，避免占用常驻空间。")
+        new("搜索交互", "按需展开", "列表页搜索框改为点击图标后展开，避免占用常驻空间。"),
+        new("默认客户端", string.IsNullOrWhiteSpace(ServerSummary?.DefaultClientId) ? "--" : ServerSummary.DefaultClientId, "当前后端种子数据中的默认 OIDC 客户端。")
     ];
 
     public IReadOnlyList<SystemSettingGroupItemViewModel> SettingGroups =>
@@ -65,6 +78,15 @@ public partial class SystemSettingsPageViewModel : ViewModelBase
         })
     ];
 
+    [ObservableProperty]
+    private string _statusMessage = "正在读取系统配置摘要。";
+
+    [ObservableProperty]
+    private SystemSettingsSummaryDto? _serverSummary;
+
+    [ObservableProperty]
+    private bool _isBusy;
+
     [RelayCommand]
     private void ApplyTheme(ThemeOptionCardViewModel? option)
     {
@@ -75,6 +97,33 @@ public partial class SystemSettingsPageViewModel : ViewModelBase
 
         _themeService.ApplyTheme(option.Mode);
         RefreshThemeSelection();
+    }
+
+    [RelayCommand]
+    private async Task LoadSummaryAsync()
+    {
+        if (!_session.IsAuthenticated)
+        {
+            StatusMessage = "请先登录后查看系统配置摘要。";
+            ServerSummary = null;
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var result = await _apiClient.GetSystemSettingsSummaryAsync(_session.AccessToken);
+            ServerSummary = result.Data;
+            StatusMessage = result.IsSuccess && result.Data != null
+                ? $"已读取服务端配置摘要，服务器时间 {result.Data.ServerTimeUtc.ToLocalTime():yyyy-MM-dd HH:mm:ss}。"
+                : result.ErrorMessage ?? "读取系统配置摘要失败。";
+        }
+        finally
+        {
+            IsBusy = false;
+            OnPropertyChanged(nameof(HasServerSummary));
+            OnPropertyChanged(nameof(SettingCards));
+        }
     }
 
     private void RefreshThemeSelection()

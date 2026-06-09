@@ -1,12 +1,100 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             xmlns:model="using:Lumine.AuthPortal.Models"
              x:Class="Lumine.AuthPortal.Views.Pages.AuditLogsPageView"
+             x:Name="Root"
              x:DataType="vm:AuditLogsPageViewModel">
-  <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="24" MaxWidth="760">
-    <StackPanel Spacing="12">
-      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-      <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <StackPanel Spacing="16">
+      <Border Classes="admin-panel">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+            <StackPanel Spacing="4">
+              <TextBlock Text="审计日志" Classes="admin-card-title"/>
+              <TextBlock Text="基于授权码和 refresh token 生成当前可追踪的授权审计视图。" Classes="admin-hint"/>
+            </StackPanel>
+            <Button Grid.Column="1" Classes="admin-button" Content="刷新" Command="{Binding LoadCommand}"/>
+          </Grid>
+
+          <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+            <TextBox x:Name="SearchKeywordTextBox"
+                     Text="{Binding SearchKeyword}"
+                     Watermark="搜索分类、动作、操作者或结果"
+                     KeyDown="SearchKeywordTextBox_OnKeyDown"/>
+            <Button Grid.Column="1" Classes="admin-button" Content="搜索" Command="{Binding SearchCommand}"/>
+            <ComboBox Grid.Column="2" Width="96" ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding SelectedPageSize}"/>
+            <Button Grid.Column="3" Classes="admin-button" Content="上一页" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPreviousPage}"/>
+            <Button Grid.Column="4" Classes="admin-button" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
+          </Grid>
+
+          <Border Grid.Row="2" Classes="admin-status-banner">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+              <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
+              <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource StatusInfoBrush}" VerticalAlignment="Center"/>
+            </Grid>
+          </Border>
+
+          <Grid Grid.Row="3" ColumnDefinitions="1.7*,0.8*" ColumnSpacing="16">
+            <Border Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
+              <Grid RowDefinitions="Auto,Auto,*">
+                <Grid ColumnDefinitions="90,90,110,120,90,*" ColumnSpacing="12" Margin="2,0,2,10">
+                  <TextBlock Text="分类" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="1" Text="动作" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="2" Text="操作者" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="3" Text="目标" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="4" Text="结果" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="5" Text="详情" Classes="admin-table-header"/>
+                </Grid>
+
+                <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtleBrush}"/>
+
+                <Grid Grid.Row="2">
+                  <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Background="Transparent" BorderThickness="0" Margin="0,10,0,0" IsVisible="{Binding HasLogs}">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate x:DataType="model:AuditLogEntryDto">
+                        <Border Classes="admin-row-card" Margin="0,0,0,8">
+                          <Grid ColumnDefinitions="90,90,110,120,90,*" ColumnSpacing="12">
+                            <TextBlock Text="{Binding Category}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Action}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Actor}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Target}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="{Binding Outcome}" Classes="admin-muted" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="5" Text="{Binding Details}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+
+                  <Border Classes="info-card" IsVisible="{Binding ShowEmptyState}" VerticalAlignment="Center">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                      <TextBlock Text="暂无审计记录" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
+                      <TextBlock Text="完成授权码申请、换取 Token 或撤销 Token 后，这里会出现对应记录。" Classes="admin-hint" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                  </Border>
+                </Grid>
+              </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Classes="info-card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="当前记录" Classes="admin-card-title"/>
+                <TextBlock Text="{Binding SelectedItem.Category, TargetNullValue=未选择记录}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding SelectedItem.Action, TargetNullValue=选择左侧记录查看详情}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                <TextBlock Text="{Binding SelectedItem.Details}" Classes="admin-hint" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+          </Grid>
+
+          <Grid Grid.Row="4" ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding SelectedItem.OccurredAtUtc, StringFormat=发生时间：{0:yyyy-MM-dd HH:mm:ss}, TargetNullValue=发生时间：--}" Classes="admin-hint" VerticalAlignment="Center"/>
+            <Border Grid.Column="1" Classes="admin-pill admin-pill-muted">
+              <TextBlock Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+            </Border>
+          </Grid>
+        </Grid>
+      </Border>
     </StackPanel>
-  </Border>
+  </ScrollViewer>
 </UserControl>

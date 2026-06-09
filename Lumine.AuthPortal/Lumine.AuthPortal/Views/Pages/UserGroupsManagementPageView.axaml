@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             xmlns:model="using:Lumine.AuthPortal.Models"
+             x:Class="Lumine.AuthPortal.Views.Pages.UserGroupsManagementPageView"
+             x:Name="Root"
+             x:DataType="vm:UserGroupsManagementPageViewModel">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <StackPanel Spacing="16">
+      <Border Classes="admin-panel">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+            <StackPanel Spacing="4">
+              <TextBlock Text="用户组管理" Classes="admin-card-title"/>
+              <TextBlock Text="基于现有角色聚合成员和权限，提供当前系统的用户组视图。" Classes="admin-hint"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+              <Button Classes="admin-button" Content="刷新" Command="{Binding LoadCommand}"/>
+            </StackPanel>
+          </Grid>
+
+          <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+            <TextBox x:Name="SearchKeywordTextBox"
+                     Text="{Binding SearchKeyword}"
+                     Watermark="搜索用户组名称、类型或权限摘要"
+                     KeyDown="SearchKeywordTextBox_OnKeyDown"/>
+            <Button Grid.Column="1" Classes="admin-button" Content="搜索" Command="{Binding SearchCommand}"/>
+            <ComboBox Grid.Column="2" Width="96" ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding SelectedPageSize}"/>
+            <Button Grid.Column="3" Classes="admin-button" Content="上一页" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPreviousPage}"/>
+            <Button Grid.Column="4" Classes="admin-button" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
+          </Grid>
+
+          <Border Grid.Row="2" Classes="admin-status-banner">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+              <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
+              <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource StatusInfoBrush}" VerticalAlignment="Center"/>
+            </Grid>
+          </Border>
+
+          <Grid Grid.Row="3" ColumnDefinitions="1.6*,0.9*" ColumnSpacing="16">
+            <Border Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
+              <Grid RowDefinitions="Auto,Auto,*">
+                <Grid ColumnDefinitions="180,120,80,90,130,*" ColumnSpacing="12" Margin="2,0,2,10">
+                  <TextBlock Text="用户组" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="1" Text="类型" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="2" Text="成员数" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="3" Text="权限数" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="4" Text="角色映射" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="5" Text="权限摘要" Classes="admin-table-header"/>
+                </Grid>
+
+                <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtleBrush}"/>
+
+                <Grid Grid.Row="2">
+                  <ListBox ItemsSource="{Binding Items}"
+                           SelectedItem="{Binding SelectedItem}"
+                           Background="Transparent"
+                           BorderThickness="0"
+                           Margin="0,10,0,0"
+                           IsVisible="{Binding HasGroups}">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate x:DataType="model:UserGroupDto">
+                        <Border Classes="admin-row-card" Margin="0,0,0,8">
+                          <Grid ColumnDefinitions="180,120,80,90,130,*" ColumnSpacing="12">
+                            <TextBlock Text="{Binding GroupName}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding GroupType}" Classes="admin-muted" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding MemberCount}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" Text="{Binding PermissionCount}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="{Binding RoleSummary}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="5" Text="{Binding PermissionSummary}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+
+                  <Border Classes="info-card" IsVisible="{Binding ShowEmptyState}" VerticalAlignment="Center">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                      <TextBlock Text="暂无用户组数据" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
+                      <TextBlock Text="当前页面基于角色聚合展示，创建角色后会自动形成新的用户组视图。" Classes="admin-hint" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                  </Border>
+                </Grid>
+              </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Classes="info-card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="成员明细" Classes="admin-card-title"/>
+                <TextBlock Text="{Binding SelectedItem.GroupName, TargetNullValue=未选择用户组}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding SelectedGroupMembersText}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+          </Grid>
+
+          <Grid Grid.Row="4" ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding SelectedItem.PermissionSummary, TargetNullValue=选择用户组后可查看权限摘要}" Classes="admin-hint" VerticalAlignment="Center"/>
+            <Border Grid.Column="1" Classes="admin-pill admin-pill-muted">
+              <TextBlock Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+            </Border>
+          </Grid>
+        </Grid>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

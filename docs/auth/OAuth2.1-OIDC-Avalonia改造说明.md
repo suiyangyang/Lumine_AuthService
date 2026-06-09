@@ -11,7 +11,7 @@
 - 当前服务已提供 `/.well-known/openid-configuration`、`/jwks.json`、`/connect/authorize`、`/connect/token`、`/connect/userinfo`。
 - 当前授权流以 `authorization code + PKCE` 为主，适配默认公共客户端 `lumine-demo-client`。
 - `POST /api/auth/login` 仍保留，供后台登录和简化联调用途。
-- `Lumine.AuthPortal` 已包含登录、注册、客户端管理、OIDC Discovery 与授权码联调页面。
+- `Lumine.AuthPortal` 已包含登录、注册、授权确认、客户端管理、OIDC Discovery 与授权码联调页面。
 - 服务会签发 `access_token`、`id_token` 和 `refresh_token`，但 `token` 端点当前只接受 `authorization_code`，尚未开放 `refresh_token` 续期。
 
 ## 当前端点
@@ -117,14 +117,7 @@
 - 注册页
 - OAuth 客户端管理页
 - OIDC Discovery / Playground 页面
-- 授权确认页骨架
-
-Portal 中预留但仍为占位的页面包括：
-
-- Token 管理
-- 菜单管理
-- 用户组管理
-- 审计日志的部分深层能力
+- 授权确认页
 
 ## 当前限制
 

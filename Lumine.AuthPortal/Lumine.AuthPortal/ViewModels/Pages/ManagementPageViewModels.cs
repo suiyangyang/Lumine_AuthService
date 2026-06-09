@@ -1626,10 +1626,13 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
         ? string.Empty
         : $"确认删除权限“{PendingDeletePermission.PermissionName}”吗？";
 
+    public bool HasSelectedPermission => SelectedItem != null;
+
     partial void OnSelectedItemChanged(PermissionDto? value)
     {
         OnPropertyChanged(nameof(EditorTitle));
         OnPropertyChanged(nameof(PermissionDialogTitle));
+        OnPropertyChanged(nameof(HasSelectedPermission));
 
         if (value == null)
         {
@@ -1930,12 +1933,17 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
 
     public bool HasPendingDelete => PendingDeleteClient != null;
 
+    public bool HasSelectedClient => SelectedItem != null;
+
     public string DeleteConfirmationText => PendingDeleteClient == null
         ? string.Empty
         : $"确认删除客户端“{PendingDeleteClient.ClientName}”吗？";
 
+    public string SelectedClientStatusText => IsActive ? "启用" : "停用";
+
     partial void OnSelectedItemChanged(OidcClientDto? value)
     {
+        OnPropertyChanged(nameof(HasSelectedClient));
         if (value == null) return;
         ClientId = value.ClientId;
         ClientName = value.ClientName;
@@ -2199,11 +2207,3 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
     private static string? EmptyToNull(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }
 
-public partial class AuditLogsPageViewModel : ViewModelBase
-{
-    [ObservableProperty]
-    private string _title = "审计日志";
-
-    [ObservableProperty]
-    private string _description = "Step 10 占位：后续可接入登录审计、授权审计、管理操作审计列表。";
-}

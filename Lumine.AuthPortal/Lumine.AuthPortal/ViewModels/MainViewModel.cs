@@ -65,14 +65,14 @@ public partial class MainViewModel : ViewModelBase
         var users = new NavigationItemViewModel("users", "用户管理", "users", "users.view", "users.manage");
         var roles = new NavigationItemViewModel("roles", "角色管理", "roles", "roles.view", "roles.manage");
         var permissions = new NavigationItemViewModel("permissions", "权限管理", "permissions", "permissions.view", "permissions.manage");
-        var userGroups = new NavigationItemViewModel("user-groups", "用户组管理", "user-groups");
+        var userGroups = new NavigationItemViewModel("user-groups", "用户组管理", "user-groups", "users.view", "users.manage");
         var clients = new NavigationItemViewModel("clients", "OAuth 客户端", "clients", "clients.view", "clients.manage");
         var consent = new NavigationItemViewModel("consent", "授权确认", "consent");
-        var tokens = new NavigationItemViewModel("tokens", "Token 管理", "tokens");
+        var tokens = new NavigationItemViewModel("tokens", "Token 管理", "tokens", "clients.view", "clients.manage");
         var oidc = new NavigationItemViewModel("oidc", "OIDC Discovery", "oidc");
-        var menus = new NavigationItemViewModel("menus", "菜单管理", "menus");
+        var menus = new NavigationItemViewModel("menus", "菜单管理", "menus", "permissions.view", "permissions.manage");
         var settings = new NavigationItemViewModel("settings", "系统配置", "settings");
-        var audit = new NavigationItemViewModel("audit", "审计日志", "audit");
+        var audit = new NavigationItemViewModel("audit", "审计日志", "audit", "clients.view", "clients.manage");
 
         NavigationItems =
         [
@@ -107,17 +107,17 @@ public partial class MainViewModel : ViewModelBase
             ["dashboard"] = () => new DashboardPageViewModel(_apiClient, _session),
             ["login"] = () => CreateLoginPage(),
             ["register"] = () => CreateRegisterPage(),
-            ["user-groups"] = () => new PlaceholderPageViewModel("用户组管理", "预留后台入口，后续可接入用户组列表、成员维护与角色映射。"),
-            ["consent"] = () => new ConsentPageViewModel(),
+            ["user-groups"] = () => new UserGroupsManagementPageViewModel(_apiClient, _session),
+            ["consent"] = () => new ConsentPageViewModel(_apiClient, _session),
             ["users"] = () => new UsersManagementPageViewModel(_apiClient, _session),
             ["roles"] = () => new RolesManagementPageViewModel(_apiClient, _session),
             ["permissions"] = () => new PermissionsManagementPageViewModel(_apiClient, _session),
             ["clients"] = () => new ClientsManagementPageViewModel(_apiClient, _session),
-            ["tokens"] = () => new PlaceholderPageViewModel("Token 管理", "预留后台入口，后续可接入访问令牌、刷新令牌与吊销记录管理。"),
+            ["tokens"] = () => new TokensManagementPageViewModel(_apiClient, _session),
             ["oidc"] = () => new OidcPlaygroundPageViewModel(_apiClient, _session),
-            ["menus"] = () => new PlaceholderPageViewModel("菜单管理", "预留后台入口，后续可接入菜单树、路由元数据与权限绑定配置。"),
-            ["settings"] = () => new SystemSettingsPageViewModel(_themeService),
-            ["audit"] = () => new AuditLogsPageViewModel()
+            ["menus"] = () => new MenusManagementPageViewModel(_apiClient, _session),
+            ["settings"] = () => new SystemSettingsPageViewModel(_apiClient, _session, _themeService),
+            ["audit"] = () => new AuditLogsPageViewModel(_apiClient, _session)
         };
 
         RefreshNavigationVisibility();

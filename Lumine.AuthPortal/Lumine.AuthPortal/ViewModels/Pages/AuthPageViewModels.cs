@@ -310,27 +310,184 @@ public partial class RegisterPageViewModel : ViewModelBase
 
 public partial class ConsentPageViewModel : ViewModelBase
 {
+    private readonly PortalApiClient _apiClient;
+    private readonly PortalSession _session;
+    private const string DefaultScope = "openid profile email roles permissions";
+    private const string DefaultClientId = "lumine-demo-client";
+    private const string DefaultRedirectUri = "http://localhost:5173/signin-oidc";
+
+    public ConsentPageViewModel(PortalApiClient apiClient, PortalSession session)
+    {
+        _apiClient = apiClient;
+        _session = session;
+        _ = LoadPreviewAsync();
+    }
+
+    [ObservableProperty]
+    private string _clientId = DefaultClientId;
+
     [ObservableProperty]
     private string _clientName = "Lumine Demo Client";
+
+    [ObservableProperty]
+    private string _redirectUri = DefaultRedirectUri;
 
     [ObservableProperty]
     private string _requestedScopes = "openid profile email roles permissions";
 
     [ObservableProperty]
-    private string _state = "state-001";
+    private string _state = string.Empty;
 
     [ObservableProperty]
-    private string _decisionMessage = "可作为授权确认页骨架，后续接入 `/connect/authorize` 的 `consent=approve|deny`。";
+    private string _nonce = string.Empty;
+
+    [ObservableProperty]
+    private string _codeVerifier = string.Empty;
+
+    [ObservableProperty]
+    private string _codeChallenge = string.Empty;
+
+    [ObservableProperty]
+    private string _decisionMessage = "正在检查当前授权请求。";
+
+    [ObservableProperty]
+    private bool _isBusy;
+
+    public bool CanSubmitDecision => _session.IsAuthenticated && !IsBusy;
+
+    public bool HasDecisionMessage => !string.IsNullOrWhiteSpace(DecisionMessage);
+
+    public string CurrentRequestSummary => $"{ClientName} · {ClientId}";
+
+    public string PkceSummary => $"state: {State}{Environment.NewLine}nonce: {Nonce}{Environment.NewLine}challenge: {CodeChallenge}";
 
     [RelayCommand]
-    private void Approve()
+    private async Task RefreshAsync()
     {
-        DecisionMessage = "已模拟同意授权，下一步可接入真实授权码回调流程。";
+        await LoadPreviewAsync();
     }
 
     [RelayCommand]
-    private void Deny()
+    private async Task ApproveAsync()
     {
-        DecisionMessage = "已模拟拒绝授权，后续可带 `error=access_denied` 回跳。";
+        if (!_session.IsAuthenticated)
+        {
+            DecisionMessage = "请先登录，再执行授权确认。";
+            return;
+        }
+
+        IsBusy = true;
+        var result = await _apiClient.AuthorizeAsync(
+            _session.AccessToken,
+            new AuthorizeRequestDto("code", ClientId, RedirectUri, RequestedScopes, State, Nonce, CodeChallenge, "S256", "approve", "json"));
+
+        DecisionMessage = result.IsSuccess && result.Data != null
+            ? $"授权已批准，已签发授权码：{result.Data.Code}"
+            : result.ErrorMessage ?? "批准授权失败。";
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private async Task DenyAsync()
+    {
+        if (!_session.IsAuthenticated)
+        {
+            DecisionMessage = "请先登录，再执行授权确认。";
+            return;
+        }
+
+        IsBusy = true;
+        var result = await _apiClient.AuthorizeAsync(
+            _session.AccessToken,
+            new AuthorizeRequestDto("code", ClientId, RedirectUri, RequestedScopes, State, Nonce, CodeChallenge, "S256", "deny", "json"));
+
+        DecisionMessage = result.IsSuccess
+            ? "授权已拒绝。"
+            : result.ErrorMessage ?? "拒绝授权失败。";
+        IsBusy = false;
+    }
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanSubmitDecision));
+    }
+
+    partial void OnDecisionMessageChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasDecisionMessage));
+    }
+
+    partial void OnClientIdChanged(string value)
+    {
+        OnPropertyChanged(nameof(CurrentRequestSummary));
+    }
+
+    partial void OnClientNameChanged(string value)
+    {
+        OnPropertyChanged(nameof(CurrentRequestSummary));
+    }
+
+    partial void OnStateChanged(string value)
+    {
+        OnPropertyChanged(nameof(PkceSummary));
+    }
+
+    partial void OnNonceChanged(string value)
+    {
+        OnPropertyChanged(nameof(PkceSummary));
+    }
+
+    partial void OnCodeChallengeChanged(string value)
+    {
+        OnPropertyChanged(nameof(PkceSummary));
+    }
+
+    private async Task LoadPreviewAsync()
+    {
+        GeneratePkce();
+
+        if (!_session.IsAuthenticated)
+        {
+            DecisionMessage = "请先登录，再查看授权确认。";
+            return;
+        }
+
+        IsBusy = true;
+        var result = await _apiClient.GetAuthorizePreviewAsync(
+            _session.AccessToken,
+            new AuthorizeRequestDto("code", ClientId, RedirectUri, DefaultScope, State, Nonce, CodeChallenge, "S256", string.Empty, "json"));
+
+        if (result.IsSuccess && result.Data != null)
+        {
+            ClientName = result.Data.Client.ClientName;
+            ClientId = result.Data.Client.ClientId;
+            RequestedScopes = string.Join(' ', result.Data.Scopes);
+            State = result.Data.State ?? State;
+            DecisionMessage = result.Data.Message;
+        }
+        else
+        {
+            RequestedScopes = DefaultScope;
+            DecisionMessage = result.ErrorMessage ?? "读取授权预览失败。";
+        }
+
+        IsBusy = false;
+    }
+
+    private void GeneratePkce()
+    {
+        State = ToBase64Url(System.Security.Cryptography.RandomNumberGenerator.GetBytes(24));
+        Nonce = ToBase64Url(System.Security.Cryptography.RandomNumberGenerator.GetBytes(24));
+        CodeVerifier = ToBase64Url(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));
+        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        CodeChallenge = ToBase64Url(sha256.ComputeHash(System.Text.Encoding.ASCII.GetBytes(CodeVerifier)));
+    }
+
+    private static string ToBase64Url(byte[] bytes)
+    {
+        return Convert.ToBase64String(bytes)
+            .TrimEnd('=')
+            .Replace('+', '-')
+            .Replace('/', '_');
     }
 }

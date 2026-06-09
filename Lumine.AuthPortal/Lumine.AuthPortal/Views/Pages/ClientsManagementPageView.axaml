@@ -6,22 +6,24 @@
              x:DataType="vm:ClientsManagementPageViewModel">
   <Grid>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-      <StackPanel Spacing="20">
-        <Border Classes="admin-panel">
-          <StackPanel Spacing="16">
-            <StackPanel Spacing="6">
-              <TextBlock Text="{Binding SectionTitle}" FontSize="30" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-              <TextBlock Text="{Binding SectionSubtitle}" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
-            </StackPanel>
+      <StackPanel Spacing="16">
+        <Border Classes="admin-panel" Padding="18">
+          <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+              <StackPanel Spacing="4">
+                <TextBlock Text="OAuth 客户端列表" Classes="admin-card-title"/>
+                <TextBlock Text="维护第三方系统接入所需的客户端参数、Scope 和回调地址。" Classes="admin-hint"/>
+              </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <Button Classes="admin-button" Content="刷新列表" Command="{Binding LoadCommand}"/>
-              <Button Classes="admin-button admin-primary" Content="新增客户端" Command="{Binding OpenCreateDialogCommand}"/>
-              <Button Classes="admin-button" Content="编辑所选" Command="{Binding OpenEditDialogCommand}"/>
-              <Button Classes="admin-button admin-danger" Content="删除所选" Command="{Binding DeleteCommand}"/>
-            </StackPanel>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <Button Classes="admin-button" Content="刷新" Command="{Binding LoadCommand}"/>
+                <Button Classes="admin-button admin-primary" Content="新增客户端" Command="{Binding OpenCreateDialogCommand}"/>
+                <Button Classes="admin-button" Content="编辑" Command="{Binding OpenEditDialogCommand}" IsEnabled="{Binding HasSelectedClient}"/>
+                <Button Classes="admin-button admin-danger" Content="删除" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelectedClient}"/>
+              </StackPanel>
+            </Grid>
 
-            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
               <TextBox x:Name="ClientSearchTextBox" Text="{Binding SearchKeyword}" Watermark="搜索 ClientId / ClientName" KeyDown="ClientSearchTextBox_OnKeyDown"/>
               <Button Grid.Column="1" Classes="admin-button" Content="搜索" Command="{Binding SearchCommand}"/>
               <ComboBox Grid.Column="2" Width="96" ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding SelectedPageSize}" HorizontalContentAlignment="Center"/>
@@ -29,127 +31,84 @@
               <Button Grid.Column="4" Classes="admin-button" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
             </Grid>
 
-            <Border Classes="admin-status-banner" Padding="14,10">
+            <Border Grid.Row="2" Classes="admin-status-banner" Padding="14,10">
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
                 <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource StatusInfoBrush}" VerticalAlignment="Center"/>
               </Grid>
             </Border>
-          </StackPanel>
-        </Border>
 
-        <Grid ColumnDefinitions="1.6*,1.1*" ColumnSpacing="20">
-          <Border Classes="admin-panel">
-            <StackPanel Spacing="18">
-              <StackPanel Spacing="8">
-                <TextBlock Classes="admin-section-title" Text="菜单"/>
-                <Border Classes="admin-content-block">
-                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                    <TextBlock Text="{Binding MenuTreeText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                    <Button Grid.Column="1" Classes="admin-copy-button" Content="⧉" Tag="{Binding MenuTreeText}" Click="OnCopyTextClick"/>
+            <Grid Grid.Row="3" ColumnDefinitions="1.55*,0.95*" ColumnSpacing="16">
+              <Border Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
+                <Grid RowDefinitions="Auto,Auto,*">
+                  <Grid ColumnDefinitions="160,150,110,*,90,130" ColumnSpacing="12" Margin="2,0,2,10">
+                    <TextBlock Text="ClientId" Classes="admin-table-header"/>
+                    <TextBlock Grid.Column="1" Text="名称" Classes="admin-table-header"/>
+                    <TextBlock Grid.Column="2" Text="类型" Classes="admin-table-header"/>
+                    <TextBlock Grid.Column="3" Text="Scope" Classes="admin-table-header"/>
+                    <TextBlock Grid.Column="4" Text="状态" Classes="admin-table-header"/>
+                    <TextBlock Grid.Column="5" Text="操作" Classes="admin-table-header"/>
                   </Grid>
+
+                  <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtleBrush}"/>
+
+                  <ListBox Grid.Row="2" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Background="Transparent" BorderThickness="0" Margin="0,10,0,0">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate>
+                        <Border Background="{DynamicResource SurfaceSoftBrush}" CornerRadius="12" Padding="10" Margin="0,0,0,8">
+                          <Grid ColumnDefinitions="160,150,110,*,90,130" ColumnSpacing="12">
+                            <TextBlock Text="{Binding ClientId}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding ClientName}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding ClientType}" Classes="admin-muted" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" Text="{Binding AllowedScopes}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="{Binding StatusText}" Classes="admin-muted" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="8">
+                              <Button Classes="admin-button admin-compact"
+                                      Content="编辑"
+                                      Command="{Binding DataContext.OpenEditDialogCommand, ElementName=Root}"
+                                      CommandParameter="{Binding}"/>
+                              <Button Classes="admin-button admin-compact admin-danger"
+                                      Content="删除"
+                                      Command="{Binding DataContext.DeleteClientCommand, ElementName=Root}"
+                                      CommandParameter="{Binding}"/>
+                            </StackPanel>
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                </Grid>
+              </Border>
+
+              <StackPanel Grid.Column="1" Spacing="16">
+                <Border Classes="info-card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="当前配置概览" Classes="admin-card-title"/>
+                    <TextBlock Text="{Binding SelectedClientSummaryText}" Classes="admin-hint" TextWrapping="Wrap"/>
+                  </StackPanel>
                 </Border>
-              </StackPanel>
 
-              <StackPanel Spacing="8">
-                <TextBlock Classes="admin-section-title" Text="用于"/>
-                <Border Classes="admin-content-block">
-                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                    <TextBlock Text="{Binding UsageText}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                    <Button Grid.Column="1" Classes="admin-copy-button" Content="⧉" Tag="{Binding UsageText}" Click="OnCopyTextClick"/>
-                  </Grid>
-                </Border>
-              </StackPanel>
-
-              <StackPanel Spacing="8">
-                <TextBlock Classes="admin-section-title" Text="表结构"/>
-                <Border Classes="admin-content-block">
-                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                    <TextBlock Text="{Binding TableSchemaText}" FontFamily="Consolas, Cascadia Mono, monospace" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="15" TextWrapping="Wrap"/>
-                    <Button Grid.Column="1" Classes="admin-copy-button" Content="⧉" Tag="{Binding TableSchemaText}" Click="OnCopyTextClick" VerticalAlignment="Top"/>
-                  </Grid>
-                </Border>
-              </StackPanel>
-
-              <StackPanel Spacing="8">
-                <TextBlock Classes="admin-section-title" Text="支持类型"/>
-                <Border Classes="admin-content-block">
-                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                    <TextBlock Text="{Binding SupportedTypesText}" FontFamily="Consolas, Cascadia Mono, monospace" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="15" TextWrapping="Wrap"/>
-                    <Button Grid.Column="1" Classes="admin-copy-button" Content="⧉" Tag="{Binding SupportedTypesText}" Click="OnCopyTextClick" VerticalAlignment="Top"/>
-                  </Grid>
-                </Border>
-              </StackPanel>
-            </StackPanel>
-          </Border>
-
-          <StackPanel Grid.Column="1" Spacing="20">
-            <Border Classes="admin-panel">
-              <StackPanel Spacing="12">
-                <TextBlock Classes="admin-section-title" Text="客户端列表"/>
-                <TextBlock Text="{Binding ClientCountText}" Foreground="{DynamicResource TextMutedBrush}"/>
-                <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" MinHeight="220" Background="Transparent" BorderThickness="0">
-                  <ListBox.ItemTemplate>
-                    <DataTemplate>
-                      <Border Background="{DynamicResource SurfaceRaisedBrush}" BorderBrush="{DynamicResource BorderStrongBrush}" BorderThickness="1" CornerRadius="14" Padding="14" Margin="0,0,0,10">
-                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
-                          <StackPanel Spacing="4">
-                            <TextBlock Text="{Binding ClientName}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                            <TextBlock Text="{Binding ClientId}" Foreground="{DynamicResource TextSecondaryBrush}"/>
-                            <TextBlock Text="{Binding ClientType}" Foreground="{DynamicResource TextMutedBrush}"/>
-                          </StackPanel>
-                          <Button Grid.Column="1"
-                                  Classes="admin-button admin-compact"
-                                  Content="编辑"
-                                  Command="{Binding DataContext.OpenEditDialogCommand, ElementName=Root}"
-                                CommandParameter="{Binding}"
-                                  VerticalAlignment="Top"/>
-                          <Button Grid.Column="2"
-                                  Classes="admin-button admin-compact admin-danger"
-                                  Content="删除"
-                                  Command="{Binding DataContext.DeleteClientCommand, ElementName=Root}"
-                                  CommandParameter="{Binding}"
-                                  VerticalAlignment="Top"/>
-                        </Grid>
-                      </Border>
-                    </DataTemplate>
-                  </ListBox.ItemTemplate>
-                </ListBox>
-
-                <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}">
-                  <StackPanel Spacing="10">
-                    <TextBlock Text="删除确认" Foreground="#FCA5A5" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap"/>
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                      <Button Classes="admin-button admin-danger-solid" Content="确认删除" Command="{Binding ConfirmDeleteCommand}"/>
-                      <Button Classes="admin-button" Content="取消" Command="{Binding CancelDeleteCommand}"/>
-                    </StackPanel>
+                <Border Classes="info-card">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="支持类型" Classes="admin-card-title"/>
+                    <TextBlock Text="{Binding SupportedTypesText}" Classes="admin-hint" TextWrapping="Wrap"/>
                   </StackPanel>
                 </Border>
               </StackPanel>
-            </Border>
+            </Grid>
 
-            <Border Classes="admin-panel">
+            <Border Grid.Row="4" Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}" HorizontalAlignment="Left">
               <StackPanel Spacing="10">
-                <TextBlock Classes="admin-section-title" Text="当前配置概览"/>
-                <Border Classes="admin-content-block">
-                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                    <TextBlock Text="{Binding SelectedClientSummaryText}" FontFamily="Consolas, Cascadia Mono, monospace" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="14" TextWrapping="Wrap"/>
-                    <Button Grid.Column="1" Classes="admin-copy-button" Content="⧉" Tag="{Binding SelectedClientSummaryText}" Click="OnCopyTextClick" VerticalAlignment="Top"/>
-                  </Grid>
-                </Border>
+                <TextBlock Text="删除确认" Foreground="#FCA5A5" FontWeight="Bold"/>
+                <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap"/>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <Button Classes="admin-button admin-danger-solid" Content="确认删除" Command="{Binding ConfirmDeleteCommand}"/>
+                  <Button Classes="admin-button" Content="取消" Command="{Binding CancelDeleteCommand}"/>
+                </StackPanel>
               </StackPanel>
             </Border>
-
-            <Border Classes="info-card">
-              <StackPanel Spacing="8">
-                <TextBlock Classes="admin-section-title" Text="操作说明"/>
-                <TextBlock Text="点击“新增客户端”或列表行内“编辑”进入弹窗；删除操作仍保留二次确认。" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
-              </StackPanel>
-            </Border>
-          </StackPanel>
-        </Grid>
+          </Grid>
+        </Border>
       </StackPanel>
     </ScrollViewer>
 
