@@ -94,6 +94,10 @@ public sealed record PagedResultDto<T>(IReadOnlyList<T> Items, int TotalCount, i
 public sealed record OidcClientDto(Guid Id, string ClientId, string ClientName, string ClientType, IReadOnlyList<string> AllowedScopes, IReadOnlyList<string> RedirectUris, bool RequirePkce, bool IsActive, string? Description)
 {
     public string StatusText => IsActive ? "启用" : "停用";
+
+    public string AllowedScopesDisplay => AllowedScopes.Count == 0
+        ? "未配置"
+        : string.Join("、", AllowedScopes);
 }
 
 public sealed record CreateUserRequestDto(string UserName, string Email, string Password, string? NickName, string? PhoneNumber, bool IsActive, List<Guid>? RoleIds);
@@ -169,7 +173,16 @@ public sealed record RefreshTokenRecordDto(
     IReadOnlyList<string> Scopes,
     DateTime CreatedAtUtc,
     DateTime ExpiresAtUtc,
-    DateTime? RevokedAtUtc);
+    DateTime? RevokedAtUtc)
+{
+    public string ScopesDisplay => Scopes.Count == 0
+        ? "未配置"
+        : string.Join("、", Scopes);
+
+    public string RevokedStatusText => RevokedAtUtc.HasValue
+        ? RevokedAtUtc.Value.ToLocalTime().ToString("MM-dd HH:mm")
+        : "有效";
+}
 
 public sealed record PortalMenuItemDto(
     int Order,
@@ -180,7 +193,16 @@ public sealed record PortalMenuItemDto(
     bool IsImplemented,
     IReadOnlyList<string> RequiredPermissions,
     bool HasAccess,
-    string Description);
+    string Description)
+{
+    public string RequiredPermissionsDisplay => RequiredPermissions.Count == 0
+        ? "当前菜单对所有已登录用户可见。"
+        : string.Join(" / ", RequiredPermissions);
+
+    public string ImplementationStatusText => IsImplemented ? "已实现" : "待补全";
+
+    public string AccessStatusText => HasAccess ? "当前账号可见" : "当前账号无权限";
+}
 
 public sealed record AuditLogEntryDto(
     string Id,
@@ -190,7 +212,10 @@ public sealed record AuditLogEntryDto(
     string Target,
     string Outcome,
     string Details,
-    DateTime OccurredAtUtc);
+    DateTime OccurredAtUtc)
+{
+    public string OccurredAtDisplay => OccurredAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");
+}
 
 public sealed record SystemSettingsSummaryDto(
     string Issuer,

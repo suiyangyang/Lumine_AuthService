@@ -284,6 +284,7 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
+    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private UserDto? _pendingDeleteUser;
     [ObservableProperty] private bool _isCreateDialogOpen;
@@ -334,6 +335,8 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     public string SelectedUserIdText => SelectedItem?.Id.ToString() ?? "待创建";
 
     public int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalCount / (double)PageSize));
+
+    public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
     public bool CanGoPreviousPage => PageIndex > 1;
 
@@ -403,6 +406,11 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
         NotifyPaginationProperties(includeTotalPages: true);
     }
 
+    partial void OnSelectedPageSizeChanged(int value)
+    {
+        QueuePageSizeChangeIfNeeded(value, PageSize, ApplyPageSizeAsync);
+    }
+
     partial void OnSearchKeywordChanged(string value)
     {
         OnPropertyChanged(nameof(HasSearchKeyword));
@@ -437,6 +445,16 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
         await GoToNextPageAsync(CanGoNextPage, PageIndex, LoadPageAsync);
     }
 
+    [RelayCommand]
+    private async Task ApplyPageSizeAsync(int? pageSize = null)
+    {
+        await ApplyPageSizeAndReloadAsync(pageSize, SelectedPageSize, normalizedPageSize =>
+        {
+            SelectedPageSize = normalizedPageSize;
+            PageSize = normalizedPageSize;
+        }, LoadPageAsync);
+    }
+
     private async Task LoadPageAsync(int targetPageIndex)
     {
         await RunAuthenticatedBusyActionAsync(async () =>
@@ -457,6 +475,7 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
             TotalCount = usersResult.Data?.TotalCount ?? 0;
             PageIndex = usersResult.Data?.PageIndex ?? normalizedPageIndex;
             PageSize = usersResult.Data?.PageSize ?? PageSize;
+            SelectedPageSize = PageSize;
             AvailableRoles = (rolesResult.Data?.Items ?? Array.Empty<RoleDto>())
                 .OrderBy(role => role.Name)
                 .Select(role => new UserRoleOptionViewModel(role.Id, role.Name))
@@ -891,8 +910,13 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private RoleDto? _pendingDeleteRole;
     [ObservableProperty] private bool _isRoleDialogOpen;
+    [ObservableProperty] private bool _isSearchVisible;
 
     public bool HasSelectedRole => SelectedItem != null;
+
+    public bool HasRoles => RoleRows.Count > 0;
+
+    public bool ShowRolesEmptyState => !HasRoles;
 
     public string CurrentRoleIdentity => SelectedItem?.Id.ToString() ?? "新建角色";
 
@@ -906,6 +930,8 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
 
     public string PaginationSummaryText => $"第 {PageIndex} / {TotalPages} 页 · 共 {TotalCount} 条";
 
+    public bool HasSearchKeyword => !string.IsNullOrWhiteSpace(SearchKeyword);
+
     public bool HasPendingDelete => PendingDeleteRole != null;
 
     public string RoleDialogTitle => SelectedItem == null ? "新增角色" : FormattedRoleDialogTitle();
@@ -913,6 +939,28 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
     public string DeleteConfirmationText => PendingDeleteRole == null
         ? string.Empty
         : $"确认删除角色“{PendingDeleteRole.Name}”吗？该角色关联将一并移除。";
+
+    public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
+
+    public StreamGeometry AddIconData => NavigationIconData.Get("add");
+
+    public StreamGeometry EditIconData => NavigationIconData.Get("edit");
+
+    public StreamGeometry AssignPermissionsIconData => NavigationIconData.Get("roles");
+
+    public StreamGeometry DeleteIconData => NavigationIconData.Get("trash");
+
+    public StreamGeometry SearchIconData => NavigationIconData.Get(IsSearchVisible ? "close" : "search");
+
+    public StreamGeometry ClearSearchIconData => NavigationIconData.Get("close");
+
+    public StreamGeometry PreviousPageIconData => NavigationIconData.Get("chevron-left");
+
+    public StreamGeometry NextPageIconData => NavigationIconData.Get("chevron-right");
+
+    public StreamGeometry ConfirmDeleteIconData => NavigationIconData.Get("trash");
+
+    public StreamGeometry CancelIconData => NavigationIconData.Get("close");
 
     partial void OnSelectedRoleRowChanged(RoleTableRowViewModel? value)
     {
@@ -953,9 +1001,20 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
         OnPropertyChanged(nameof(RoleDialogTitle));
     }
 
+    partial void OnRoleRowsChanged(IReadOnlyList<RoleTableRowViewModel> value)
+    {
+        OnPropertyChanged(nameof(HasRoles));
+        OnPropertyChanged(nameof(ShowRolesEmptyState));
+    }
+
     partial void OnPageIndexChanged(int value)
     {
         NotifyPaginationProperties();
+    }
+
+    partial void OnSearchKeywordChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSearchKeyword));
     }
 
     partial void OnPageSizeChanged(int value)
@@ -1131,8 +1190,40 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
     }
 
     [RelayCommand]
-    private void OpenEditDialog()
+    private void ToggleSearch()
     {
+        IsSearchVisible = !IsSearchVisible;
+        OnPropertyChanged(nameof(SearchIconData));
+
+        if (!IsSearchVisible && !string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            SearchKeyword = string.Empty;
+            _ = SearchAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSearch()
+    {
+        if (string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            IsSearchVisible = false;
+            OnPropertyChanged(nameof(SearchIconData));
+            return;
+        }
+
+        SearchKeyword = string.Empty;
+        _ = SearchAsync();
+    }
+
+    [RelayCommand]
+    private void OpenEditDialog(RoleDto? role = null)
+    {
+        if (role != null)
+        {
+            SelectedItem = role;
+        }
+
         if (!TryRequireItem(SelectedItem, "请先选择一个角色。", out var selectedRole))
         {
             return;
@@ -1143,8 +1234,13 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
     }
 
     [RelayCommand]
-    private void OpenAssignPermissionsDialog()
+    private void OpenAssignPermissionsDialog(RoleDto? role = null)
     {
+        if (role != null)
+        {
+            SelectedItem = role;
+        }
+
         if (!TryRequireItem(SelectedItem, "请先选择一个角色，再分配权限。", out var selectedRole))
         {
             return;
@@ -1601,6 +1697,7 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private PermissionDto? _pendingDeletePermission;
     [ObservableProperty] private bool _isPermissionDialogOpen;
+    [ObservableProperty] private bool _isSearchVisible;
 
     public IReadOnlyList<PermissionReferenceSection> ReferenceSections { get; }
 
@@ -1618,6 +1715,8 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
 
     public string PaginationSummaryText => $"第 {PageIndex} / {TotalPages} 页 · 共 {TotalCount} 条";
 
+    public bool HasSearchKeyword => !string.IsNullOrWhiteSpace(SearchKeyword);
+
     public bool HasPendingDelete => PendingDeletePermission != null;
 
     public string PermissionDialogTitle => SelectedItem == null ? "新建权限" : $"编辑权限 · {SelectedItem.PermissionName}";
@@ -1627,6 +1726,30 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
         : $"确认删除权限“{PendingDeletePermission.PermissionName}”吗？";
 
     public bool HasSelectedPermission => SelectedItem != null;
+
+    public bool HasPermissions => Items.Count > 0;
+
+    public bool ShowPermissionsEmptyState => !HasPermissions;
+
+    public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
+
+    public StreamGeometry AddIconData => NavigationIconData.Get("add");
+
+    public StreamGeometry EditIconData => NavigationIconData.Get("edit");
+
+    public StreamGeometry DeleteIconData => NavigationIconData.Get("trash");
+
+    public StreamGeometry SearchIconData => NavigationIconData.Get(IsSearchVisible ? "close" : "search");
+
+    public StreamGeometry ClearSearchIconData => NavigationIconData.Get("close");
+
+    public StreamGeometry PreviousPageIconData => NavigationIconData.Get("chevron-left");
+
+    public StreamGeometry NextPageIconData => NavigationIconData.Get("chevron-right");
+
+    public StreamGeometry ConfirmDeleteIconData => NavigationIconData.Get("trash");
+
+    public StreamGeometry CancelIconData => NavigationIconData.Get("close");
 
     partial void OnSelectedItemChanged(PermissionDto? value)
     {
@@ -1646,6 +1769,13 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
     partial void OnItemsChanged(IReadOnlyList<PermissionDto> value)
     {
         OnPropertyChanged(nameof(PermissionCountText));
+        OnPropertyChanged(nameof(HasPermissions));
+        OnPropertyChanged(nameof(ShowPermissionsEmptyState));
+    }
+
+    partial void OnSearchKeywordChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSearchKeyword));
     }
 
     partial void OnPageIndexChanged(int value)
@@ -1765,8 +1895,40 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
     }
 
     [RelayCommand]
-    private void OpenEditDialog()
+    private void ToggleSearch()
     {
+        IsSearchVisible = !IsSearchVisible;
+        OnPropertyChanged(nameof(SearchIconData));
+
+        if (!IsSearchVisible && !string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            SearchKeyword = string.Empty;
+            _ = SearchAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSearch()
+    {
+        if (string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            IsSearchVisible = false;
+            OnPropertyChanged(nameof(SearchIconData));
+            return;
+        }
+
+        SearchKeyword = string.Empty;
+        _ = SearchAsync();
+    }
+
+    [RelayCommand]
+    private void OpenEditDialog(PermissionDto? permission = null)
+    {
+        if (permission != null)
+        {
+            SelectedItem = permission;
+        }
+
         if (!TryRequireItem(SelectedItem, "请先选择一个权限。", out var selectedPermission))
         {
             return;
@@ -1869,6 +2031,7 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
     [ObservableProperty] private OidcClientDto? _pendingDeleteClient;
     [ObservableProperty] private bool _isClientDialogOpen;
     [ObservableProperty] private string _clientDialogTitle = "新建客户端";
+    [ObservableProperty] private bool _isSearchVisible;
 
     public string SectionTitle => "6 OAuth客户端管理";
 
@@ -1929,17 +2092,43 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
 
     public string PaginationSummaryText => $"第 {PageIndex} / {TotalPages} 页 · 共 {TotalCount} 条";
 
+    public bool HasSearchKeyword => !string.IsNullOrWhiteSpace(SearchKeyword);
+
     public string ClientCountText => $"当前页 {Items.Count} 条，累计 {TotalCount} 个客户端";
 
     public bool HasPendingDelete => PendingDeleteClient != null;
 
     public bool HasSelectedClient => SelectedItem != null;
 
+    public bool HasClients => Items.Count > 0;
+
+    public bool ShowClientsEmptyState => !HasClients;
+
     public string DeleteConfirmationText => PendingDeleteClient == null
         ? string.Empty
         : $"确认删除客户端“{PendingDeleteClient.ClientName}”吗？";
 
     public string SelectedClientStatusText => IsActive ? "启用" : "停用";
+
+    public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
+
+    public StreamGeometry AddIconData => NavigationIconData.Get("add");
+
+    public StreamGeometry EditIconData => NavigationIconData.Get("edit");
+
+    public StreamGeometry DeleteIconData => NavigationIconData.Get("trash");
+
+    public StreamGeometry SearchIconData => NavigationIconData.Get(IsSearchVisible ? "close" : "search");
+
+    public StreamGeometry ClearSearchIconData => NavigationIconData.Get("close");
+
+    public StreamGeometry PreviousPageIconData => NavigationIconData.Get("chevron-left");
+
+    public StreamGeometry NextPageIconData => NavigationIconData.Get("chevron-right");
+
+    public StreamGeometry ConfirmDeleteIconData => NavigationIconData.Get("trash");
+
+    public StreamGeometry CancelIconData => NavigationIconData.Get("close");
 
     partial void OnSelectedItemChanged(OidcClientDto? value)
     {
@@ -1975,6 +2164,13 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
     partial void OnItemsChanged(IReadOnlyList<OidcClientDto> value)
     {
         OnPropertyChanged(nameof(ClientCountText));
+        OnPropertyChanged(nameof(HasClients));
+        OnPropertyChanged(nameof(ShowClientsEmptyState));
+    }
+
+    partial void OnSearchKeywordChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSearchKeyword));
     }
 
     partial void OnPageIndexChanged(int value)
@@ -2092,6 +2288,33 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
     private async Task DeleteAsync()
     {
         await BeginDeleteAsync(SelectedItem, client => PendingDeleteClient = client, client => $"待删除客户端：{client.ClientName}");
+    }
+
+    [RelayCommand]
+    private void ToggleSearch()
+    {
+        IsSearchVisible = !IsSearchVisible;
+        OnPropertyChanged(nameof(SearchIconData));
+
+        if (!IsSearchVisible && !string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            SearchKeyword = string.Empty;
+            _ = SearchAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSearch()
+    {
+        if (string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            IsSearchVisible = false;
+            OnPropertyChanged(nameof(SearchIconData));
+            return;
+        }
+
+        SearchKeyword = string.Empty;
+        _ = SearchAsync();
     }
 
     [RelayCommand]

@@ -18,7 +18,7 @@
       <Setter Property="CornerRadius" Value="10"/>
       <Setter Property="Padding" Value="12,10"/>
       <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}"/>
-      <Setter Property="SelectionBrush" Value="#3B82F6"/>
+      <Setter Property="SelectionBrush" Value="{DynamicResource SelectionBrush}"/>
     </Style>
     <Style Selector="TextBox.login-input /template/ Border#border">
       <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
@@ -88,9 +88,9 @@
       <Setter Property="Height" Value="16"/>
     </Style>
     <Style Selector="Button.login-primary-action">
-      <Setter Property="Background" Value="#2563EB"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="8"/>
       <Setter Property="Padding" Value="16,11"/>
@@ -99,64 +99,64 @@
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#2563EB"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action /template/ Border#border">
-      <Setter Property="Background" Value="#2563EB"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pointerover">
-      <Setter Property="Background" Value="#1D4ED8"/>
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pointerover /template/ ContentPresenter">
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#1D4ED8"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pointerover /template/ Border#border">
-      <Setter Property="Background" Value="#1D4ED8"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pressed">
-      <Setter Property="Background" Value="#1E40AF"/>
+      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
-      <Setter Property="BorderBrush" Value="#BFDBFE"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pressed /template/ ContentPresenter">
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#1E40AF"/>
-      <Setter Property="BorderBrush" Value="#BFDBFE"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pressed /template/ Border#border">
-      <Setter Property="Background" Value="#1E40AF"/>
-      <Setter Property="BorderBrush" Value="#BFDBFE"/>
+      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:disabled">
-      <Setter Property="Background" Value="#1E3A5F"/>
-      <Setter Property="Foreground" Value="#94A3B8"/>
-      <Setter Property="BorderBrush" Value="#314666"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:disabled /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#94A3B8"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:disabled /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#1E3A5F"/>
-      <Setter Property="BorderBrush" Value="#314666"/>
-      <Setter Property="Foreground" Value="#94A3B8"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:disabled /template/ Border#border">
-      <Setter Property="Background" Value="#1E3A5F"/>
-      <Setter Property="BorderBrush" Value="#314666"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action">
       <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
@@ -217,16 +217,16 @@
       <Setter Property="BorderBrush" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="0"/>
-      <Setter Property="Foreground" Value="#2563EB"/>
+      <Setter Property="Foreground" Value="{DynamicResource LinkBrush}"/>
       <Setter Property="FontSize" Value="13"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="HorizontalContentAlignment" Value="Right"/>
     </Style>
     <Style Selector="Button.login-link-action:pointerover">
-      <Setter Property="Foreground" Value="#1D4ED8"/>
+      <Setter Property="Foreground" Value="{DynamicResource LinkHoverBrush}"/>
     </Style>
     <Style Selector="Button.login-link-action:pressed">
-      <Setter Property="Foreground" Value="#1E40AF"/>
+      <Setter Property="Foreground" Value="{DynamicResource LinkPressedBrush}"/>
     </Style>
     <Style Selector="Border.login-status-banner">
       <Setter Property="Padding" Value="2,2,2,0"/>
@@ -242,10 +242,10 @@
       <Setter Property="FontSize" Value="13"/>
     </Style>
     <Style Selector="TextBlock.login-status-text.status-error">
-      <Setter Property="Foreground" Value="#DC2626"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}"/>
     </Style>
     <Style Selector="TextBlock.login-status-text.status-success">
-      <Setter Property="Foreground" Value="#059669"/>
+      <Setter Property="Foreground" Value="{DynamicResource SuccessBackgroundBrush}"/>
     </Style>
   </UserControl.Styles>
 

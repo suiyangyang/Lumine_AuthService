@@ -5,8 +5,7 @@
              xmlns:vmPages="using:Lumine.AuthPortal.ViewModels.Pages"
              xmlns:views="using:Lumine.AuthPortal.Views.Pages"
              x:Class="Lumine.AuthPortal.App"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Light">
 
     <Application.Resources>
         <FontFamily x:Key="ChineseFont">avares://Lumine.AuthPortal/Assets/SimHei.ttf#SimHei, Microsoft YaHei UI, Segoe UI, Segoe UI Emoji, Segoe UI Symbol</FontFamily>
@@ -35,6 +34,49 @@
         <SolidColorBrush x:Key="TextOnSelectedBrush" Color="#0F172A" />
         <SolidColorBrush x:Key="TextAccentSoftBrush" Color="#1D4ED8" />
         <SolidColorBrush x:Key="StatusInfoBrush" Color="#1D4ED8" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#2563EB" />
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#1D4ED8" />
+        <SolidColorBrush x:Key="AccentPressedBrush" Color="#1E40AF" />
+        <SolidColorBrush x:Key="AccentBorderBrush" Color="#60A5FA" />
+        <SolidColorBrush x:Key="AccentBorderStrongBrush" Color="#BFDBFE" />
+        <SolidColorBrush x:Key="LinkBrush" Color="#2563EB" />
+        <SolidColorBrush x:Key="LinkHoverBrush" Color="#1D4ED8" />
+        <SolidColorBrush x:Key="LinkPressedBrush" Color="#1E40AF" />
+        <SolidColorBrush x:Key="SelectionBrush" Color="#BFDBFE" />
+        <SolidColorBrush x:Key="DialogBackdropBrush" Color="#AA020617" />
+        <SolidColorBrush x:Key="DangerBannerBackgroundBrush" Color="#2B1220" />
+        <SolidColorBrush x:Key="DangerBannerBorderBrush" Color="#7F1D1D" />
+        <SolidColorBrush x:Key="DangerBannerForegroundBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="SuccessBannerBackgroundBrush" Color="#ECFDF5" />
+        <SolidColorBrush x:Key="SuccessBannerBorderBrush" Color="#6EE7B7" />
+        <SolidColorBrush x:Key="SuccessBannerForegroundBrush" Color="#065F46" />
+        <SolidColorBrush x:Key="SuccessPillBackgroundBrush" Color="#0F766E" />
+        <SolidColorBrush x:Key="SuccessPillForegroundBrush" Color="#ECFDF5" />
+        <SolidColorBrush x:Key="DangerPillBackgroundBrush" Color="#7F1D1D" />
+        <SolidColorBrush x:Key="DangerPillForegroundBrush" Color="#FEF2F2" />
+        <SolidColorBrush x:Key="DangerSoftBackgroundBrush" Color="#FFF1F2" />
+        <SolidColorBrush x:Key="DangerSoftHoverBackgroundBrush" Color="#FFE4E6" />
+        <SolidColorBrush x:Key="DangerSoftPressedBackgroundBrush" Color="#FECDD3" />
+        <SolidColorBrush x:Key="DangerSoftBorderBrush" Color="#FCA5A5" />
+        <SolidColorBrush x:Key="DangerSoftHoverBorderBrush" Color="#FB7185" />
+        <SolidColorBrush x:Key="DangerSoftPressedBorderBrush" Color="#E11D48" />
+        <SolidColorBrush x:Key="DangerSoftForegroundBrush" Color="#B91C1C" />
+        <SolidColorBrush x:Key="DangerSoftHoverForegroundBrush" Color="#9F1239" />
+        <SolidColorBrush x:Key="DangerSoftPressedForegroundBrush" Color="#881337" />
+        <SolidColorBrush x:Key="DangerSolidBackgroundBrush" Color="#DC2626" />
+        <SolidColorBrush x:Key="DangerSolidHoverBackgroundBrush" Color="#B91C1C" />
+        <SolidColorBrush x:Key="DangerSolidPressedBackgroundBrush" Color="#991B1B" />
+        <SolidColorBrush x:Key="DangerSolidBorderBrush" Color="#F87171" />
+        <SolidColorBrush x:Key="DangerSolidHoverBorderBrush" Color="#FCA5A5" />
+        <SolidColorBrush x:Key="DangerSolidPressedBorderBrush" Color="#FECACA" />
+        <SolidColorBrush x:Key="SuccessBackgroundBrush" Color="#059669" />
+        <SolidColorBrush x:Key="SuccessHoverBackgroundBrush" Color="#047857" />
+        <SolidColorBrush x:Key="SuccessPressedBackgroundBrush" Color="#065F46" />
+        <SolidColorBrush x:Key="SuccessBorderBrush" Color="#34D399" />
+        <SolidColorBrush x:Key="SuccessHoverBorderBrush" Color="#6EE7B7" />
+        <SolidColorBrush x:Key="SuccessPressedBorderBrush" Color="#A7F3D0" />
+        <SolidColorBrush x:Key="RoleTagBackgroundBrush" Color="#312E81" />
+        <SolidColorBrush x:Key="RoleTagForegroundBrush" Color="#E0E7FF" />
     </Application.Resources>
 
     <Application.DataTemplates>
@@ -86,7 +128,7 @@
     <Application.Styles>
         <FluentTheme />
         <Style Selector="Border.dialog-backdrop">
-            <Setter Property="Background" Value="#AA020617" />
+            <Setter Property="Background" Value="{DynamicResource DialogBackdropBrush}" />
         </Style>
         <Style Selector="Border.dialog-card">
             <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}" />
@@ -117,8 +159,8 @@
             <Setter Property="Padding" Value="12" />
         </Style>
         <Style Selector="Border.admin-danger-banner">
-            <Setter Property="Background" Value="#2B1220" />
-            <Setter Property="BorderBrush" Value="#7F1D1D" />
+            <Setter Property="Background" Value="{DynamicResource DangerBannerBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerBannerBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="12" />
             <Setter Property="Padding" Value="12" />
@@ -127,6 +169,21 @@
             <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
             <Setter Property="CornerRadius" Value="12" />
             <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style Selector="Border.admin-search-shell">
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="0,0,6,0" />
+            <Setter Property="MinHeight" Value="42" />
+        </Style>
+        <Style Selector="TextBox.admin-search-input">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="Padding" Value="14,10" />
         </Style>
         <Style Selector="Border.admin-content-block">
             <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
@@ -151,10 +208,10 @@
             <Setter Property="Padding" Value="10,4" />
         </Style>
         <Style Selector="Border.admin-pill.admin-pill-success">
-            <Setter Property="Background" Value="#0F766E" />
+            <Setter Property="Background" Value="{DynamicResource SuccessPillBackgroundBrush}" />
         </Style>
         <Style Selector="Border.admin-pill.admin-pill-danger">
-            <Setter Property="Background" Value="#7F1D1D" />
+            <Setter Property="Background" Value="{DynamicResource DangerPillBackgroundBrush}" />
         </Style>
         <Style Selector="TextBlock.admin-section-title">
             <Setter Property="FontSize" Value="16" />
@@ -301,32 +358,32 @@
             <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button.admin-primary">
-            <Setter Property="Background" Value="#2563EB" />
-            <Setter Property="BorderBrush" Value="#60A5FA" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button.admin-primary:pointerover">
-            <Setter Property="Background" Value="#1D4ED8" />
-            <Setter Property="BorderBrush" Value="#93C5FD" />
+            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button.admin-danger">
-            <Setter Property="Background" Value="#111827" />
-            <Setter Property="BorderBrush" Value="#7F1D1D" />
-            <Setter Property="Foreground" Value="#FCA5A5" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button.admin-danger:pointerover">
-            <Setter Property="Background" Value="#2B1220" />
-            <Setter Property="BorderBrush" Value="#B91C1C" />
-            <Setter Property="Foreground" Value="#FECACA" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftHoverBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftHoverForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button.admin-danger-solid">
-            <Setter Property="Background" Value="#DC2626" />
-            <Setter Property="BorderBrush" Value="#F87171" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button.admin-danger-solid:pointerover">
-            <Setter Property="Background" Value="#B91C1C" />
-            <Setter Property="BorderBrush" Value="#FCA5A5" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidHoverBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-row-icon-button">
             <Setter Property="Width" Value="32" />
@@ -345,14 +402,14 @@
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-row-icon-button.admin-danger">
-            <Setter Property="Background" Value="#7F1D1D" />
-            <Setter Property="BorderBrush" Value="#B91C1C" />
-            <Setter Property="Foreground" Value="#FEE2E2" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-row-icon-button.admin-danger:pointerover">
-            <Setter Property="Background" Value="#991B1B" />
-            <Setter Property="BorderBrush" Value="#F87171" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftHoverBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftHoverForegroundBrush}" />
         </Style>
         <Style Selector="PathIcon.admin-button-icon">
             <Setter Property="Width" Value="16" />
@@ -363,208 +420,208 @@
             <Setter Property="Height" Value="14" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary">
-            <Setter Property="Background" Value="#2563EB" />
-            <Setter Property="BorderBrush" Value="#60A5FA" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#2563EB" />
-            <Setter Property="BorderBrush" Value="#60A5FA" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary /template/ Border#border">
-            <Setter Property="Background" Value="#2563EB" />
-            <Setter Property="BorderBrush" Value="#60A5FA" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary:pointerover">
-            <Setter Property="Background" Value="#1D4ED8" />
-            <Setter Property="BorderBrush" Value="#93C5FD" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary:pointerover /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#1D4ED8" />
-            <Setter Property="BorderBrush" Value="#93C5FD" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary:pointerover /template/ Border#border">
-            <Setter Property="Background" Value="#1D4ED8" />
-            <Setter Property="BorderBrush" Value="#93C5FD" />
+            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary:pressed">
-            <Setter Property="Background" Value="#1E40AF" />
-            <Setter Property="BorderBrush" Value="#BFDBFE" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary:pressed /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#1E40AF" />
-            <Setter Property="BorderBrush" Value="#BFDBFE" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary:pressed /template/ Border#border">
-            <Setter Property="Background" Value="#1E40AF" />
-            <Setter Property="BorderBrush" Value="#BFDBFE" />
+            <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success">
-            <Setter Property="Background" Value="#059669" />
-            <Setter Property="BorderBrush" Value="#34D399" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SuccessBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#059669" />
-            <Setter Property="BorderBrush" Value="#34D399" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SuccessBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success /template/ Border#border">
-            <Setter Property="Background" Value="#059669" />
-            <Setter Property="BorderBrush" Value="#34D399" />
+            <Setter Property="Background" Value="{DynamicResource SuccessBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success:pointerover">
-            <Setter Property="Background" Value="#047857" />
-            <Setter Property="BorderBrush" Value="#6EE7B7" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SuccessHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessHoverBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success:pointerover /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#047857" />
-            <Setter Property="BorderBrush" Value="#6EE7B7" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SuccessHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessHoverBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success:pointerover /template/ Border#border">
-            <Setter Property="Background" Value="#047857" />
-            <Setter Property="BorderBrush" Value="#6EE7B7" />
+            <Setter Property="Background" Value="{DynamicResource SuccessHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessHoverBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success:pressed">
-            <Setter Property="Background" Value="#065F46" />
-            <Setter Property="BorderBrush" Value="#A7F3D0" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SuccessPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessPressedBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success:pressed /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#065F46" />
-            <Setter Property="BorderBrush" Value="#A7F3D0" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SuccessPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessPressedBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-success:pressed /template/ Border#border">
-            <Setter Property="Background" Value="#065F46" />
-            <Setter Property="BorderBrush" Value="#A7F3D0" />
+            <Setter Property="Background" Value="{DynamicResource SuccessPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessPressedBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger">
-            <Setter Property="Background" Value="#111827" />
-            <Setter Property="BorderBrush" Value="#7F1D1D" />
-            <Setter Property="Foreground" Value="#FCA5A5" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FCA5A5" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#111827" />
-            <Setter Property="BorderBrush" Value="#7F1D1D" />
-            <Setter Property="Foreground" Value="#FCA5A5" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger /template/ Border#border">
-            <Setter Property="Background" Value="#111827" />
-            <Setter Property="BorderBrush" Value="#7F1D1D" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger:pointerover">
-            <Setter Property="Background" Value="#2B1220" />
-            <Setter Property="BorderBrush" Value="#B91C1C" />
-            <Setter Property="Foreground" Value="#FECACA" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftHoverBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftHoverForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger:pointerover /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FECACA" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftHoverForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#2B1220" />
-            <Setter Property="BorderBrush" Value="#B91C1C" />
-            <Setter Property="Foreground" Value="#FECACA" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftHoverBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftHoverForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger:pointerover /template/ Border#border">
-            <Setter Property="Background" Value="#2B1220" />
-            <Setter Property="BorderBrush" Value="#B91C1C" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftHoverBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger:pressed">
-            <Setter Property="Background" Value="#3B1422" />
-            <Setter Property="BorderBrush" Value="#DC2626" />
-            <Setter Property="Foreground" Value="#FEE2E2" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftPressedBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftPressedForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger:pressed /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FEE2E2" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftPressedForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#3B1422" />
-            <Setter Property="BorderBrush" Value="#DC2626" />
-            <Setter Property="Foreground" Value="#FEE2E2" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftPressedBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerSoftPressedForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger:pressed /template/ Border#border">
-            <Setter Property="Background" Value="#3B1422" />
-            <Setter Property="BorderBrush" Value="#DC2626" />
+            <Setter Property="Background" Value="{DynamicResource DangerSoftPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftPressedBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid">
-            <Setter Property="Background" Value="#DC2626" />
-            <Setter Property="BorderBrush" Value="#F87171" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#DC2626" />
-            <Setter Property="BorderBrush" Value="#F87171" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid /template/ Border#border">
-            <Setter Property="Background" Value="#DC2626" />
-            <Setter Property="BorderBrush" Value="#F87171" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid:pointerover">
-            <Setter Property="Background" Value="#B91C1C" />
-            <Setter Property="BorderBrush" Value="#FCA5A5" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidHoverBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid:pointerover /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#B91C1C" />
-            <Setter Property="BorderBrush" Value="#FCA5A5" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidHoverBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid:pointerover /template/ Border#border">
-            <Setter Property="Background" Value="#B91C1C" />
-            <Setter Property="BorderBrush" Value="#FCA5A5" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidHoverBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid:pressed">
-            <Setter Property="Background" Value="#991B1B" />
-            <Setter Property="BorderBrush" Value="#FECACA" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidPressedBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid:pressed /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#991B1B" />
-            <Setter Property="BorderBrush" Value="#FECACA" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidPressedBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger-solid:pressed /template/ Border#border">
-            <Setter Property="Background" Value="#991B1B" />
-            <Setter Property="BorderBrush" Value="#FECACA" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidPressedBorderBrush}" />
         </Style>
         <Style Selector="Button.admin-row-action">
             <Setter Property="CornerRadius" Value="6" />
@@ -586,19 +643,19 @@
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-row-action.admin-danger">
-            <Setter Property="Background" Value="#7F1D1D" />
-            <Setter Property="BorderBrush" Value="#B91C1C" />
-            <Setter Property="Foreground" Value="#FEE2E2" />
+            <Setter Property="Background" Value="{DynamicResource DangerBannerBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerBannerBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DangerPillForegroundBrush}" />
         </Style>
         <Style Selector="Button.admin-row-action.admin-danger:pointerover">
-            <Setter Property="Background" Value="#991B1B" />
-            <Setter Property="BorderBrush" Value="#F87171" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidHoverBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-row-action.admin-danger:pressed">
-            <Setter Property="Background" Value="#7F1D1D" />
-            <Setter Property="BorderBrush" Value="#FCA5A5" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource DangerSolidPressedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerSolidPressedBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
         <Style Selector="Button.admin-copy-button">
             <Setter Property="Width" Value="32" />
@@ -631,6 +688,8 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="SelectionBrush" Value="{DynamicResource SelectionBrush}" />
         </Style>
         <Style Selector="TextBox.admin-form-input:pointerover">
             <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
@@ -640,6 +699,76 @@
         <Style Selector="TextBox.admin-form-input:focus">
             <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="SelectionBrush" Value="{DynamicResource SelectionBrush}" />
+        </Style>
+        <Style Selector="TextBox:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+        </Style>
+        <Style Selector="TextBox:focus">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
+        </Style>
+        <Style Selector="TextBox:disabled">
+            <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="ComboBox:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+        </Style>
+        <Style Selector="ComboBox:focus">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
+        </Style>
+        <Style Selector="ComboBox:disabled">
+            <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        </Style>
+        <Style Selector="ComboBoxItem">
+            <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="ComboBoxItem:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+        </Style>
+        <Style Selector="ComboBoxItem:selected">
+            <Setter Property="Background" Value="{DynamicResource SurfaceSelectedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnSelectedBrush}" />
+        </Style>
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+        </Style>
+        <Style Selector="ListBoxItem:selected">
+            <Setter Property="Background" Value="{DynamicResource SurfaceSelectedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnSelectedBrush}" />
+        </Style>
+        <Style Selector="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="CheckBox:disabled">
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+        </Style>
+        <Style Selector="Expander">
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="TextBlock">

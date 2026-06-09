@@ -5,27 +5,9 @@
              x:Class="Lumine.AuthPortal.Views.Pages.UsersManagementPageView"
              x:Name="Root"
              x:DataType="vm:UsersManagementPageViewModel">
-  <UserControl.Styles>
-    <Style Selector="Border.admin-search-shell">
-      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="12"/>
-      <Setter Property="Padding" Value="0,0,6,0"/>
-      <Setter Property="MinHeight" Value="42"/>
-    </Style>
-    <Style Selector="TextBox.admin-search-input">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
-      <Setter Property="Padding" Value="14,10"/>
-    </Style>
-  </UserControl.Styles>
-
   <Grid>
     <Border Classes="admin-panel" Padding="18">
-      <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14">
+      <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
           <StackPanel Spacing="4">
             <TextBlock Text="用户列表" Classes="admin-card-title"/>
@@ -76,11 +58,7 @@
           </Grid>
         </Border>
 
-        <Border Grid.Row="2" Classes="admin-status-banner" Padding="10,8">
-          <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
-        </Border>
-
-        <Border Grid.Row="3" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
+        <Border Grid.Row="2" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
           <Grid RowDefinitions="Auto,Auto,*">
             <Grid ColumnDefinitions="190,130,220,72,132,132,*,212" ColumnSpacing="12" Margin="2,0,2,10">
               <TextBlock Text="ID" Classes="admin-table-header"/>
@@ -111,10 +89,10 @@
                         <TextBlock Grid.Column="2" Text="{Binding Email}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
 
                         <Border Grid.Column="3" Classes="admin-pill admin-pill-success" HorizontalAlignment="Left" VerticalAlignment="Center" IsVisible="{Binding IsActive}">
-                          <TextBlock Text="启用" Foreground="#ECFDF5" FontSize="12"/>
+                          <TextBlock Text="启用" Foreground="{DynamicResource SuccessPillForegroundBrush}" FontSize="12"/>
                         </Border>
                         <Border Grid.Column="3" Classes="admin-pill admin-pill-danger" HorizontalAlignment="Left" VerticalAlignment="Center" IsVisible="{Binding IsInactive}">
-                          <TextBlock Text="禁用" Foreground="#FEF2F2" FontSize="12"/>
+                          <TextBlock Text="禁用" Foreground="{DynamicResource DangerPillForegroundBrush}" FontSize="12"/>
                         </Border>
 
                         <TextBlock Grid.Column="4" Text="{Binding CreatedAtDisplay}" Classes="admin-muted" VerticalAlignment="Center"/>
@@ -173,26 +151,34 @@
           </Grid>
         </Border>
 
-        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" ColumnSpacing="12">
-          <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}" HorizontalAlignment="Left">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-              <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
-              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                <Button Classes="admin-icon-button admin-danger-solid"
-                        Command="{Binding ConfirmDeleteCommand}"
-                        ToolTip.Tip="确认删除">
-                  <PathIcon Data="{Binding ConfirmDeleteIconData}" Classes="admin-button-icon"/>
-                </Button>
-                <Button Classes="admin-icon-button"
-                        Command="{Binding CancelDeleteCommand}"
-                        ToolTip.Tip="取消删除">
-                  <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
-                </Button>
-              </StackPanel>
-            </Grid>
-          </Border>
-
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+          <StackPanel Spacing="10">
+            <Border Classes="admin-status-banner" Padding="10,8">
+              <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
+            </Border>
+            <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}" HorizontalAlignment="Left">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                  <Button Classes="admin-icon-button admin-danger-solid"
+                          Command="{Binding ConfirmDeleteCommand}"
+                          ToolTip.Tip="确认删除">
+                    <PathIcon Data="{Binding ConfirmDeleteIconData}" Classes="admin-button-icon"/>
+                  </Button>
+                  <Button Classes="admin-icon-button"
+                          Command="{Binding CancelDeleteCommand}"
+                          ToolTip.Tip="取消删除">
+                    <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
+                  </Button>
+                </StackPanel>
+              </Grid>
+            </Border>
+          </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <ComboBox Width="92"
+                      ItemsSource="{Binding PageSizeOptions}"
+                      SelectedItem="{Binding SelectedPageSize}"
+                      HorizontalContentAlignment="Center"/>
             <Button Classes="admin-icon-button"
                     Command="{Binding PreviousPageCommand}"
                     IsEnabled="{Binding CanGoPreviousPage}"

@@ -32,7 +32,7 @@
       <Setter Property="CornerRadius" Value="10"/>
       <Setter Property="Padding" Value="12,10"/>
       <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}"/>
-      <Setter Property="SelectionBrush" Value="#3B82F6"/>
+      <Setter Property="SelectionBrush" Value="{DynamicResource SelectionBrush}"/>
     </Style>
     <Style Selector="TextBox.register-input /template/ Border#border">
       <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
@@ -56,9 +56,9 @@
       <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
     <Style Selector="Button.register-primary-action">
-      <Setter Property="Background" Value="#2563EB"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="8"/>
       <Setter Property="Padding" Value="16,11"/>
@@ -67,46 +67,46 @@
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.register-primary-action /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#2563EB"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.register-primary-action /template/ Border#border">
-      <Setter Property="Background" Value="#2563EB"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}"/>
     </Style>
     <Style Selector="Button.register-primary-action:pointerover">
-      <Setter Property="Background" Value="#1D4ED8"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.register-primary-action:pointerover /template/ ContentPresenter">
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.register-primary-action:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#1D4ED8"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.register-primary-action:pointerover /template/ Border#border">
-      <Setter Property="Background" Value="#1D4ED8"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderStrongBrush}"/>
     </Style>
     <Style Selector="Button.register-link-action">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="0"/>
-      <Setter Property="Foreground" Value="#2563EB"/>
+      <Setter Property="Foreground" Value="{DynamicResource LinkBrush}"/>
       <Setter Property="FontSize" Value="13"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="HorizontalContentAlignment" Value="Right"/>
     </Style>
     <Style Selector="Button.register-link-action:pointerover">
-      <Setter Property="Foreground" Value="#1D4ED8"/>
+      <Setter Property="Foreground" Value="{DynamicResource LinkHoverBrush}"/>
     </Style>
     <Style Selector="Button.register-link-action:pressed">
-      <Setter Property="Foreground" Value="#1E40AF"/>
+      <Setter Property="Foreground" Value="{DynamicResource LinkPressedBrush}"/>
     </Style>
     <Style Selector="Border.register-status-banner">
       <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
@@ -116,12 +116,22 @@
       <Setter Property="Padding" Value="12"/>
     </Style>
     <Style Selector="Border.register-status-banner.status-error">
-      <Setter Property="Background" Value="#FEF2F2"/>
-      <Setter Property="BorderBrush" Value="#FCA5A5"/>
+      <Setter Property="Background" Value="{DynamicResource DangerSoftBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftBorderBrush}"/>
     </Style>
     <Style Selector="Border.register-status-banner.status-success">
-      <Setter Property="Background" Value="#ECFDF5"/>
-      <Setter Property="BorderBrush" Value="#6EE7B7"/>
+      <Setter Property="Background" Value="{DynamicResource SuccessBannerBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SuccessBannerBorderBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.register-status-text">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+    <Style Selector="TextBlock.register-status-text.status-error">
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.register-status-text.status-success">
+      <Setter Property="Foreground" Value="{DynamicResource SuccessBannerForegroundBrush}"/>
     </Style>
   </UserControl.Styles>
 
@@ -196,8 +206,9 @@
                   IsVisible="{Binding HasStatusMessage}"
                   MinHeight="46">
             <TextBlock Text="{Binding StatusMessage}"
-                       Foreground="{DynamicResource TextSecondaryBrush}"
-                       TextWrapping="Wrap"
+                       Classes="register-status-text"
+                       Classes.status-error="{Binding IsErrorMessage}"
+                       Classes.status-success="{Binding IsSuccessMessage}"
                        VerticalAlignment="Center"/>
           </Border>
         </Grid>

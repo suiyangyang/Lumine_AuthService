@@ -23,6 +23,7 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
+    [ObservableProperty] private bool _isSearchVisible;
 
     public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
@@ -38,6 +39,8 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
 
     public string PaginationSummaryText => $"第 {PageIndex} / {TotalPages} 页 · 共 {TotalCount} 个用户组";
 
+    public bool HasSearchKeyword => !string.IsNullOrWhiteSpace(SearchKeyword);
+
     public string SelectedGroupMembersText => SelectedItem == null
         ? "请选择一个用户组查看成员。"
         : SelectedItem.Members.Count == 0
@@ -45,7 +48,27 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
             : string.Join(Environment.NewLine, SelectedItem.Members.Select(member =>
                 $"{member.UserName} · {(member.IsActive ? "启用" : "禁用")} · {string.Join("、", member.Roles)}"));
 
+    public string SelectedGroupRoleSummary => SelectedItem == null
+        ? "选择用户组后查看角色映射。"
+        : string.IsNullOrWhiteSpace(SelectedItem.RoleSummary)
+            ? "当前用户组未映射角色。"
+            : SelectedItem.RoleSummary;
+
+    public string SelectedGroupPermissionSummary => SelectedItem == null
+        ? "选择用户组后查看权限摘要。"
+        : string.IsNullOrWhiteSpace(SelectedItem.PermissionSummary)
+            ? "当前用户组未配置权限。"
+            : SelectedItem.PermissionSummary;
+
+    public string SelectedGroupMetaSummary => SelectedItem == null
+        ? "未选择用户组"
+        : $"{SelectedItem.GroupType} · {SelectedItem.MemberCount} 名成员 · {SelectedItem.PermissionCount} 项权限";
+
     public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
+
+    public StreamGeometry SearchIconData => NavigationIconData.Get(IsSearchVisible ? "close" : "search");
+
+    public StreamGeometry ClearSearchIconData => NavigationIconData.Get("close");
 
     public StreamGeometry PreviousPageIconData => NavigationIconData.Get("chevron-left");
 
@@ -60,6 +83,14 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
     partial void OnSelectedItemChanged(UserGroupDto? value)
     {
         OnPropertyChanged(nameof(SelectedGroupMembersText));
+        OnPropertyChanged(nameof(SelectedGroupRoleSummary));
+        OnPropertyChanged(nameof(SelectedGroupPermissionSummary));
+        OnPropertyChanged(nameof(SelectedGroupMetaSummary));
+    }
+
+    partial void OnSearchKeywordChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSearchKeyword));
     }
 
     partial void OnPageIndexChanged(int value)
@@ -114,6 +145,33 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
             SelectedPageSize = normalizedPageSize;
             PageSize = normalizedPageSize;
         }, LoadPageAsync);
+    }
+
+    [RelayCommand]
+    private void ToggleSearch()
+    {
+        IsSearchVisible = !IsSearchVisible;
+        OnPropertyChanged(nameof(SearchIconData));
+
+        if (!IsSearchVisible && !string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            SearchKeyword = string.Empty;
+            _ = SearchAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSearch()
+    {
+        if (string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            IsSearchVisible = false;
+            OnPropertyChanged(nameof(SearchIconData));
+            return;
+        }
+
+        SearchKeyword = string.Empty;
+        _ = SearchAsync();
     }
 
     private async Task LoadPageAsync(int targetPageIndex)
@@ -156,6 +214,7 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private RefreshTokenRecordDto? _pendingRevokeToken;
+    [ObservableProperty] private bool _isSearchVisible;
 
     public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
@@ -173,11 +232,17 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
 
     public string PaginationSummaryText => $"第 {PageIndex} / {TotalPages} 页 · 共 {TotalCount} 条 Token 记录";
 
+    public bool HasSearchKeyword => !string.IsNullOrWhiteSpace(SearchKeyword);
+
     public string DeleteConfirmationText => PendingRevokeToken == null
         ? string.Empty
         : $"确认撤销 Token {PendingRevokeToken.TokenPreview} 吗？";
 
     public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
+
+    public StreamGeometry SearchIconData => NavigationIconData.Get(IsSearchVisible ? "close" : "search");
+
+    public StreamGeometry ClearSearchIconData => NavigationIconData.Get("close");
 
     public StreamGeometry PreviousPageIconData => NavigationIconData.Get("chevron-left");
 
@@ -197,6 +262,11 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
     {
         OnPropertyChanged(nameof(HasPendingRevoke));
         OnPropertyChanged(nameof(DeleteConfirmationText));
+    }
+
+    partial void OnSearchKeywordChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSearchKeyword));
     }
 
     partial void OnPageIndexChanged(int value)
@@ -251,6 +321,33 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
             SelectedPageSize = normalizedPageSize;
             PageSize = normalizedPageSize;
         }, LoadPageAsync);
+    }
+
+    [RelayCommand]
+    private void ToggleSearch()
+    {
+        IsSearchVisible = !IsSearchVisible;
+        OnPropertyChanged(nameof(SearchIconData));
+
+        if (!IsSearchVisible && !string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            SearchKeyword = string.Empty;
+            _ = SearchAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSearch()
+    {
+        if (string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            IsSearchVisible = false;
+            OnPropertyChanged(nameof(SearchIconData));
+            return;
+        }
+
+        SearchKeyword = string.Empty;
+        _ = SearchAsync();
     }
 
     [RelayCommand]
@@ -337,17 +434,32 @@ public partial class MenusManagementPageViewModel : ManagementPageViewModelBase
             ? "当前菜单对所有已登录用户可见。"
             : string.Join(" / ", SelectedItem.RequiredPermissions);
 
+    public string SelectedMenuRouteText => SelectedItem?.Route ?? "--";
+
+    public string SelectedMenuSectionText => SelectedItem?.Section ?? "--";
+
+    public string SelectedMenuStatusText => SelectedItem?.ImplementationStatusText ?? "未选择菜单";
+
+    public string SelectedMenuAccessText => SelectedItem?.AccessStatusText ?? "未选择菜单";
+
+    public string MenuOverviewText => $"共 {Items.Count} 个菜单项";
+
     public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
 
     partial void OnItemsChanged(IReadOnlyList<PortalMenuItemDto> value)
     {
         OnPropertyChanged(nameof(HasMenus));
         OnPropertyChanged(nameof(ShowEmptyState));
+        OnPropertyChanged(nameof(MenuOverviewText));
     }
 
     partial void OnSelectedItemChanged(PortalMenuItemDto? value)
     {
         OnPropertyChanged(nameof(PermissionSummaryText));
+        OnPropertyChanged(nameof(SelectedMenuRouteText));
+        OnPropertyChanged(nameof(SelectedMenuSectionText));
+        OnPropertyChanged(nameof(SelectedMenuStatusText));
+        OnPropertyChanged(nameof(SelectedMenuAccessText));
     }
 
     [RelayCommand]
@@ -380,6 +492,7 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
+    [ObservableProperty] private bool _isSearchVisible;
 
     public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
@@ -395,7 +508,13 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
 
     public string PaginationSummaryText => $"第 {PageIndex} / {TotalPages} 页 · 共 {TotalCount} 条审计记录";
 
+    public bool HasSearchKeyword => !string.IsNullOrWhiteSpace(SearchKeyword);
+
     public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
+
+    public StreamGeometry SearchIconData => NavigationIconData.Get(IsSearchVisible ? "close" : "search");
+
+    public StreamGeometry ClearSearchIconData => NavigationIconData.Get("close");
 
     public StreamGeometry PreviousPageIconData => NavigationIconData.Get("chevron-left");
 
@@ -405,6 +524,11 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
     {
         OnPropertyChanged(nameof(HasLogs));
         OnPropertyChanged(nameof(ShowEmptyState));
+    }
+
+    partial void OnSearchKeywordChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSearchKeyword));
     }
 
     partial void OnPageIndexChanged(int value)
@@ -459,6 +583,33 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
             SelectedPageSize = normalizedPageSize;
             PageSize = normalizedPageSize;
         }, LoadPageAsync);
+    }
+
+    [RelayCommand]
+    private void ToggleSearch()
+    {
+        IsSearchVisible = !IsSearchVisible;
+        OnPropertyChanged(nameof(SearchIconData));
+
+        if (!IsSearchVisible && !string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            SearchKeyword = string.Empty;
+            _ = SearchAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSearch()
+    {
+        if (string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            IsSearchVisible = false;
+            OnPropertyChanged(nameof(SearchIconData));
+            return;
+        }
+
+        SearchKeyword = string.Empty;
+        _ = SearchAsync();
     }
 
     private async Task LoadPageAsync(int targetPageIndex)

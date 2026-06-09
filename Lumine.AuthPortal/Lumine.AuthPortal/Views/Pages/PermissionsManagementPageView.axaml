@@ -9,99 +9,168 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
       <StackPanel Spacing="16">
         <Border Classes="admin-panel" Padding="18">
-          <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14">
+          <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
               <StackPanel Spacing="4">
                 <TextBlock Text="权限列表" Classes="admin-card-title"/>
                 <TextBlock Text="维护权限编码、显示名称与后续页面/API 映射。" Classes="admin-hint"/>
               </StackPanel>
 
-              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                <Button Classes="admin-button" Content="刷新" Command="{Binding LoadCommand}"/>
-                <Button Classes="admin-button admin-primary" Content="新增权限" Command="{Binding OpenCreateDialogCommand}"/>
-                <Button Classes="admin-button" Content="编辑" Command="{Binding OpenEditDialogCommand}"/>
-                <Button Classes="admin-button admin-danger" Content="删除" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelectedPermission}"/>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                <Button Classes="admin-icon-button"
+                        Command="{Binding ToggleSearchCommand}"
+                        Click="ToggleSearchButton_OnClick"
+                        ToolTip.Tip="搜索权限">
+                  <PathIcon Data="{Binding SearchIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Button Classes="admin-icon-button"
+                        Command="{Binding LoadCommand}"
+                        ToolTip.Tip="刷新列表">
+                  <PathIcon Data="{Binding RefreshIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Button Classes="admin-icon-button admin-primary"
+                        Command="{Binding OpenCreateDialogCommand}"
+                        ToolTip.Tip="新增权限">
+                  <PathIcon Data="{Binding AddIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Button Classes="admin-icon-button"
+                        Command="{Binding OpenEditDialogCommand}"
+                        IsEnabled="{Binding HasSelectedPermission}"
+                        ToolTip.Tip="编辑权限">
+                  <PathIcon Data="{Binding EditIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Button Classes="admin-icon-button admin-danger"
+                        Command="{Binding DeleteCommand}"
+                        IsEnabled="{Binding HasSelectedPermission}"
+                        ToolTip.Tip="删除权限">
+                  <PathIcon Data="{Binding DeleteIconData}" Classes="admin-button-icon"/>
+                </Button>
               </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
-              <TextBox x:Name="PermissionSearchTextBox" Text="{Binding SearchKeyword}" Watermark="搜索权限名称 / 显示名" KeyDown="PermissionSearchTextBox_OnKeyDown"/>
-              <Button Grid.Column="1" Classes="admin-button" Content="搜索" Command="{Binding SearchCommand}"/>
-              <ComboBox Grid.Column="2" Width="96" ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding SelectedPageSize}" HorizontalContentAlignment="Center"/>
-              <Button Grid.Column="3" Classes="admin-button" Content="上一页" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPreviousPage}"/>
-              <Button Grid.Column="4" Classes="admin-button" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
-            </Grid>
-
-            <Border Grid.Row="2" Classes="admin-status-banner">
-              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
-                <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource StatusInfoBrush}" VerticalAlignment="Center"/>
+            <Border Grid.Row="1"
+                    Classes="admin-search-shell"
+                    IsVisible="{Binding IsSearchVisible}">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+                <TextBox x:Name="PermissionSearchTextBox"
+                         Classes="admin-search-input"
+                         Text="{Binding SearchKeyword}"
+                         Watermark="搜索权限名称或显示名，按 Enter 执行"
+                         KeyDown="PermissionSearchTextBox_OnKeyDown"/>
+                <Button Grid.Column="1"
+                        Classes="admin-row-icon-button"
+                        Command="{Binding ClearSearchCommand}"
+                        ToolTip.Tip="清空搜索">
+                  <PathIcon Data="{Binding ClearSearchIconData}" Classes="admin-row-button-icon"/>
+                </Button>
               </Grid>
             </Border>
 
-            <Grid Grid.Row="3" ColumnDefinitions="1.55*,0.95*" ColumnSpacing="16">
-              <Border Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
-                <Grid RowDefinitions="Auto,Auto,*">
-                  <Grid ColumnDefinitions="220,180,*,120" ColumnSpacing="12" Margin="2,0,2,10">
-                    <TextBlock Text="权限编码" Classes="admin-table-header"/>
-                    <TextBlock Grid.Column="1" Text="显示名称" Classes="admin-table-header"/>
-                    <TextBlock Grid.Column="2" Text="ID" Classes="admin-table-header"/>
-                    <TextBlock Grid.Column="3" Text="操作" Classes="admin-table-header"/>
-                  </Grid>
+            <Border Grid.Row="2" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
+              <Grid RowDefinitions="Auto,Auto,*">
+                <Grid ColumnDefinitions="220,200,*,108" ColumnSpacing="12" Margin="2,0,2,10">
+                  <TextBlock Text="权限编码" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="1" Text="显示名称" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="2" Text="ID" Classes="admin-table-header"/>
+                  <TextBlock Grid.Column="3" Text="操作" Classes="admin-table-header"/>
+                </Grid>
 
-                  <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtleBrush}"/>
+                <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtleBrush}"/>
 
-                  <ListBox Grid.Row="2" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Background="Transparent" BorderThickness="0" Margin="0,10,0,0">
+                <Grid Grid.Row="2">
+                  <ListBox ItemsSource="{Binding Items}"
+                           SelectedItem="{Binding SelectedItem}"
+                           Background="Transparent"
+                           BorderThickness="0"
+                           Margin="0,10,0,0"
+                           IsVisible="{Binding HasPermissions}">
                     <ListBox.ItemTemplate>
                       <DataTemplate x:DataType="model:PermissionDto">
                         <Border Classes="admin-row-card" Margin="0,0,0,8" Padding="10">
-                          <Grid ColumnDefinitions="220,180,*,120" ColumnSpacing="12">
+                          <Grid ColumnDefinitions="220,200,*,108" ColumnSpacing="12">
                             <TextBlock Text="{Binding PermissionName}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
                             <TextBlock Grid.Column="1" Text="{Binding DisplayName}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
                             <TextBlock Grid.Column="2" Text="{Binding Id}" Classes="admin-muted" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8">
-                              <Button Classes="admin-button admin-compact" Content="编辑" Command="{Binding DataContext.OpenEditDialogCommand, ElementName=Root}"/>
-                              <Button Classes="admin-button admin-compact admin-danger"
-                                      Content="删除"
+                            <WrapPanel Grid.Column="3" Orientation="Horizontal" ItemHeight="32" VerticalAlignment="Center">
+                              <Button Classes="admin-row-icon-button"
+                                      Command="{Binding DataContext.OpenEditDialogCommand, ElementName=Root}"
+                                      CommandParameter="{Binding}"
+                                      ToolTip.Tip="编辑权限"
+                                      Margin="0,0,6,0">
+                                <PathIcon Data="{Binding DataContext.EditIconData, ElementName=Root}" Classes="admin-row-button-icon"/>
+                              </Button>
+                              <Button Classes="admin-row-icon-button admin-danger"
                                       Command="{Binding DataContext.DeletePermissionCommand, ElementName=Root}"
-                                      CommandParameter="{Binding}"/>
-                            </StackPanel>
+                                      CommandParameter="{Binding}"
+                                      ToolTip.Tip="删除权限">
+                                <PathIcon Data="{Binding DataContext.DeleteIconData, ElementName=Root}" Classes="admin-row-button-icon"/>
+                              </Button>
+                            </WrapPanel>
                           </Grid>
                         </Border>
                       </DataTemplate>
                     </ListBox.ItemTemplate>
                   </ListBox>
-                </Grid>
-              </Border>
 
-              <StackPanel Grid.Column="1" Spacing="16">
-                <Border Classes="info-card">
-                  <StackPanel Spacing="8">
-                    <TextBlock Text="当前选择" Classes="admin-card-title"/>
-                    <TextBlock Text="{Binding EditorTitle}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                  <Border Classes="info-card" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsVisible="{Binding ShowPermissionsEmptyState}">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                      <TextBlock Text="暂无权限数据" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
+                      <TextBlock Text="可调整搜索条件后重试，或点击右上角新增图标创建权限。" Classes="admin-hint" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                  </Border>
+                </Grid>
+              </Grid>
+            </Border>
+
+            <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+              <StackPanel Spacing="10">
+                <Border Classes="admin-status-banner" Padding="10,8">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
                     <TextBlock Text="{Binding PermissionCountText}" Classes="admin-hint"/>
                   </StackPanel>
                 </Border>
-
-                <Border Classes="info-card">
-                  <StackPanel Spacing="8">
-                    <TextBlock Text="命名建议" Classes="admin-card-title"/>
-                    <TextBlock Text="推荐格式：资源.动作，例如 `users.view`、`roles.manage`、`clients.view`。" Classes="admin-hint" TextWrapping="Wrap"/>
-                  </StackPanel>
+                <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}" HorizontalAlignment="Left">
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                      <Button Classes="admin-icon-button admin-danger-solid"
+                              Command="{Binding ConfirmDeleteCommand}"
+                              ToolTip.Tip="确认删除">
+                        <PathIcon Data="{Binding ConfirmDeleteIconData}" Classes="admin-button-icon"/>
+                      </Button>
+                      <Button Classes="admin-icon-button"
+                              Command="{Binding CancelDeleteCommand}"
+                              ToolTip.Tip="取消删除">
+                        <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
+                      </Button>
+                    </StackPanel>
+                  </Grid>
                 </Border>
               </StackPanel>
-            </Grid>
 
-            <Border Grid.Row="4" Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}" HorizontalAlignment="Left">
-              <StackPanel Spacing="10">
-                <TextBlock Text="删除确认" Foreground="#FCA5A5" FontWeight="Bold"/>
-                <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap"/>
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                  <Button Classes="admin-button admin-danger-solid" Content="确认删除" Command="{Binding ConfirmDeleteCommand}"/>
-                  <Button Classes="admin-button" Content="取消" Command="{Binding CancelDeleteCommand}"/>
-                </StackPanel>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                <ComboBox Width="92"
+                          ItemsSource="{Binding PageSizeOptions}"
+                          SelectedItem="{Binding SelectedPageSize}"
+                          HorizontalContentAlignment="Center"/>
+                <Button Classes="admin-icon-button"
+                        Command="{Binding PreviousPageCommand}"
+                        IsEnabled="{Binding CanGoPreviousPage}"
+                        ToolTip.Tip="上一页">
+                  <PathIcon Data="{Binding PreviousPageIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Border Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                </Border>
+                <Button Classes="admin-icon-button"
+                        Command="{Binding NextPageCommand}"
+                        IsEnabled="{Binding CanGoNextPage}"
+                        ToolTip.Tip="下一页">
+                  <PathIcon Data="{Binding NextPageIconData}" Classes="admin-button-icon"/>
+                </Button>
               </StackPanel>
-            </Border>
+            </Grid>
           </Grid>
         </Border>
       </StackPanel>

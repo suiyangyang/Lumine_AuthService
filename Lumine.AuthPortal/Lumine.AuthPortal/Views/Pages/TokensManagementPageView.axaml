@@ -7,35 +7,47 @@
              x:DataType="vm:TokensManagementPageViewModel">
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <StackPanel Spacing="16">
-      <Border Classes="admin-panel">
-        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14">
+      <Border Classes="admin-panel" Padding="18">
+        <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
             <StackPanel Spacing="4">
               <TextBlock Text="Token 管理" Classes="admin-card-title"/>
               <TextBlock Text="查看 refresh token 的签发、到期与撤销状态，并支持即时撤销。" Classes="admin-hint"/>
             </StackPanel>
-            <Button Grid.Column="1" Classes="admin-button" Content="刷新" Command="{Binding LoadCommand}"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="admin-icon-button"
+                      Command="{Binding ToggleSearchCommand}"
+                      Click="ToggleSearchButton_OnClick"
+                      ToolTip.Tip="搜索 Token">
+                <PathIcon Data="{Binding SearchIconData}" Classes="admin-button-icon"/>
+              </Button>
+              <Button Classes="admin-icon-button"
+                      Command="{Binding LoadCommand}"
+                      ToolTip.Tip="刷新列表">
+                <PathIcon Data="{Binding RefreshIconData}" Classes="admin-button-icon"/>
+              </Button>
+            </StackPanel>
           </Grid>
 
-          <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
-            <TextBox x:Name="SearchKeywordTextBox"
-                     Text="{Binding SearchKeyword}"
-                     Watermark="搜索 Token、用户或客户端"
-                     KeyDown="SearchKeywordTextBox_OnKeyDown"/>
-            <Button Grid.Column="1" Classes="admin-button" Content="搜索" Command="{Binding SearchCommand}"/>
-            <ComboBox Grid.Column="2" Width="96" ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding SelectedPageSize}"/>
-            <Button Grid.Column="3" Classes="admin-button" Content="上一页" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPreviousPage}"/>
-            <Button Grid.Column="4" Classes="admin-button" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
-          </Grid>
-
-          <Border Grid.Row="2" Classes="admin-status-banner">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-              <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
-              <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource StatusInfoBrush}" VerticalAlignment="Center"/>
+          <Border Grid.Row="1"
+                  Classes="admin-search-shell"
+                  IsVisible="{Binding IsSearchVisible}">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+              <TextBox x:Name="SearchKeywordTextBox"
+                       Classes="admin-search-input"
+                       Text="{Binding SearchKeyword}"
+                       Watermark="搜索 Token、用户或客户端，按 Enter 执行"
+                       KeyDown="SearchKeywordTextBox_OnKeyDown"/>
+              <Button Grid.Column="1"
+                      Classes="admin-row-icon-button"
+                      Command="{Binding ClearSearchCommand}"
+                      ToolTip.Tip="清空搜索">
+                <PathIcon Data="{Binding ClearSearchIconData}" Classes="admin-row-button-icon"/>
+              </Button>
             </Grid>
           </Border>
 
-          <Border Grid.Row="3" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
+          <Border Grid.Row="2" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
             <Grid RowDefinitions="Auto,Auto,*">
               <Grid ColumnDefinitions="120,130,140,170,120,120,*" ColumnSpacing="12" Margin="2,0,2,10">
                 <TextBlock Text="Token" Classes="admin-table-header"/>
@@ -53,22 +65,24 @@
                 <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Background="Transparent" BorderThickness="0" Margin="0,10,0,0" IsVisible="{Binding HasTokens}">
                   <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="model:RefreshTokenRecordDto">
-                      <Border Classes="admin-row-card" Margin="0,0,0,8">
+                      <Border Classes="admin-row-card" Margin="0,0,0,8" Padding="10">
                         <Grid ColumnDefinitions="120,130,140,170,120,120,*" ColumnSpacing="12">
                           <TextBlock Text="{Binding TokenPreview}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
                           <TextBlock Grid.Column="1" Text="{Binding UserName}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
                           <TextBlock Grid.Column="2" Text="{Binding ClientName}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                          <TextBlock Grid.Column="3" Text="{Binding Scopes}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                          <TextBlock Grid.Column="3" Text="{Binding ScopesDisplay}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                           <TextBlock Grid.Column="4" Text="{Binding CreatedAtUtc, StringFormat={}{0:MM-dd HH:mm}}" Classes="admin-muted" VerticalAlignment="Center"/>
                           <TextBlock Grid.Column="5" Text="{Binding ExpiresAtUtc, StringFormat={}{0:MM-dd HH:mm}}" Classes="admin-muted" VerticalAlignment="Center"/>
                           <Grid Grid.Column="6" ColumnDefinitions="Auto,Auto" ColumnSpacing="8">
                             <Border Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
-                              <TextBlock Text="{Binding RevokedAtUtc, TargetNullValue=有效}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                              <TextBlock Text="{Binding RevokedStatusText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </Border>
-                            <Button Grid.Column="1" Classes="admin-button admin-danger admin-compact"
-                                    Content="撤销"
+                            <Button Grid.Column="1" Classes="admin-row-icon-button admin-danger"
                                     Command="{Binding DataContext.RevokeTokenCommand, ElementName=Root}"
-                                    CommandParameter="{Binding}"/>
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="撤销 Token">
+                              <PathIcon Data="{Binding DataContext.ConfirmDeleteIconData, ElementName=Root}" Classes="admin-row-button-icon"/>
+                            </Button>
                           </Grid>
                         </Grid>
                       </Border>
@@ -86,19 +100,48 @@
             </Grid>
           </Border>
 
-          <Border Grid.Row="4" Classes="admin-danger-banner" IsVisible="{Binding HasPendingRevoke}" HorizontalAlignment="Left">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-              <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" VerticalAlignment="Center"/>
-              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                <Button Classes="admin-icon-button admin-danger-solid" Command="{Binding ConfirmDeleteCommand}">
-                  <PathIcon Data="{Binding ConfirmDeleteIconData}" Classes="admin-button-icon"/>
-                </Button>
-                <Button Classes="admin-icon-button" Command="{Binding CancelDeleteCommand}">
-                  <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
-                </Button>
-              </StackPanel>
-            </Grid>
-          </Border>
+          <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel Spacing="10">
+              <Border Classes="admin-status-banner" Padding="10,8">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
+              </Border>
+              <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingRevoke}" HorizontalAlignment="Left">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                  <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" VerticalAlignment="Center"/>
+                  <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Classes="admin-icon-button admin-danger-solid" Command="{Binding ConfirmDeleteCommand}" ToolTip.Tip="确认撤销">
+                      <PathIcon Data="{Binding ConfirmDeleteIconData}" Classes="admin-button-icon"/>
+                    </Button>
+                    <Button Classes="admin-icon-button" Command="{Binding CancelDeleteCommand}" ToolTip.Tip="取消撤销">
+                      <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
+                    </Button>
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <ComboBox Width="92"
+                        ItemsSource="{Binding PageSizeOptions}"
+                        SelectedItem="{Binding SelectedPageSize}"
+                        HorizontalContentAlignment="Center"/>
+              <Button Classes="admin-icon-button"
+                      Command="{Binding PreviousPageCommand}"
+                      IsEnabled="{Binding CanGoPreviousPage}"
+                      ToolTip.Tip="上一页">
+                <PathIcon Data="{Binding PreviousPageIconData}" Classes="admin-button-icon"/>
+              </Button>
+              <Border Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
+                <TextBlock Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+              </Border>
+              <Button Classes="admin-icon-button"
+                      Command="{Binding NextPageCommand}"
+                      IsEnabled="{Binding CanGoNextPage}"
+                      ToolTip.Tip="下一页">
+                <PathIcon Data="{Binding NextPageIconData}" Classes="admin-button-icon"/>
+              </Button>
+            </StackPanel>
+          </Grid>
         </Grid>
       </Border>
     </StackPanel>

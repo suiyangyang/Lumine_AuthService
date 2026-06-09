@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Lumine.AuthPortal.ViewModels.Pages;
 
 namespace Lumine.AuthPortal.Views.Pages;
@@ -45,5 +46,19 @@ public partial class ClientsManagementPageView : UserControl
             viewModel.SearchCommand.Execute(null);
             e.Handled = true;
         }
+    }
+
+    private void ToggleSearchButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (DataContext is not ClientsManagementPageViewModel viewModel || !viewModel.IsSearchVisible)
+            {
+                return;
+            }
+
+            ClientSearchTextBox.Focus();
+            ClientSearchTextBox.CaretIndex = ClientSearchTextBox.Text?.Length ?? 0;
+        }, DispatcherPriority.Background);
     }
 }

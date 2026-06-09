@@ -3,6 +3,7 @@ function normalizeApiBaseUrl(value) {
 }
 
 const sessionStorageKey = 'lumine.authportal.session';
+const themeStorageKey = 'lumine.authportal.theme';
 
 globalThis.lumineAuthPortalSession = {
     load() {
@@ -21,6 +22,22 @@ globalThis.lumineAuthPortalSession = {
     clear() {
         try {
             globalThis.localStorage.removeItem(sessionStorageKey);
+        } catch {
+        }
+    }
+};
+
+globalThis.lumineAuthPortalTheme = {
+    load() {
+        try {
+            return globalThis.localStorage.getItem(themeStorageKey);
+        } catch {
+            return null;
+        }
+    },
+    save(payload) {
+        try {
+            globalThis.localStorage.setItem(themeStorageKey, payload);
         } catch {
         }
     }

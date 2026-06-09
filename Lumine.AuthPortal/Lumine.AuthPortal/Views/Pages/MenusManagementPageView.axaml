@@ -6,65 +6,139 @@
              x:DataType="vm:MenusManagementPageViewModel">
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <StackPanel Spacing="16">
-      <Border Classes="admin-panel">
-        <StackPanel Spacing="14">
+      <Border Classes="admin-panel" Padding="18">
+        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="14">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
             <StackPanel Spacing="4">
               <TextBlock Text="菜单管理" Classes="admin-card-title"/>
               <TextBlock Text="查看登录后左侧菜单的顺序、路由、权限绑定和当前实现状态。" Classes="admin-hint"/>
             </StackPanel>
-            <Button Grid.Column="1" Classes="admin-button" Content="刷新" Command="{Binding LoadCommand}"/>
+            <Button Grid.Column="1"
+                    Classes="admin-icon-button"
+                    Command="{Binding LoadCommand}"
+                    ToolTip.Tip="刷新列表">
+              <PathIcon Data="{Binding RefreshIconData}" Classes="admin-button-icon"/>
+            </Button>
           </Grid>
 
-          <Border Classes="admin-status-banner">
-            <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
-          </Border>
-
-          <Grid ColumnDefinitions="1.5*,0.9*" ColumnSpacing="16">
-            <Border Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
-              <Grid RowDefinitions="Auto,Auto,*">
-                <Grid ColumnDefinitions="60,120,120,170,90,*" ColumnSpacing="12" Margin="2,0,2,10">
-                  <TextBlock Text="顺序" Classes="admin-table-header"/>
-                  <TextBlock Grid.Column="1" Text="菜单" Classes="admin-table-header"/>
-                  <TextBlock Grid.Column="2" Text="分组" Classes="admin-table-header"/>
-                  <TextBlock Grid.Column="3" Text="路由" Classes="admin-table-header"/>
-                  <TextBlock Grid.Column="4" Text="状态" Classes="admin-table-header"/>
-                  <TextBlock Grid.Column="5" Text="说明" Classes="admin-table-header"/>
+          <Border Grid.Row="1" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
+            <Grid ColumnDefinitions="1.15*,0.9*" ColumnSpacing="16">
+              <Grid RowDefinitions="Auto,*" RowSpacing="12">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                  <TextBlock Text="菜单顺序" Classes="admin-card-title"/>
+                  <Border Grid.Column="1" Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding MenuOverviewText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                  </Border>
                 </Grid>
 
-                <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtleBrush}"/>
+                <Grid Grid.Row="1">
+                  <ListBox ItemsSource="{Binding Items}"
+                           SelectedItem="{Binding SelectedItem}"
+                           Background="Transparent"
+                           BorderThickness="0"
+                           IsVisible="{Binding HasMenus}">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate x:DataType="model:PortalMenuItemDto">
+                        <Border Classes="admin-row-card" Margin="0,0,0,10" Padding="14">
+                          <StackPanel Spacing="10">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                              <Border Classes="admin-pill admin-pill-muted" VerticalAlignment="Top">
+                                <TextBlock Text="{Binding Order}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                              </Border>
+                              <StackPanel Grid.Column="1" Spacing="4">
+                                <TextBlock Text="{Binding Title}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           FontWeight="SemiBold"
+                                           FontSize="16"/>
+                                <TextBlock Text="{Binding Section}" Classes="admin-hint"/>
+                              </StackPanel>
+                              <Border Grid.Column="2"
+                                      Classes="admin-pill admin-pill-success"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Top"
+                                      IsVisible="{Binding IsImplemented}">
+                                <TextBlock Text="已实现" Foreground="{DynamicResource SuccessPillForegroundBrush}" FontSize="12"/>
+                              </Border>
+                            </Grid>
 
-                <ListBox Grid.Row="2" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Background="Transparent" BorderThickness="0" Margin="0,10,0,0" IsVisible="{Binding HasMenus}">
-                  <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="model:PortalMenuItemDto">
-                      <Border Classes="admin-row-card" Margin="0,0,0,8">
-                        <Grid ColumnDefinitions="60,120,120,170,90,*" ColumnSpacing="12">
-                          <TextBlock Text="{Binding Order}" Classes="admin-muted" VerticalAlignment="Center"/>
-                          <TextBlock Grid.Column="1" Text="{Binding Title}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                          <TextBlock Grid.Column="2" Text="{Binding Section}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-                          <TextBlock Grid.Column="3" Text="{Binding Route}" Classes="admin-muted" VerticalAlignment="Center"/>
-                          <Border Grid.Column="4" Classes="admin-pill admin-pill-success" HorizontalAlignment="Left" VerticalAlignment="Center" IsVisible="{Binding IsImplemented}">
-                            <TextBlock Text="已实现" Foreground="#ECFDF5" FontSize="12"/>
-                          </Border>
-                          <TextBlock Grid.Column="5" Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                        </Grid>
-                      </Border>
-                    </DataTemplate>
-                  </ListBox.ItemTemplate>
-                </ListBox>
+                            <WrapPanel ItemHeight="28">
+                              <Border Classes="admin-pill admin-pill-muted" Margin="0,0,8,8">
+                                <TextBlock Text="{Binding Route}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                              </Border>
+                              <Border Classes="admin-pill admin-pill-muted" Margin="0,0,8,8">
+                                <TextBlock Text="{Binding AccessStatusText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                              </Border>
+                            </WrapPanel>
+
+                            <TextBlock Text="{Binding Description}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       TextWrapping="Wrap"
+                                       MaxLines="3"/>
+                          </StackPanel>
+                        </Border>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+
+                  <Border Classes="info-card" IsVisible="{Binding ShowEmptyState}" VerticalAlignment="Center">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                      <TextBlock Text="暂无菜单数据" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
+                      <TextBlock Text="刷新后可重新拉取当前前端菜单配置。" Classes="admin-hint" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                  </Border>
+                </Grid>
               </Grid>
-            </Border>
 
-            <Border Grid.Column="1" Classes="info-card">
-              <StackPanel Spacing="10">
-                <TextBlock Text="权限绑定" Classes="admin-card-title"/>
-                <TextBlock Text="{Binding SelectedItem.Title, TargetNullValue=未选择菜单}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
-                <TextBlock Text="{Binding PermissionSummaryText}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding SelectedItem.Description, TargetNullValue=选择左侧菜单项后查看说明}" Classes="admin-hint" TextWrapping="Wrap"/>
-              </StackPanel>
-            </Border>
-          </Grid>
-        </StackPanel>
+              <Border Grid.Column="1" Classes="info-card">
+                <StackPanel Spacing="12">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="菜单详情" Classes="admin-card-title"/>
+                    <TextBlock Text="{Binding SelectedItem.Title, TargetNullValue=未选择菜单}"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               FontWeight="SemiBold"
+                               FontSize="16"/>
+                    <TextBlock Text="{Binding SelectedItem.Description, TargetNullValue=选择左侧菜单查看说明}"
+                               Classes="admin-hint"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+
+                  <Border Background="{DynamicResource SurfaceSoftBrush}" CornerRadius="10" Padding="12">
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                      <TextBlock Text="所属分组" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                      <TextBlock Grid.Column="1" Text="{Binding SelectedMenuSectionText}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+
+                      <TextBlock Grid.Row="1" Text="路由" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                      <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedMenuRouteText}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+
+                      <TextBlock Grid.Row="2" Text="实现状态" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                      <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedMenuStatusText}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+
+                      <TextBlock Grid.Row="3" Text="访问状态" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                      <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedMenuAccessText}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                    </Grid>
+                  </Border>
+
+                  <Border Background="{DynamicResource SurfaceSoftBrush}" CornerRadius="10" Padding="12">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="权限绑定" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                      <TextBlock Text="{Binding PermissionSummaryText}"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 TextWrapping="Wrap"/>
+                    </StackPanel>
+                  </Border>
+                </StackPanel>
+              </Border>
+            </Grid>
+          </Border>
+
+          <Border Grid.Row="2" Classes="admin-status-banner" Padding="10,8">
+            <StackPanel Spacing="4">
+              <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding SelectedItem.Title, StringFormat=当前选择：{0}, TargetNullValue=当前选择：未选择菜单}" Classes="admin-hint"/>
+              <TextBlock Text="{Binding PermissionSummaryText}" Classes="admin-hint" TextWrapping="Wrap"/>
+            </StackPanel>
+          </Border>
+        </Grid>
       </Border>
     </StackPanel>
   </ScrollViewer>

@@ -36,7 +36,7 @@ public partial class SystemSettingsPageViewModel : ViewModelBase
 
     public string Title => "系统配置";
 
-    public string Description => "统一管理后台的体验参数。当前已支持切换 Fluent 默认配色与 Lumine Dark 深色备选配色。";
+    public string Description => "统一管理后台的体验参数。当前已支持切换 Fluent Light 与 VS Code Dark 两套主题。";
 
     public int DefaultManagementPageSize => PortalUiDefaults.ManagementPageSize;
 

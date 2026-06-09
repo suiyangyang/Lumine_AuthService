@@ -7,7 +7,7 @@
     <StackPanel Spacing="16">
       <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="18" Padding="20">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
-          <Border Width="64" Height="64" CornerRadius="32" Background="#2563EB" VerticalAlignment="Top">
+          <Border Width="64" Height="64" CornerRadius="32" Background="{DynamicResource AccentBrush}" VerticalAlignment="Top">
             <TextBlock Text="{Binding DisplayName}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -104,8 +104,8 @@
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <Border Background="#312E81" CornerRadius="999" Padding="12,6" Margin="0,0,8,8">
-                    <TextBlock Text="{Binding .}" Foreground="#E0E7FF"/>
+                  <Border Background="{DynamicResource RoleTagBackgroundBrush}" CornerRadius="999" Padding="12,6" Margin="0,0,8,8">
+                    <TextBlock Text="{Binding .}" Foreground="{DynamicResource RoleTagForegroundBrush}"/>
                   </Border>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>

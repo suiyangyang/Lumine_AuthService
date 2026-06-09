@@ -17,6 +17,31 @@
       <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
       <Setter Property="BorderThickness" Value="2"/>
     </Style>
+    <Style Selector="Border.theme-preview-card">
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="14"/>
+      <Setter Property="Padding" Value="14"/>
+    </Style>
+    <Style Selector="Border.theme-preview-sample">
+      <Setter Property="MinHeight" Value="40"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="TextBlock.theme-preview-column">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="TextBlock.theme-preview-row">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
   </UserControl.Styles>
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <StackPanel Spacing="16">
@@ -38,7 +63,7 @@
       <Border Classes="admin-panel">
         <StackPanel Spacing="14">
           <TextBlock Text="界面主题" Classes="admin-card-title"/>
-          <TextBlock Text="默认使用 FluentTheme，也可切换到当前这套深色主体方案。"
+          <TextBlock Text="可在 Fluent Light 与 VS Code Dark 之间切换，所有后台页面将同步应用主题资源。"
                      Classes="admin-info-body"/>
 
           <ItemsControl ItemsSource="{Binding ThemeOptions}">
@@ -94,6 +119,190 @@
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="admin-panel">
+        <StackPanel Spacing="14">
+          <TextBlock Text="主题状态预览" Classes="admin-card-title"/>
+          <TextBlock Text="对照 VS Code Dark 的层级与对比关系，集中展示常用后台控件在 Default、Hover、Pressed、Disabled 下的视觉状态。"
+                     Classes="admin-info-body"/>
+          <TextBlock Text="输入类控件以 Focus 代替 Pressed，导航项以 Selected 代替 Pressed，用于检查暗色主题下文本、边框和背景是否保持清晰。"
+                     Classes="admin-hint"/>
+
+          <Grid ColumnDefinitions="1.3*,1*,1*,1*,1*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                ColumnSpacing="12" RowSpacing="10">
+            <TextBlock Grid.Column="1" Text="Default" Classes="theme-preview-column"/>
+            <TextBlock Grid.Column="2" Text="Hover" Classes="theme-preview-column"/>
+            <TextBlock Grid.Column="3" Text="Pressed / Focused" Classes="theme-preview-column"/>
+            <TextBlock Grid.Column="4" Text="Disabled / Selected" Classes="theme-preview-column"/>
+
+            <TextBlock Grid.Row="1" Text="主按钮" Classes="theme-preview-row"/>
+            <Border Grid.Row="1" Grid.Column="1" Classes="theme-preview-sample"
+                    Background="{DynamicResource AccentBrush}"
+                    BorderBrush="{DynamicResource AccentBorderBrush}">
+              <TextBlock Text="确认操作" Foreground="{DynamicResource TextOnAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="2" Classes="theme-preview-sample"
+                    Background="{DynamicResource AccentHoverBrush}"
+                    BorderBrush="{DynamicResource AccentBorderStrongBrush}">
+              <TextBlock Text="悬停中" Foreground="{DynamicResource TextOnAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="3" Classes="theme-preview-sample"
+                    Background="{DynamicResource AccentPressedBrush}"
+                    BorderBrush="{DynamicResource AccentBorderStrongBrush}">
+              <TextBlock Text="按下中" Foreground="{DynamicResource TextOnAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="4" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceInsetBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}">
+              <TextBlock Text="不可用" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <TextBlock Grid.Row="2" Text="次按钮" Classes="theme-preview-row"/>
+            <Border Grid.Row="2" Grid.Column="1" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceRaisedBrush}"
+                    BorderBrush="{DynamicResource BorderStrongBrush}">
+              <TextBlock Text="次级操作" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="2" Grid.Column="2" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceHoverBrush}"
+                    BorderBrush="{DynamicResource BorderHoverBrush}">
+              <TextBlock Text="悬停中" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="2" Grid.Column="3" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfacePressedBrush}"
+                    BorderBrush="{DynamicResource BorderHoverBrush}">
+              <TextBlock Text="按下中" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="2" Grid.Column="4" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceInsetBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}">
+              <TextBlock Text="不可用" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <TextBlock Grid.Row="3" Text="危险按钮" Classes="theme-preview-row"/>
+            <Border Grid.Row="3" Grid.Column="1" Classes="theme-preview-sample"
+                    Background="{DynamicResource DangerSoftBackgroundBrush}"
+                    BorderBrush="{DynamicResource DangerSoftBorderBrush}">
+              <TextBlock Text="删除项目" Foreground="{DynamicResource DangerSoftForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="2" Classes="theme-preview-sample"
+                    Background="{DynamicResource DangerSoftHoverBackgroundBrush}"
+                    BorderBrush="{DynamicResource DangerSoftHoverBorderBrush}">
+              <TextBlock Text="悬停中" Foreground="{DynamicResource DangerSoftHoverForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="3" Classes="theme-preview-sample"
+                    Background="{DynamicResource DangerSoftPressedBackgroundBrush}"
+                    BorderBrush="{DynamicResource DangerSoftPressedBorderBrush}">
+              <TextBlock Text="按下中" Foreground="{DynamicResource DangerSoftPressedForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="4" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceInsetBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}">
+              <TextBlock Text="不可用" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <TextBlock Grid.Row="4" Text="输入框" Classes="theme-preview-row"/>
+            <Border Grid.Row="4" Grid.Column="1" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceInsetBrush}"
+                    BorderBrush="{DynamicResource BorderStrongBrush}">
+              <TextBlock Text="默认输入内容" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="2" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceSoftBrush}"
+                    BorderBrush="{DynamicResource BorderHoverBrush}">
+              <TextBlock Text="Hover 输入内容" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="3" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfacePanelBrush}"
+                    BorderBrush="{DynamicResource BorderActiveBrush}">
+              <TextBlock Text="Focused 输入内容" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="4" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceSoftBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}">
+              <TextBlock Text="Disabled 输入内容" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
+            </Border>
+
+            <TextBlock Grid.Row="5" Text="下拉框" Classes="theme-preview-row"/>
+            <Border Grid.Row="5" Grid.Column="1" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceInsetBrush}"
+                    BorderBrush="{DynamicResource BorderStrongBrush}">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="10 条 / 页" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="▾" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+              </Grid>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="2" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceInsetBrush}"
+                    BorderBrush="{DynamicResource BorderHoverBrush}">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Hover 选项" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="▾" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+              </Grid>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="3" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceInsetBrush}"
+                    BorderBrush="{DynamicResource BorderActiveBrush}">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Focused 选项" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="▾" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+              </Grid>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="4" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceSoftBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Disabled 选项" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="▾" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
+              </Grid>
+            </Border>
+
+            <TextBlock Grid.Row="6" Text="列表 / 导航" Classes="theme-preview-row"/>
+            <Border Grid.Row="6" Grid.Column="1" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfacePanelBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}">
+              <TextBlock Text="默认菜单项" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="2" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceHoverBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}">
+              <TextBlock Text="Hover 菜单项" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="3" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceSelectedHoverBrush}"
+                    BorderBrush="{DynamicResource BorderActiveBrush}">
+              <TextBlock Text="Active 菜单项" Foreground="{DynamicResource TextOnSelectedBrush}" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="4" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfacePanelBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}">
+              <TextBlock Text="Muted 菜单项" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
+            </Border>
+
+            <TextBlock Grid.Row="7" Text="表格行操作" Classes="theme-preview-row"/>
+            <Border Grid.Row="7" Grid.Column="1" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceRaisedBrush}"
+                    BorderBrush="{DynamicResource BorderStrongBrush}">
+              <TextBlock Text="编辑 / 查看" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="7" Grid.Column="2" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceHoverBrush}"
+                    BorderBrush="{DynamicResource BorderActiveBrush}">
+              <TextBlock Text="Hover 操作" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="7" Grid.Column="3" Classes="theme-preview-sample"
+                    Background="{DynamicResource DangerSolidHoverBackgroundBrush}"
+                    BorderBrush="{DynamicResource DangerSolidBorderBrush}">
+              <TextBlock Text="危险操作" Foreground="{DynamicResource TextOnAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="7" Grid.Column="4" Classes="theme-preview-sample"
+                    Background="{DynamicResource SurfaceInsetBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}">
+              <TextBlock Text="不可用" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+          </Grid>
         </StackPanel>
       </Border>
 
