@@ -1,7 +1,7 @@
 # Lumine AuthService OIDC 当前实现说明
 
 > 状态：Current
-> 更新时间：2026-06-09
+> 更新时间：2026-06-10
 > 适用范围：`Lumine.AuthServer` 的 OIDC 端点与 `Lumine.AuthPortal` 的联调能力
 
 本文档描述当前仓库已经实现的认证与 OIDC 能力，不再记录历史改造计划。
@@ -11,6 +11,7 @@
 - 当前服务已提供 `/.well-known/openid-configuration`、`/jwks.json`、`/connect/authorize`、`/connect/token`、`/connect/userinfo`。
 - 当前授权流以 `authorization code + PKCE` 为主，适配默认公共客户端 `lumine-demo-client`。
 - `POST /api/auth/login` 仍保留，供后台登录和简化联调用途。
+- `POST /api/auth/logout` 已提供，供后台退出登录并记录审计日志。
 - `Lumine.AuthPortal` 已包含登录、注册、授权确认、客户端管理、OIDC Discovery 与授权码联调页面。
 - 服务会签发 `access_token`、`id_token` 和 `refresh_token`，但 `token` 端点当前只接受 `authorization_code`，尚未开放 `refresh_token` 续期。
 
@@ -24,6 +25,7 @@
 | `/connect/token` | `POST` | 用授权码换取 token |
 | `/connect/userinfo` | `GET`/`POST` | 使用 access token 读取用户信息 |
 | `/api/auth/login` | `POST` | 后台登录与简化联调入口 |
+| `/api/auth/logout` | `POST` | 后台登出并记录审计日志 |
 | `/api/auth/register` | `POST` | 注册用户 |
 
 ## 当前支持的核心能力
@@ -75,6 +77,17 @@
 
 - 当前代码会生成并保存 `refresh_token`
 - 但 `grant_type=refresh_token` 续期逻辑尚未开放
+
+### 5. 审计覆盖
+
+当前已落库并可在后台查看的审计事件包括：
+
+- 登录成功 / 失败
+- 登出
+- 授权拒绝
+- 授权码签发
+- 访问令牌换取
+- Refresh Token 撤销
 
 ### 4. UserInfo
 
