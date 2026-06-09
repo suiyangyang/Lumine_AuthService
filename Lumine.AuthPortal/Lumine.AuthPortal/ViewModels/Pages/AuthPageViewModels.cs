@@ -19,7 +19,7 @@ public partial class LoginPageViewModel : ViewModelBase
     private const string DefaultNonce = "portal-login-nonce";
 
     [ObservableProperty]
-    private string _userName = "admin";
+    private string _userName = string.Empty;
 
     [ObservableProperty]
     private string _password = string.Empty;
@@ -45,7 +45,17 @@ public partial class LoginPageViewModel : ViewModelBase
     [ObservableProperty]
     private string _statusMessage = "请输入账号密码后登录。";
 
+    [ObservableProperty]
+    private bool _isErrorMessage;
+
+    [ObservableProperty]
+    private bool _isSuccessMessage;
+
     public string OidcToggleText => ShowOidcParameters ? "隐藏 OIDC 调试参数" : "显示 OIDC 调试参数";
+
+    public string LoginButtonText => IsBusy ? "正在登录..." : "登录并进入后台";
+
+    public bool CanInteract => !IsBusy;
 
     public char PasswordMaskChar => ShowPassword ? '\0' : '●';
 
@@ -53,19 +63,47 @@ public partial class LoginPageViewModel : ViewModelBase
 
     public string PasswordVisibilityToolTip => ShowPassword ? "隐藏密码" : "显示密码";
 
-    public LoginPageViewModel(PortalApiClient apiClient, PortalSession session, Action onLoginSucceeded, Action openRegister)
+    public LoginPageViewModel(
+        PortalApiClient apiClient,
+        PortalSession session,
+        Action onLoginSucceeded,
+        Action openRegister,
+        string? initialUserName = null,
+        string? initialStatusMessage = null,
+        bool initialSuccessMessage = false)
     {
         _apiClient = apiClient;
         _session = session;
         _onLoginSucceeded = onLoginSucceeded;
         _openRegister = openRegister;
+
+        if (!string.IsNullOrWhiteSpace(initialUserName))
+        {
+            UserName = initialUserName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(initialStatusMessage))
+        {
+            SetStatus(initialStatusMessage, isSuccess: initialSuccessMessage);
+        }
     }
 
     [RelayCommand]
     private async Task LoginAsync()
     {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(Password))
+        {
+            SetStatus("请输入用户名和密码。", isError: true);
+            return;
+        }
+
         IsBusy = true;
-        StatusMessage = "正在调用登录接口...";
+        SetStatus("正在调用登录接口...");
 
         var scope = ShowOidcParameters ? Scope : null;
         var clientId = ShowOidcParameters ? ClientId : null;
@@ -75,12 +113,13 @@ public partial class LoginPageViewModel : ViewModelBase
         if (result.IsSuccess && result.Data != null)
         {
             _session.ApplyLogin(result.Data);
-            StatusMessage = $"登录成功，欢迎 {result.Data.User?.UserName ?? UserName}。";
+            Password = string.Empty;
+            SetStatus($"登录成功，欢迎 {result.Data.User?.UserName ?? UserName}。", isSuccess: true);
             _onLoginSucceeded();
         }
         else
         {
-            StatusMessage = result.ErrorMessage ?? "登录失败。";
+            SetStatus(result.ErrorMessage ?? "登录失败。", isError: true);
         }
 
         IsBusy = false;
@@ -113,9 +152,9 @@ public partial class LoginPageViewModel : ViewModelBase
     partial void OnShowOidcParametersChanged(bool value)
     {
         OnPropertyChanged(nameof(OidcToggleText));
-        StatusMessage = value
+        SetStatus(value
             ? "已开启 OIDC 调试参数，可用于第三方授权联调。"
-            : "请输入账号密码后登录。";
+            : "请输入账号密码后登录。");
     }
 
     [RelayCommand]
@@ -136,12 +175,25 @@ public partial class LoginPageViewModel : ViewModelBase
         OnPropertyChanged(nameof(PasswordVisibilityIconData));
         OnPropertyChanged(nameof(PasswordVisibilityToolTip));
     }
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        OnPropertyChanged(nameof(LoginButtonText));
+        OnPropertyChanged(nameof(CanInteract));
+    }
+
+    private void SetStatus(string message, bool isError = false, bool isSuccess = false)
+    {
+        StatusMessage = message;
+        IsErrorMessage = isError;
+        IsSuccessMessage = isSuccess;
+    }
 }
 
 public partial class RegisterPageViewModel : ViewModelBase
 {
     private readonly PortalApiClient _apiClient;
-    private readonly Action _openLogin;
+    private readonly Action<string?, string?, bool> _openLogin;
 
     [ObservableProperty]
     private string _userName = string.Empty;
@@ -164,7 +216,17 @@ public partial class RegisterPageViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isBusy;
 
-    public RegisterPageViewModel(PortalApiClient apiClient, Action openLogin)
+    [ObservableProperty]
+    private bool _isErrorMessage;
+
+    [ObservableProperty]
+    private bool _isSuccessMessage;
+
+    public string RegisterButtonText => IsBusy ? "正在提交..." : "提交注册";
+
+    public bool CanInteract => !IsBusy;
+
+    public RegisterPageViewModel(PortalApiClient apiClient, Action<string?, string?, bool> openLogin)
     {
         _apiClient = apiClient;
         _openLogin = openLogin;
@@ -173,13 +235,36 @@ public partial class RegisterPageViewModel : ViewModelBase
     [RelayCommand]
     private async Task RegisterAsync()
     {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+        {
+            SetStatus("用户名、邮箱和密码为必填项。", isError: true);
+            return;
+        }
+
         IsBusy = true;
-        StatusMessage = "正在调用注册接口...";
+        SetStatus("正在调用注册接口...");
 
         var result = await _apiClient.RegisterAsync(new RegisterRequestDto(UserName, Email, Password, NickName, PhoneNumber));
-        StatusMessage = result.IsSuccess && result.Data != null
-            ? $"注册成功：{result.Data.UserName}"
-            : result.ErrorMessage ?? "注册失败。";
+        if (result.IsSuccess && result.Data != null)
+        {
+            var registeredUserName = result.Data.UserName;
+            UserName = string.Empty;
+            Email = string.Empty;
+            Password = string.Empty;
+            NickName = string.Empty;
+            PhoneNumber = string.Empty;
+            SetStatus($"账号 {registeredUserName} 注册成功，请登录。", isSuccess: true);
+            _openLogin(registeredUserName, $"账号 {registeredUserName} 注册成功，请登录。", true);
+        }
+        else
+        {
+            SetStatus(result.ErrorMessage ?? "注册失败。", isError: true);
+        }
 
         IsBusy = false;
     }
@@ -187,7 +272,20 @@ public partial class RegisterPageViewModel : ViewModelBase
     [RelayCommand]
     private void OpenLogin()
     {
-        _openLogin();
+        _openLogin(null, null, false);
+    }
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        OnPropertyChanged(nameof(RegisterButtonText));
+        OnPropertyChanged(nameof(CanInteract));
+    }
+
+    private void SetStatus(string message, bool isError = false, bool isSuccess = false)
+    {
+        StatusMessage = message;
+        IsErrorMessage = isError;
+        IsSuccessMessage = isSuccess;
     }
 }
 

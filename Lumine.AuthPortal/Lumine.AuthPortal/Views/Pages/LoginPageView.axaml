@@ -266,6 +266,21 @@
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
+    <Style Selector="Border.login-status-banner">
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="12"/>
+    </Style>
+    <Style Selector="Border.login-status-banner.status-error">
+      <Setter Property="Background" Value="#FEF2F2"/>
+      <Setter Property="BorderBrush" Value="#FCA5A5"/>
+    </Style>
+    <Style Selector="Border.login-status-banner.status-success">
+      <Setter Property="Background" Value="#ECFDF5"/>
+      <Setter Property="BorderBrush" Value="#6EE7B7"/>
+    </Style>
   </UserControl.Styles>
 
   <Grid RowDefinitions="*,Auto,*" ColumnDefinitions="*,Auto,*" Background="{DynamicResource AppBackgroundBrush}">
@@ -294,11 +309,13 @@
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
                       <Button Classes="login-switch-button active"
                               Grid.Column="0"
-                              Content="登录"/>
+                              Content="登录"
+                              IsEnabled="{Binding CanInteract}"/>
                       <Button Classes="login-switch-button"
                               Grid.Column="1"
                               Content="注册"
-                              Command="{Binding OpenRegisterCommand}"/>
+                              Command="{Binding OpenRegisterCommand}"
+                              IsEnabled="{Binding CanInteract}"/>
                     </Grid>
                   </Border>
 
@@ -308,7 +325,8 @@
                     <TextBlock Text="用户名" Classes="form-label"/>
                     <TextBox Text="{Binding UserName}"
                              Classes="login-input"
-                             Watermark="admin"
+                             Watermark="请输入用户名"
+                             IsEnabled="{Binding CanInteract}"
                              KeyDown="LoginInput_OnKeyDown"/>
                   </StackPanel>
 
@@ -320,10 +338,12 @@
                                  Classes="password-input"
                                  PasswordChar="{Binding PasswordMaskChar}"
                                  Watermark="请输入密码"
+                                 IsEnabled="{Binding CanInteract}"
                                  KeyDown="LoginInput_OnKeyDown"/>
                         <Button Grid.Column="1"
                                 Classes="password-visibility-button"
                                 Command="{Binding TogglePasswordVisibilityCommand}"
+                                IsEnabled="{Binding CanInteract}"
                                 ToolTip.Tip="{Binding PasswordVisibilityToolTip}">
                           <PathIcon Data="{Binding PasswordVisibilityIconData}"
                                     Classes="password-visibility-icon"/>
@@ -333,8 +353,9 @@
                   </StackPanel>
 
                   <Button Classes="login-primary-action"
-                          Content="登录并进入后台"
+                          Content="{Binding LoginButtonText}"
                           Command="{Binding LoginCommand}"
+                          IsEnabled="{Binding CanInteract}"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Center"
                           FontWeight="SemiBold"/>
@@ -345,6 +366,7 @@
                 <Button Classes="login-secondary-action"
                         Content="{Binding OidcToggleText}"
                         Command="{Binding ToggleOidcParametersCommand}"
+                        IsEnabled="{Binding CanInteract}"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"/>
 
@@ -361,24 +383,27 @@
                     <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
                       <StackPanel Grid.ColumnSpan="2" Spacing="6">
                         <TextBlock Text="Scope" Classes="form-label"/>
-                        <TextBox Text="{Binding Scope}"
-                                 Classes="login-input"
-                                 Watermark="openid profile email roles permissions"
-                                 KeyDown="LoginInput_OnKeyDown"/>
+                         <TextBox Text="{Binding Scope}"
+                                  Classes="login-input"
+                                  Watermark="openid profile email roles permissions"
+                                  IsEnabled="{Binding CanInteract}"
+                                  KeyDown="LoginInput_OnKeyDown"/>
                       </StackPanel>
                       <StackPanel Grid.Row="1" Spacing="6">
                         <TextBlock Text="Client ID" Classes="form-label"/>
-                        <TextBox Text="{Binding ClientId}"
-                                 Classes="login-input"
-                                 Watermark="client_id"
-                                 KeyDown="LoginInput_OnKeyDown"/>
+                         <TextBox Text="{Binding ClientId}"
+                                  Classes="login-input"
+                                  Watermark="client_id"
+                                  IsEnabled="{Binding CanInteract}"
+                                  KeyDown="LoginInput_OnKeyDown"/>
                       </StackPanel>
                       <StackPanel Grid.Row="1" Grid.Column="1" Spacing="6">
                         <TextBlock Text="Nonce" Classes="form-label"/>
-                        <TextBox Text="{Binding Nonce}"
-                                 Classes="login-input"
-                                 Watermark="nonce"
-                                 KeyDown="LoginInput_OnKeyDown"/>
+                         <TextBox Text="{Binding Nonce}"
+                                  Classes="login-input"
+                                  Watermark="nonce"
+                                  IsEnabled="{Binding CanInteract}"
+                                  KeyDown="LoginInput_OnKeyDown"/>
                       </StackPanel>
                     </Grid>
                   </StackPanel>
@@ -387,11 +412,9 @@
             </StackPanel>
 
             <Border Grid.Row="2"
-                    Background="{DynamicResource SurfaceInsetBrush}"
-                    BorderBrush="{DynamicResource BorderSubtleBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="12"
+                    Classes="login-status-banner"
+                    Classes.status-error="{Binding IsErrorMessage}"
+                    Classes.status-success="{Binding IsSuccessMessage}"
                     MinHeight="46">
               <TextBlock Text="{Binding StatusMessage}"
                          Foreground="{DynamicResource TextSecondaryBrush}"

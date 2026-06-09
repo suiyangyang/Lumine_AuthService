@@ -2,6 +2,30 @@ function normalizeApiBaseUrl(value) {
     return (value || '').trim().replace(/\/+$/, '');
 }
 
+const sessionStorageKey = 'lumine.authportal.session';
+
+globalThis.lumineAuthPortalSession = {
+    load() {
+        try {
+            return globalThis.localStorage.getItem(sessionStorageKey);
+        } catch {
+            return null;
+        }
+    },
+    save(payload) {
+        try {
+            globalThis.localStorage.setItem(sessionStorageKey, payload);
+        } catch {
+        }
+    },
+    clear() {
+        try {
+            globalThis.localStorage.removeItem(sessionStorageKey);
+        } catch {
+        }
+    }
+};
+
 globalThis.resolveApiBaseUrl = async function resolveApiBaseUrl() {
     const params = new URLSearchParams(globalThis.location.search);
     const storageKey = 'lumine.authportal.apiBaseUrl';

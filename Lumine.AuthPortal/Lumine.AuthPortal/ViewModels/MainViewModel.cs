@@ -22,7 +22,9 @@ public partial class MainViewModel : ViewModelBase
         _themeService = themeService;
         _session.PropertyChanged += (_, args) =>
         {
-            if (args.PropertyName is nameof(PortalSession.AccessToken) or nameof(PortalSession.Permissions))
+            if (args.PropertyName is nameof(PortalSession.AccessToken)
+                or nameof(PortalSession.Permissions)
+                or nameof(PortalSession.IsAuthenticated))
             {
                 RefreshNavigationVisibility();
                 OnPropertyChanged(nameof(IsAuthenticated));
@@ -32,6 +34,7 @@ public partial class MainViewModel : ViewModelBase
             }
 
             if (args.PropertyName is nameof(PortalSession.AccessToken)
+                or nameof(PortalSession.IsAuthenticated)
                 or nameof(PortalSession.UserName)
                 or nameof(PortalSession.Email)
                 or nameof(PortalSession.Roles))
@@ -102,8 +105,8 @@ public partial class MainViewModel : ViewModelBase
         _pageFactory = new Dictionary<string, Func<ViewModelBase>>(StringComparer.OrdinalIgnoreCase)
         {
             ["dashboard"] = () => new DashboardPageViewModel(_apiClient, _session),
-            ["login"] = () => new LoginPageViewModel(_apiClient, _session, () => Navigate("dashboard"), () => Navigate("register")),
-            ["register"] = () => new RegisterPageViewModel(_apiClient, () => Navigate("login")),
+            ["login"] = () => CreateLoginPage(),
+            ["register"] = () => CreateRegisterPage(),
             ["user-groups"] = () => new PlaceholderPageViewModel("用户组管理", "预留后台入口，后续可接入用户组列表、成员维护与角色映射。"),
             ["consent"] = () => new ConsentPageViewModel(),
             ["users"] = () => new UsersManagementPageViewModel(_apiClient, _session),
@@ -306,6 +309,32 @@ public partial class MainViewModel : ViewModelBase
                 _ => IsAuthenticated
             };
         }
+    }
+
+    private LoginPageViewModel CreateLoginPage(string? initialUserName = null, string? initialStatusMessage = null, bool initialSuccessMessage = false)
+    {
+        return new LoginPageViewModel(
+            _apiClient,
+            _session,
+            () => Navigate("dashboard"),
+            () => Navigate("register"),
+            initialUserName,
+            initialStatusMessage,
+            initialSuccessMessage);
+    }
+
+    private RegisterPageViewModel CreateRegisterPage()
+    {
+        return new RegisterPageViewModel(
+            _apiClient,
+            (userName, statusMessage, isSuccess) =>
+            {
+                CurrentPage = CreateLoginPage(userName, statusMessage, isSuccess);
+                CurrentPageTitle = "登录";
+                CurrentPageKey = "login";
+                IsAccountMenuOpen = false;
+                UpdateSelectedNavigation("login");
+            });
     }
 
     partial void OnCurrentPageKeyChanged(string value)

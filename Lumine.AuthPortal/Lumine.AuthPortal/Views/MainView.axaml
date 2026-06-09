@@ -249,7 +249,9 @@
 
   <Grid Background="{DynamicResource AppBackgroundBrush}">
     <Grid IsVisible="{Binding IsAnonymous}">
-      <Grid RowDefinitions="Auto,*" Margin="32">
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+        <Grid RowDefinitions="Auto,*" Margin="32">
         <Border Classes="brand-title-shell"
                 HorizontalAlignment="Center">
           <StackPanel Orientation="Horizontal"
@@ -268,7 +270,8 @@
                         Content="{Binding CurrentPage}"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"/>
-      </Grid>
+        </Grid>
+      </ScrollViewer>
     </Grid>
 
     <Grid IsVisible="{Binding IsAuthenticated}"

@@ -39,6 +39,9 @@ dotnet run --project "e:\Work\Code\LumineSolution\Lumine_AuthService\Lumine.Auth
 ## 当前状态
 
 - 可访问基础页面与后台壳布局
+- 默认启动时仅展示登录/注册入口，不显示后台导航壳
+- 注册成功后会自动回到登录页，并回填刚注册的用户名
+- 浏览器端和桌面端都会尝试恢复最近一次有效登录会话
 - 可调用后端 `discovery`、`login`、`register`、`userinfo` 与管理摘要 API
 - 可通过 Web 端执行基础的用户、角色、权限、客户端增删改
 - 审计日志页当前为占位骨架

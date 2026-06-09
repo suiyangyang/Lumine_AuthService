@@ -117,6 +117,21 @@
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
+    <Style Selector="Border.register-status-banner">
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="12"/>
+    </Style>
+    <Style Selector="Border.register-status-banner.status-error">
+      <Setter Property="Background" Value="#FEF2F2"/>
+      <Setter Property="BorderBrush" Value="#FCA5A5"/>
+    </Style>
+    <Style Selector="Border.register-status-banner.status-success">
+      <Setter Property="Background" Value="#ECFDF5"/>
+      <Setter Property="BorderBrush" Value="#6EE7B7"/>
+    </Style>
   </UserControl.Styles>
 
   <Grid RowDefinitions="*,Auto,*" ColumnDefinitions="*,Auto,*" Background="{DynamicResource AppBackgroundBrush}">
@@ -145,10 +160,12 @@
                   <Button Classes="register-switch-button"
                           Grid.Column="0"
                           Content="登录"
-                          Command="{Binding OpenLoginCommand}"/>
+                          Command="{Binding OpenLoginCommand}"
+                          IsEnabled="{Binding CanInteract}"/>
                   <Button Classes="register-switch-button active"
                           Grid.Column="1"
-                          Content="注册"/>
+                          Content="注册"
+                          IsEnabled="{Binding CanInteract}"/>
                 </Grid>
               </Border>
 
@@ -162,29 +179,30 @@
                     RowSpacing="12">
                 <StackPanel Spacing="6">
                   <TextBlock Text="用户名" Classes="form-label"/>
-                  <TextBox Text="{Binding UserName}" Classes="register-input" Watermark="请输入用户名"/>
+                  <TextBox Text="{Binding UserName}" Classes="register-input" Watermark="请输入用户名" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Spacing="6">
                   <TextBlock Text="邮箱" Classes="form-label"/>
-                  <TextBox Text="{Binding Email}" Classes="register-input" Watermark="name@example.com"/>
+                  <TextBox Text="{Binding Email}" Classes="register-input" Watermark="name@example.com" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
                 </StackPanel>
                 <StackPanel Grid.Row="1" Spacing="6">
                   <TextBlock Text="密码" Classes="form-label"/>
-                  <TextBox Text="{Binding Password}" Classes="register-input" PasswordChar="●" Watermark="请输入密码"/>
+                  <TextBox Text="{Binding Password}" Classes="register-input" PasswordChar="●" Watermark="请输入密码" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="1" Spacing="6">
                   <TextBlock Text="昵称" Classes="form-label"/>
-                  <TextBox Text="{Binding NickName}" Classes="register-input" Watermark="选填"/>
+                  <TextBox Text="{Binding NickName}" Classes="register-input" Watermark="选填" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
                 </StackPanel>
                 <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Spacing="6">
                   <TextBlock Text="手机号" Classes="form-label"/>
-                  <TextBox Text="{Binding PhoneNumber}" Classes="register-input" Watermark="选填"/>
+                  <TextBox Text="{Binding PhoneNumber}" Classes="register-input" Watermark="选填" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
                 </StackPanel>
               </Grid>
 
               <Button Classes="register-primary-action"
-                      Content="提交注册"
+                      Content="{Binding RegisterButtonText}"
                       Command="{Binding RegisterCommand}"
+                      IsEnabled="{Binding CanInteract}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Center"
                       FontWeight="SemiBold"/>
@@ -192,11 +210,9 @@
           </Border>
 
           <Border Grid.Row="2"
-                  Background="{DynamicResource SurfaceInsetBrush}"
-                  BorderBrush="{DynamicResource BorderSubtleBrush}"
-                  BorderThickness="1"
-                  CornerRadius="8"
-                  Padding="12"
+                  Classes="register-status-banner"
+                  Classes.status-error="{Binding IsErrorMessage}"
+                  Classes.status-success="{Binding IsSuccessMessage}"
                   MinHeight="46">
             <TextBlock Text="{Binding StatusMessage}"
                        Foreground="{DynamicResource TextSecondaryBrush}"
