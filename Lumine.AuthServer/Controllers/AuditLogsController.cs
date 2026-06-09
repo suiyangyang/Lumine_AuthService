@@ -24,11 +24,11 @@ namespace Lumine.AuthServer.Controllers
         public async Task<ActionResult<PagedResultDto<AuditLogEntryDto>>> GetAll(
             [FromQuery] string? keyword,
             [FromQuery] int pageIndex = 1,
-            [FromQuery] int pageSize = 20,
+            [FromQuery] int pageSize = ManagementApiDefaults.DefaultPageSize,
             CancellationToken cancellationToken = default)
         {
             pageIndex = pageIndex <= 0 ? 1 : pageIndex;
-            pageSize = pageSize <= 0 ? 20 : Math.Min(pageSize, 100);
+            pageSize = pageSize <= 0 ? ManagementApiDefaults.DefaultPageSize : Math.Min(pageSize, ManagementApiDefaults.MaxPageSize);
 
             var persistedQuery = _dbContext.AuditLogEntries
                 .AsNoTracking()

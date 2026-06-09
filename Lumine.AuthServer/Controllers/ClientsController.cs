@@ -26,10 +26,10 @@ namespace Lumine.AuthServer.Controllers
 
         [HttpGet]
         [Permission("clients.view")]
-        public async Task<ActionResult<PagedResultDto<OidcClientDto>>> GetAll([FromQuery] string? keyword, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<PagedResultDto<OidcClientDto>>> GetAll([FromQuery] string? keyword, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = ManagementApiDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
         {
             pageIndex = pageIndex <= 0 ? 1 : pageIndex;
-            pageSize = pageSize <= 0 ? 20 : Math.Min(pageSize, 100);
+            pageSize = pageSize <= 0 ? ManagementApiDefaults.DefaultPageSize : Math.Min(pageSize, ManagementApiDefaults.MaxPageSize);
 
             var query = _dbContext.OidcClients
                 .AsNoTracking()

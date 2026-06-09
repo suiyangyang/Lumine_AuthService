@@ -16,7 +16,9 @@ namespace Lumine.AuthServer.Controllers
         public ActionResult<IReadOnlyList<PortalMenuItemDto>> GetAll()
         {
             var permissions = User.Claims
-                .Where(claim => string.Equals(claim.Type, "permissions", StringComparison.OrdinalIgnoreCase))
+                .Where(claim =>
+                    string.Equals(claim.Type, "permissions", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(claim.Type, "permission", StringComparison.OrdinalIgnoreCase))
                 .Select(claim => claim.Value)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 

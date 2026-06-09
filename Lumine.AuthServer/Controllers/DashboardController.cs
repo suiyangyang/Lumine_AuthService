@@ -23,7 +23,9 @@ namespace Lumine.AuthServer.Controllers
         public async Task<ActionResult<DashboardSummaryDto>> GetSummary(CancellationToken cancellationToken)
         {
             var permissionSet = User.Claims
-                .Where(claim => string.Equals(claim.Type, "permissions", StringComparison.OrdinalIgnoreCase))
+                .Where(claim =>
+                    string.Equals(claim.Type, "permissions", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(claim.Type, "permission", StringComparison.OrdinalIgnoreCase))
                 .Select(claim => claim.Value)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
@@ -34,12 +36,10 @@ namespace Lumine.AuthServer.Controllers
             var canViewLoginActivity = canViewUsers || canViewClients;
             var canViewTokenActivity = canViewClients;
 
-            var userCountTask = CountIfAllowedAsync(canViewUsers, _dbContext.Users.AsNoTracking(), cancellationToken);
-            var roleCountTask = CountIfAllowedAsync(canViewRoles, _dbContext.Roles.AsNoTracking(), cancellationToken);
-            var permissionCountTask = CountIfAllowedAsync(canViewPermissions, _dbContext.Permissions.AsNoTracking(), cancellationToken);
-            var clientCountTask = CountIfAllowedAsync(canViewClients, _dbContext.OidcClients.AsNoTracking(), cancellationToken);
-
-            await Task.WhenAll(userCountTask, roleCountTask, permissionCountTask, clientCountTask);
+            var userCount = await CountIfAllowedAsync(canViewUsers, _dbContext.Users.AsNoTracking(), cancellationToken);
+            var roleCount = await CountIfAllowedAsync(canViewRoles, _dbContext.Roles.AsNoTracking(), cancellationToken);
+            var permissionCount = await CountIfAllowedAsync(canViewPermissions, _dbContext.Permissions.AsNoTracking(), cancellationToken);
+            var clientCount = await CountIfAllowedAsync(canViewClients, _dbContext.OidcClients.AsNoTracking(), cancellationToken);
 
             var utcToday = DateTime.UtcNow.Date;
             var trendStartDate = utcToday.AddDays(-6);
@@ -74,10 +74,10 @@ namespace Lumine.AuthServer.Controllers
 
             var summary = new DashboardSummaryDto
             {
-                Users = CreateMetric("用户总数", await userCountTask, canViewUsers, "基于当前用户清单统计。"),
-                Roles = CreateMetric("角色数量", await roleCountTask, canViewRoles, "统计系统内角色定义数量。"),
-                Permissions = CreateMetric("权限数量", await permissionCountTask, canViewPermissions, "统计系统内权限点数量。"),
-                Clients = CreateMetric("OAuth 客户端数量", await clientCountTask, canViewClients, "统计已注册客户端数量。"),
+                Users = CreateMetric("用户总数", userCount, canViewUsers, "基于当前用户清单统计。"),
+                Roles = CreateMetric("角色数量", roleCount, canViewRoles, "统计系统内角色定义数量。"),
+                Permissions = CreateMetric("权限数量", permissionCount, canViewPermissions, "统计系统内权限点数量。"),
+                Clients = CreateMetric("OAuth 客户端数量", clientCount, canViewClients, "统计已注册客户端数量。"),
                 LoginTrend = BuildTrend(loginTrendEntries, trendStartDate, utcToday),
                 TokenIssueTrend = BuildTrend(tokenTrendEntries, trendStartDate, utcToday),
                 RecentLoginUsers = BuildRecentLoginUsers(recentLoginUsers, canViewUsers),
