@@ -8,9 +8,6 @@
 		<InvariantGlobalization>false</InvariantGlobalization>
 		<BlazorIcuDataFileName>icudt_CJK.dat</BlazorIcuDataFileName>
 		<PublishTrimmed>false</PublishTrimmed>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<WasmBuildNative>true</WasmBuildNative>
 	</PropertyGroup>
 
