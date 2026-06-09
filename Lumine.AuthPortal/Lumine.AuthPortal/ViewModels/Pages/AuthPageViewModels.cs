@@ -43,7 +43,7 @@ public partial class LoginPageViewModel : ViewModelBase
     private bool _isBusy;
 
     [ObservableProperty]
-    private string _statusMessage = "请输入账号密码后登录。";
+    private string _statusMessage = string.Empty;
 
     [ObservableProperty]
     private bool _isErrorMessage;
@@ -53,9 +53,11 @@ public partial class LoginPageViewModel : ViewModelBase
 
     public string OidcToggleText => ShowOidcParameters ? "隐藏 OIDC 调试参数" : "显示 OIDC 调试参数";
 
-    public string LoginButtonText => IsBusy ? "正在登录..." : "登录并进入后台";
+    public string LoginButtonText => IsBusy ? "登录中..." : "登录";
 
     public bool CanInteract => !IsBusy;
+
+    public bool HasStatusMessage => !string.IsNullOrWhiteSpace(StatusMessage);
 
     public char PasswordMaskChar => ShowPassword ? '\0' : '●';
 
@@ -152,9 +154,14 @@ public partial class LoginPageViewModel : ViewModelBase
     partial void OnShowOidcParametersChanged(bool value)
     {
         OnPropertyChanged(nameof(OidcToggleText));
-        SetStatus(value
-            ? "已开启 OIDC 调试参数，可用于第三方授权联调。"
-            : "请输入账号密码后登录。");
+        if (value)
+        {
+            SetStatus("已开启 OIDC 调试参数，可用于第三方授权联调。");
+        }
+        else if (!IsBusy && !IsErrorMessage && !IsSuccessMessage)
+        {
+            SetStatus(string.Empty);
+        }
     }
 
     [RelayCommand]
@@ -180,6 +187,11 @@ public partial class LoginPageViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(LoginButtonText));
         OnPropertyChanged(nameof(CanInteract));
+    }
+
+    partial void OnStatusMessageChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasStatusMessage));
     }
 
     private void SetStatus(string message, bool isError = false, bool isSuccess = false)
@@ -211,7 +223,7 @@ public partial class RegisterPageViewModel : ViewModelBase
     private string _phoneNumber = string.Empty;
 
     [ObservableProperty]
-    private string _statusMessage = "填写信息后即可创建账号。";
+    private string _statusMessage = string.Empty;
 
     [ObservableProperty]
     private bool _isBusy;
@@ -222,9 +234,11 @@ public partial class RegisterPageViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isSuccessMessage;
 
-    public string RegisterButtonText => IsBusy ? "正在提交..." : "提交注册";
+    public string RegisterButtonText => IsBusy ? "注册中..." : "注册";
 
     public bool CanInteract => !IsBusy;
+
+    public bool HasStatusMessage => !string.IsNullOrWhiteSpace(StatusMessage);
 
     public RegisterPageViewModel(PortalApiClient apiClient, Action<string?, string?, bool> openLogin)
     {
@@ -279,6 +293,11 @@ public partial class RegisterPageViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(RegisterButtonText));
         OnPropertyChanged(nameof(CanInteract));
+    }
+
+    partial void OnStatusMessageChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasStatusMessage));
     }
 
     private void SetStatus(string message, bool isError = false, bool isSuccess = false)

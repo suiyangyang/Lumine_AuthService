@@ -241,30 +241,21 @@
       <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
-    <Style Selector="Border.login-switch-shell">
-      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="12"/>
-      <Setter Property="Padding" Value="4"/>
-    </Style>
-    <Style Selector="Button.login-switch-button">
+    <Style Selector="Button.login-link-action">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="Padding" Value="0,10"/>
-      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Foreground" Value="#2563EB"/>
+      <Setter Property="FontSize" Value="13"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="HorizontalContentAlignment" Value="Right"/>
     </Style>
-    <Style Selector="Button.login-switch-button:pointerover">
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    <Style Selector="Button.login-link-action:pointerover">
+      <Setter Property="Foreground" Value="#1D4ED8"/>
     </Style>
-    <Style Selector="Button.login-switch-button.active">
-      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    <Style Selector="Button.login-link-action:pressed">
+      <Setter Property="Foreground" Value="#1E40AF"/>
     </Style>
     <Style Selector="Border.login-status-banner">
       <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
@@ -291,13 +282,10 @@
       <Border Classes="login-shell">
           <Grid RowDefinitions="Auto,*,Auto">
             <StackPanel Spacing="8">
-              <TextBlock Text="登录后台"
+              <TextBlock Text="登录"
                          FontSize="26"
                          FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"/>
-              <TextBlock Text="默认仅展示后台登录所需项，联调时再展开 OIDC 参数。"
-                         Foreground="{DynamicResource TextMutedBrush}"
-                         TextWrapping="Wrap"/>
             </StackPanel>
 
             <StackPanel Grid.Row="1"
@@ -305,20 +293,6 @@
                         Spacing="16">
               <Border Classes="login-panel">
                 <StackPanel Spacing="12">
-                  <Border Classes="login-switch-shell">
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
-                      <Button Classes="login-switch-button active"
-                              Grid.Column="0"
-                              Content="登录"
-                              IsEnabled="{Binding CanInteract}"/>
-                      <Button Classes="login-switch-button"
-                              Grid.Column="1"
-                              Content="注册"
-                              Command="{Binding OpenRegisterCommand}"
-                              IsEnabled="{Binding CanInteract}"/>
-                    </Grid>
-                  </Border>
-
                   <TextBlock Text="账号认证" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
 
                   <StackPanel Spacing="7">
@@ -359,6 +333,12 @@
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Center"
                           FontWeight="SemiBold"/>
+
+                  <Button Classes="login-link-action"
+                          Content="去注册"
+                          Command="{Binding OpenRegisterCommand}"
+                          IsEnabled="{Binding CanInteract}"
+                          HorizontalAlignment="Right"/>
                 </StackPanel>
               </Border>
 
@@ -415,6 +395,7 @@
                     Classes="login-status-banner"
                     Classes.status-error="{Binding IsErrorMessage}"
                     Classes.status-success="{Binding IsSuccessMessage}"
+                    IsVisible="{Binding HasStatusMessage}"
                     MinHeight="46">
               <TextBlock Text="{Binding StatusMessage}"
                          Foreground="{DynamicResource TextSecondaryBrush}"
