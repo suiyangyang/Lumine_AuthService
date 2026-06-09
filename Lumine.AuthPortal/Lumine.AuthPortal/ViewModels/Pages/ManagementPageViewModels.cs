@@ -848,6 +848,10 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
 
     public RolesManagementPageViewModel(PortalApiClient apiClient, PortalSession session) : base(apiClient, session)
     {
+        if (session.IsAuthenticated)
+        {
+            _ = LoadAsync();
+        }
     }
 
     [ObservableProperty] private IReadOnlyList<RoleDto> _items = Array.Empty<RoleDto>();
@@ -1622,6 +1626,11 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
             new PermissionReferenceSection("类型", ["menu", "api", "page"]),
             new PermissionReferenceSection("示例", ["user.read", "user.write", "role.manage", "audit.view"])
         ];
+
+        if (session.IsAuthenticated)
+        {
+            _ = LoadAsync();
+        }
     }
 
     [ObservableProperty] private IReadOnlyList<PermissionDto> _items = Array.Empty<PermissionDto>();
@@ -1930,6 +1939,10 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
 
     public ClientsManagementPageViewModel(PortalApiClient apiClient, PortalSession session) : base(apiClient, session)
     {
+        if (session.IsAuthenticated)
+        {
+            _ = LoadAsync();
+        }
     }
 
     [ObservableProperty] private IReadOnlyList<OidcClientDto> _items = Array.Empty<OidcClientDto>();
