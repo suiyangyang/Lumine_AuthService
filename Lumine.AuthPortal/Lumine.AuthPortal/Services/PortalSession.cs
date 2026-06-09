@@ -42,6 +42,12 @@ public partial class PortalSession : ObservableObject
     [ObservableProperty]
     private IReadOnlyList<string> _permissions = Array.Empty<string>();
 
+    [ObservableProperty]
+    private string? _pendingLoginMessage;
+
+    [ObservableProperty]
+    private bool _pendingLoginMessageIsSuccess;
+
     public bool IsAuthenticated => !string.IsNullOrWhiteSpace(AccessToken)
         && (!AccessTokenExpiresAtUtc.HasValue || AccessTokenExpiresAtUtc.Value > DateTime.UtcNow);
 
@@ -79,6 +85,30 @@ public partial class PortalSession : ObservableObject
         Roles = Array.Empty<string>();
         Permissions = Array.Empty<string>();
         ClearPersistedState();
+    }
+
+    public void Invalidate(string message)
+    {
+        PendingLoginMessage = message;
+        PendingLoginMessageIsSuccess = false;
+        Clear();
+    }
+
+    public void SetPendingLoginMessage(string message, bool isSuccess = false)
+    {
+        PendingLoginMessage = message;
+        PendingLoginMessageIsSuccess = isSuccess;
+    }
+
+    public bool TryConsumePendingLoginMessage(out string? message, out bool isSuccess)
+    {
+        message = PendingLoginMessage;
+        isSuccess = PendingLoginMessageIsSuccess;
+
+        PendingLoginMessage = null;
+        PendingLoginMessageIsSuccess = false;
+
+        return !string.IsNullOrWhiteSpace(message);
     }
 
     public bool HasPermission(string? permission)

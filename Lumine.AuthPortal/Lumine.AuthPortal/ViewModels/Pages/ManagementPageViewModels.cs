@@ -11,7 +11,7 @@ namespace Lumine.AuthPortal.ViewModels.Pages;
 
 public static class PortalUiDefaults
 {
-    public const int ManagementPageSize = 10;
+    public const int ManagementPageSize = PortalManagementDefaults.DefaultPageSize;
 }
 
 public abstract partial class ManagementPageViewModelBase : ViewModelBase
@@ -69,23 +69,6 @@ public abstract partial class ManagementPageViewModelBase : ViewModelBase
         }
     }
 
-    protected bool QueuePageSizeChangeIfNeeded(int selectedPageSize, int currentPageSize, Func<int?, Task> applyPageSizeAsync)
-    {
-        if (selectedPageSize <= 0 || selectedPageSize == currentPageSize)
-        {
-            return false;
-        }
-
-        _ = applyPageSizeAsync(selectedPageSize);
-        return true;
-    }
-
-    protected static int NormalizePageSize(int? requestedPageSize, int selectedPageSize)
-    {
-        var normalizedPageSize = requestedPageSize.GetValueOrDefault(selectedPageSize);
-        return normalizedPageSize > 0 ? normalizedPageSize : DefaultPageSize;
-    }
-
     protected static int NormalizePageIndex(int targetPageIndex) => Math.Max(1, targetPageIndex);
 
     protected static int CalculateLastPageIndex(int nextTotalCount, int pageSize)
@@ -121,13 +104,6 @@ public abstract partial class ManagementPageViewModelBase : ViewModelBase
         }
 
         return loadPageAsync(pageIndex + 1);
-    }
-
-    protected static async Task ApplyPageSizeAndReloadAsync(int? pageSize, int selectedPageSize, Action<int> applyPageSize, Func<int, Task> loadPageAsync)
-    {
-        var normalizedPageSize = NormalizePageSize(pageSize, selectedPageSize);
-        applyPageSize(normalizedPageSize);
-        await loadPageAsync(1);
     }
 
     protected async Task RunBusyActionAsync(Func<Task> action)
@@ -284,7 +260,6 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
-    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private UserDto? _pendingDeleteUser;
     [ObservableProperty] private bool _isCreateDialogOpen;
@@ -335,8 +310,6 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     public string SelectedUserIdText => SelectedItem?.Id.ToString() ?? "待创建";
 
     public int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalCount / (double)PageSize));
-
-    public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
     public bool CanGoPreviousPage => PageIndex > 1;
 
@@ -406,11 +379,6 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
         NotifyPaginationProperties(includeTotalPages: true);
     }
 
-    partial void OnSelectedPageSizeChanged(int value)
-    {
-        QueuePageSizeChangeIfNeeded(value, PageSize, ApplyPageSizeAsync);
-    }
-
     partial void OnSearchKeywordChanged(string value)
     {
         OnPropertyChanged(nameof(HasSearchKeyword));
@@ -445,16 +413,6 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
         await GoToNextPageAsync(CanGoNextPage, PageIndex, LoadPageAsync);
     }
 
-    [RelayCommand]
-    private async Task ApplyPageSizeAsync(int? pageSize = null)
-    {
-        await ApplyPageSizeAndReloadAsync(pageSize, SelectedPageSize, normalizedPageSize =>
-        {
-            SelectedPageSize = normalizedPageSize;
-            PageSize = normalizedPageSize;
-        }, LoadPageAsync);
-    }
-
     private async Task LoadPageAsync(int targetPageIndex)
     {
         await RunAuthenticatedBusyActionAsync(async () =>
@@ -475,7 +433,6 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
             TotalCount = usersResult.Data?.TotalCount ?? 0;
             PageIndex = usersResult.Data?.PageIndex ?? normalizedPageIndex;
             PageSize = usersResult.Data?.PageSize ?? PageSize;
-            SelectedPageSize = PageSize;
             AvailableRoles = (rolesResult.Data?.Items ?? Array.Empty<RoleDto>())
                 .OrderBy(role => role.Name)
                 .Select(role => new UserRoleOptionViewModel(role.Id, role.Name))
@@ -906,7 +863,6 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
-    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private RoleDto? _pendingDeleteRole;
     [ObservableProperty] private bool _isRoleDialogOpen;
@@ -919,8 +875,6 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
     public bool ShowRolesEmptyState => !HasRoles;
 
     public string CurrentRoleIdentity => SelectedItem?.Id.ToString() ?? "新建角色";
-
-    public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
     public int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalCount / (double)PageSize));
 
@@ -1022,11 +976,6 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
         NotifyPaginationProperties(includeTotalPages: true);
     }
 
-    partial void OnSelectedPageSizeChanged(int value)
-    {
-        QueuePageSizeChangeIfNeeded(value, PageSize, ApplyPageSizeAsync);
-    }
-
     partial void OnTotalCountChanged(int value)
     {
         NotifyPaginationProperties(includeTotalPages: true);
@@ -1067,16 +1016,6 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
         await GoToNextPageAsync(CanGoNextPage, PageIndex, LoadPageAsync);
     }
 
-    [RelayCommand]
-    private async Task ApplyPageSizeAsync(int? pageSize = null)
-    {
-        await ApplyPageSizeAndReloadAsync(pageSize, SelectedPageSize, normalizedPageSize =>
-        {
-            SelectedPageSize = normalizedPageSize;
-            PageSize = normalizedPageSize;
-        }, LoadPageAsync);
-    }
-
     private async Task LoadPageAsync(int targetPageIndex)
     {
         await RunAuthenticatedBusyActionAsync(async () =>
@@ -1097,7 +1036,6 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
             TotalCount = rolesResult.Data?.TotalCount ?? 0;
             PageIndex = rolesResult.Data?.PageIndex ?? normalizedPageIndex;
             PageSize = rolesResult.Data?.PageSize ?? PageSize;
-            SelectedPageSize = PageSize;
             RoleRows = BuildRoleRows(Items);
 
             AvailablePermissions = permissionsResult.Data?.Items ?? Array.Empty<PermissionDto>();
@@ -1693,7 +1631,6 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
-    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private PermissionDto? _pendingDeletePermission;
     [ObservableProperty] private bool _isPermissionDialogOpen;
@@ -1704,8 +1641,6 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
     public string EditorTitle => SelectedItem == null ? "新建权限" : "编辑权限";
 
     public string PermissionCountText => $"当前页 {Items.Count} 条，累计 {TotalCount} 条权限记录";
-
-    public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
     public int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalCount / (double)PageSize));
 
@@ -1788,11 +1723,6 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
         NotifyPaginationProperties(includeTotalPages: true);
     }
 
-    partial void OnSelectedPageSizeChanged(int value)
-    {
-        QueuePageSizeChangeIfNeeded(value, PageSize, ApplyPageSizeAsync);
-    }
-
     partial void OnTotalCountChanged(int value)
     {
         NotifyPaginationProperties(includeTotalPages: true, nameof(PermissionCountText));
@@ -1833,16 +1763,6 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
         await GoToNextPageAsync(CanGoNextPage, PageIndex, LoadPageAsync);
     }
 
-    [RelayCommand]
-    private async Task ApplyPageSizeAsync(int? pageSize = null)
-    {
-        await ApplyPageSizeAndReloadAsync(pageSize, SelectedPageSize, normalizedPageSize =>
-        {
-            SelectedPageSize = normalizedPageSize;
-            PageSize = normalizedPageSize;
-        }, LoadPageAsync);
-    }
-
     private async Task LoadPageAsync(int targetPageIndex)
     {
         await RunAuthenticatedBusyActionAsync(async () =>
@@ -1855,7 +1775,6 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
             TotalCount = result.Data?.TotalCount ?? 0;
             PageIndex = result.Data?.PageIndex ?? normalizedPageIndex;
             PageSize = result.Data?.PageSize ?? PageSize;
-            SelectedPageSize = PageSize;
             SelectedItem = FindItemById(Items, currentSelectedId, item => item.Id);
 
             SetRequestStatus(result.IsSuccess, $"已加载第 {PageIndex} 页，共 {TotalCount} 个权限。", "加载权限失败。", result.ErrorMessage);
@@ -2026,7 +1945,6 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
-    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private OidcClientDto? _pendingDeleteClient;
     [ObservableProperty] private bool _isClientDialogOpen;
@@ -2081,8 +1999,6 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
         $"Scope: {BuildPreviewLine(AllowedScopesInput, "未配置 Scope")}",
         $"状态: {(IsActive ? "启用" : "停用")}"
     ]);
-
-    public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
     public int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalCount / (double)PageSize));
 
@@ -2183,11 +2099,6 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
         NotifyPaginationProperties(includeTotalPages: true);
     }
 
-    partial void OnSelectedPageSizeChanged(int value)
-    {
-        QueuePageSizeChangeIfNeeded(value, PageSize, ApplyPageSizeAsync);
-    }
-
     partial void OnTotalCountChanged(int value)
     {
         NotifyPaginationProperties(includeTotalPages: true, nameof(ClientCountText));
@@ -2223,16 +2134,6 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
         await GoToNextPageAsync(CanGoNextPage, PageIndex, LoadPageAsync);
     }
 
-    [RelayCommand]
-    private async Task ApplyPageSizeAsync(int? pageSize = null)
-    {
-        await ApplyPageSizeAndReloadAsync(pageSize, SelectedPageSize, normalizedPageSize =>
-        {
-            SelectedPageSize = normalizedPageSize;
-            PageSize = normalizedPageSize;
-        }, LoadPageAsync);
-    }
-
     private async Task LoadPageAsync(int targetPageIndex)
     {
         await RunAuthenticatedBusyActionAsync(async () =>
@@ -2245,7 +2146,6 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
             TotalCount = result.Data?.TotalCount ?? 0;
             PageIndex = result.Data?.PageIndex ?? normalizedPageIndex;
             PageSize = result.Data?.PageSize ?? PageSize;
-            SelectedPageSize = PageSize;
             SelectedItem = FindItemById(Items, currentSelectedId, item => item.Id);
 
             SetRequestStatus(result.IsSuccess, $"已加载第 {PageIndex} 页，共 {TotalCount} 个客户端。", "加载客户端失败。", result.ErrorMessage);

@@ -175,10 +175,6 @@
             </Border>
           </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <ComboBox Width="92"
-                      ItemsSource="{Binding PageSizeOptions}"
-                      SelectedItem="{Binding SelectedPageSize}"
-                      HorizontalContentAlignment="Center"/>
             <Button Classes="admin-icon-button"
                     Command="{Binding PreviousPageCommand}"
                     IsEnabled="{Binding CanGoPreviousPage}"

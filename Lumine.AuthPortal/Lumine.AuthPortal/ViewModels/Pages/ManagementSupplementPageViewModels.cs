@@ -21,11 +21,8 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
-    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private bool _isSearchVisible;
-
-    public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
     public bool HasGroups => Items.Count > 0;
 
@@ -103,11 +100,6 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
         NotifyPaginationProperties(includeTotalPages: true);
     }
 
-    partial void OnSelectedPageSizeChanged(int value)
-    {
-        QueuePageSizeChangeIfNeeded(value, PageSize, ApplyPageSizeAsync);
-    }
-
     partial void OnTotalCountChanged(int value)
     {
         NotifyPaginationProperties(includeTotalPages: true);
@@ -135,16 +127,6 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
     private async Task NextPageAsync()
     {
         await GoToNextPageAsync(CanGoNextPage, PageIndex, LoadPageAsync);
-    }
-
-    [RelayCommand]
-    private async Task ApplyPageSizeAsync(int? pageSize = null)
-    {
-        await ApplyPageSizeAndReloadAsync(pageSize, SelectedPageSize, normalizedPageSize =>
-        {
-            SelectedPageSize = normalizedPageSize;
-            PageSize = normalizedPageSize;
-        }, LoadPageAsync);
     }
 
     [RelayCommand]
@@ -186,7 +168,6 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
             TotalCount = result.Data?.TotalCount ?? 0;
             PageIndex = result.Data?.PageIndex ?? normalizedPageIndex;
             PageSize = result.Data?.PageSize ?? PageSize;
-            SelectedPageSize = PageSize;
             SelectedItem = currentSelectedId == null
                 ? Items.FirstOrDefault()
                 : Items.FirstOrDefault(item => string.Equals(item.Id, currentSelectedId, StringComparison.OrdinalIgnoreCase)) ?? Items.FirstOrDefault();
@@ -211,12 +192,9 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
-    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private RefreshTokenRecordDto? _pendingRevokeToken;
     [ObservableProperty] private bool _isSearchVisible;
-
-    public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
     public bool HasTokens => Items.Count > 0;
 
@@ -279,11 +257,6 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
         NotifyPaginationProperties(includeTotalPages: true);
     }
 
-    partial void OnSelectedPageSizeChanged(int value)
-    {
-        QueuePageSizeChangeIfNeeded(value, PageSize, ApplyPageSizeAsync);
-    }
-
     partial void OnTotalCountChanged(int value)
     {
         NotifyPaginationProperties(includeTotalPages: true);
@@ -311,16 +284,6 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
     private async Task NextPageAsync()
     {
         await GoToNextPageAsync(CanGoNextPage, PageIndex, LoadPageAsync);
-    }
-
-    [RelayCommand]
-    private async Task ApplyPageSizeAsync(int? pageSize = null)
-    {
-        await ApplyPageSizeAndReloadAsync(pageSize, SelectedPageSize, normalizedPageSize =>
-        {
-            SelectedPageSize = normalizedPageSize;
-            PageSize = normalizedPageSize;
-        }, LoadPageAsync);
     }
 
     [RelayCommand]
@@ -403,7 +366,6 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
             TotalCount = result.Data?.TotalCount ?? 0;
             PageIndex = result.Data?.PageIndex ?? normalizedPageIndex;
             PageSize = result.Data?.PageSize ?? PageSize;
-            SelectedPageSize = PageSize;
             SelectedItem = FindItemById(Items, currentSelectedId, item => item.Id) ?? Items.FirstOrDefault();
 
             SetRequestStatus(result.IsSuccess, $"已加载第 {PageIndex} 页，共 {TotalCount} 条 Token 记录。", "加载 Token 记录失败。", result.ErrorMessage);
@@ -490,11 +452,8 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
-    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private bool _isSearchVisible;
-
-    public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
 
     public bool HasLogs => Items.Count > 0;
 
@@ -541,11 +500,6 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
         NotifyPaginationProperties(includeTotalPages: true);
     }
 
-    partial void OnSelectedPageSizeChanged(int value)
-    {
-        QueuePageSizeChangeIfNeeded(value, PageSize, ApplyPageSizeAsync);
-    }
-
     partial void OnTotalCountChanged(int value)
     {
         NotifyPaginationProperties(includeTotalPages: true);
@@ -573,16 +527,6 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
     private async Task NextPageAsync()
     {
         await GoToNextPageAsync(CanGoNextPage, PageIndex, LoadPageAsync);
-    }
-
-    [RelayCommand]
-    private async Task ApplyPageSizeAsync(int? pageSize = null)
-    {
-        await ApplyPageSizeAndReloadAsync(pageSize, SelectedPageSize, normalizedPageSize =>
-        {
-            SelectedPageSize = normalizedPageSize;
-            PageSize = normalizedPageSize;
-        }, LoadPageAsync);
     }
 
     [RelayCommand]
@@ -624,7 +568,6 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
             TotalCount = result.Data?.TotalCount ?? 0;
             PageIndex = result.Data?.PageIndex ?? normalizedPageIndex;
             PageSize = result.Data?.PageSize ?? PageSize;
-            SelectedPageSize = PageSize;
             SelectedItem = currentSelectedId == null
                 ? Items.FirstOrDefault()
                 : Items.FirstOrDefault(item => string.Equals(item.Id, currentSelectedId, StringComparison.OrdinalIgnoreCase)) ?? Items.FirstOrDefault();

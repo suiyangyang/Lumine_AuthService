@@ -14,14 +14,16 @@ namespace Lumine.AuthPortal.Services;
 public sealed class PortalApiClient
 {
     private readonly HttpClient _httpClient;
+    private readonly PortalSession _session;
     private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = true
     };
 
-    public PortalApiClient(HttpClient httpClient)
+    public PortalApiClient(HttpClient httpClient, PortalSession session)
     {
         _httpClient = httpClient;
+        _session = session;
     }
 
     public string BaseUrl
@@ -131,7 +133,7 @@ public sealed class PortalApiClient
         }
     }
 
-    public Task<ApiResult<PagedResultDto<UserDto>>> GetUsersAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    public Task<ApiResult<PagedResultDto<UserDto>>> GetUsersAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/users", new Dictionary<string, string?>
         {
@@ -158,7 +160,7 @@ public sealed class PortalApiClient
         return SendAsync<object>(HttpMethod.Post, "/api/users/me/change-password", request, accessToken, cancellationToken);
     }
 
-    public Task<ApiResult<PagedResultDto<RoleDto>>> GetRolesAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    public Task<ApiResult<PagedResultDto<RoleDto>>> GetRolesAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/roles", new Dictionary<string, string?>
         {
@@ -170,7 +172,7 @@ public sealed class PortalApiClient
         return SendAsync<PagedResultDto<RoleDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
-    public Task<ApiResult<PagedResultDto<PermissionDto>>> GetPermissionsAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    public Task<ApiResult<PagedResultDto<PermissionDto>>> GetPermissionsAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/permissions", new Dictionary<string, string?>
         {
@@ -182,7 +184,7 @@ public sealed class PortalApiClient
         return SendAsync<PagedResultDto<PermissionDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
-    public Task<ApiResult<PagedResultDto<OidcClientDto>>> GetClientsAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    public Task<ApiResult<PagedResultDto<OidcClientDto>>> GetClientsAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/clients", new Dictionary<string, string?>
         {
@@ -194,7 +196,7 @@ public sealed class PortalApiClient
         return SendAsync<PagedResultDto<OidcClientDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
-    public Task<ApiResult<PagedResultDto<UserGroupDto>>> GetUserGroupsAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    public Task<ApiResult<PagedResultDto<UserGroupDto>>> GetUserGroupsAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/usergroups", new Dictionary<string, string?>
         {
@@ -206,7 +208,7 @@ public sealed class PortalApiClient
         return SendAsync<PagedResultDto<UserGroupDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
-    public Task<ApiResult<PagedResultDto<RefreshTokenRecordDto>>> GetTokensAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    public Task<ApiResult<PagedResultDto<RefreshTokenRecordDto>>> GetTokensAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/tokens", new Dictionary<string, string?>
         {
@@ -228,7 +230,7 @@ public sealed class PortalApiClient
         return SendAsync<IReadOnlyList<PortalMenuItemDto>>(HttpMethod.Get, "/api/menus", bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
-    public Task<ApiResult<PagedResultDto<AuditLogEntryDto>>> GetAuditLogsAsync(string accessToken, int pageIndex = 1, int pageSize = 10, string? keyword = null, CancellationToken cancellationToken = default)
+    public Task<ApiResult<PagedResultDto<AuditLogEntryDto>>> GetAuditLogsAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/auditlogs", new Dictionary<string, string?>
         {
@@ -352,6 +354,7 @@ public sealed class PortalApiClient
                 return ApiResult<T>.Success(data);
             }
 
+            HandleUnauthorizedResponse(response.StatusCode, bearerToken);
             var message = await TryReadErrorMessageAsync(response, cancellationToken);
             return ApiResult<T>.Failure(message, (int)response.StatusCode);
         }
@@ -359,6 +362,16 @@ public sealed class PortalApiClient
         {
             return ApiResult<T>.Failure($"请求失败：{ex.Message}");
         }
+    }
+
+    private void HandleUnauthorizedResponse(System.Net.HttpStatusCode statusCode, string? bearerToken)
+    {
+        if (statusCode != System.Net.HttpStatusCode.Unauthorized || string.IsNullOrWhiteSpace(bearerToken))
+        {
+            return;
+        }
+
+        _session.Invalidate(PortalManagementDefaults.SessionExpiredMessage);
     }
 
     private async Task<string> TryReadErrorMessageAsync(HttpResponseMessage response, CancellationToken cancellationToken)

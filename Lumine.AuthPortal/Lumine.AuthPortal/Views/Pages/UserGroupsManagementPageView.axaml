@@ -5,9 +5,7 @@
              x:Class="Lumine.AuthPortal.Views.Pages.UserGroupsManagementPageView"
              x:Name="Root"
              x:DataType="vm:UserGroupsManagementPageViewModel">
-  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-    <StackPanel Spacing="16">
-      <Border Classes="admin-panel" Padding="18">
+  <Border Classes="admin-panel" Padding="18">
         <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
             <StackPanel Spacing="4">
@@ -51,27 +49,11 @@
           <Border Grid.Row="2" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
             <Grid ColumnDefinitions="1.2*,0.95*" ColumnSpacing="16">
               <Grid RowDefinitions="Auto,*" RowSpacing="12">
-                <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                   <TextBlock Text="用户组列表" Classes="admin-card-title"/>
-                  <ComboBox Grid.Column="1"
-                            Width="92"
-                            ItemsSource="{Binding PageSizeOptions}"
-                            SelectedItem="{Binding SelectedPageSize}"
-                            HorizontalContentAlignment="Center"/>
-                  <Button Grid.Column="2"
-                          Classes="admin-icon-button"
-                          Command="{Binding PreviousPageCommand}"
-                          IsEnabled="{Binding CanGoPreviousPage}"
-                          ToolTip.Tip="上一页">
-                    <PathIcon Data="{Binding PreviousPageIconData}" Classes="admin-button-icon"/>
-                  </Button>
-                  <Button Grid.Column="3"
-                          Classes="admin-icon-button"
-                          Command="{Binding NextPageCommand}"
-                          IsEnabled="{Binding CanGoNextPage}"
-                          ToolTip.Tip="下一页">
-                    <PathIcon Data="{Binding NextPageIconData}" Classes="admin-button-icon"/>
-                  </Button>
+                  <Border Grid.Column="1" Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding SelectedGroupMetaSummary}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                  </Border>
                 </Grid>
 
                 <Grid Grid.Row="1">
@@ -174,12 +156,24 @@
               </Border>
             </StackPanel>
 
-            <Border Grid.Column="1" Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
-              <TextBlock Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
-            </Border>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="admin-icon-button"
+                      Command="{Binding PreviousPageCommand}"
+                      IsEnabled="{Binding CanGoPreviousPage}"
+                      ToolTip.Tip="上一页">
+                <PathIcon Data="{Binding PreviousPageIconData}" Classes="admin-button-icon"/>
+              </Button>
+              <Border Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
+                <TextBlock Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+              </Border>
+              <Button Classes="admin-icon-button"
+                      Command="{Binding NextPageCommand}"
+                      IsEnabled="{Binding CanGoNextPage}"
+                      ToolTip.Tip="下一页">
+                <PathIcon Data="{Binding NextPageIconData}" Classes="admin-button-icon"/>
+              </Button>
+            </StackPanel>
           </Grid>
         </Grid>
       </Border>
-    </StackPanel>
-  </ScrollViewer>
 </UserControl>

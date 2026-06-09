@@ -225,37 +225,37 @@
               <TextBlock Text="Disabled 输入内容" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
             </Border>
 
-            <TextBlock Grid.Row="5" Text="下拉框" Classes="theme-preview-row"/>
+            <TextBlock Grid.Row="5" Text="分页状态" Classes="theme-preview-row"/>
             <Border Grid.Row="5" Grid.Column="1" Classes="theme-preview-sample"
                     Background="{DynamicResource SurfaceInsetBrush}"
                     BorderBrush="{DynamicResource BorderStrongBrush}">
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="10 条 / 页" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Text="▾" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Text="默认 50 条 / 页" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="1 / 12" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
               </Grid>
             </Border>
             <Border Grid.Row="5" Grid.Column="2" Classes="theme-preview-sample"
                     Background="{DynamicResource SurfaceInsetBrush}"
                     BorderBrush="{DynamicResource BorderHoverBrush}">
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="Hover 选项" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Text="▾" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Text="搜索后分页" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="2 / 6" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
               </Grid>
             </Border>
             <Border Grid.Row="5" Grid.Column="3" Classes="theme-preview-sample"
                     Background="{DynamicResource SurfaceInsetBrush}"
                     BorderBrush="{DynamicResource BorderActiveBrush}">
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="Focused 选项" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Text="▾" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Text="切换下一页" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="3 / 6" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
               </Grid>
             </Border>
             <Border Grid.Row="5" Grid.Column="4" Classes="theme-preview-sample"
                     Background="{DynamicResource SurfaceSoftBrush}"
                     BorderBrush="{DynamicResource BorderSubtleBrush}">
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="Disabled 选项" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="1" Text="▾" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
+                <TextBlock Text="末页状态" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="12 / 12" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
               </Grid>
             </Border>
 

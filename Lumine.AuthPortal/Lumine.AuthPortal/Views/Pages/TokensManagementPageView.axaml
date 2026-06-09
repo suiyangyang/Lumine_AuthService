@@ -5,9 +5,7 @@
              x:Class="Lumine.AuthPortal.Views.Pages.TokensManagementPageView"
              x:Name="Root"
              x:DataType="vm:TokensManagementPageViewModel">
-  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-    <StackPanel Spacing="16">
-      <Border Classes="admin-panel" Padding="18">
+  <Border Classes="admin-panel" Padding="18">
         <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
             <StackPanel Spacing="4">
@@ -121,10 +119,6 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-              <ComboBox Width="92"
-                        ItemsSource="{Binding PageSizeOptions}"
-                        SelectedItem="{Binding SelectedPageSize}"
-                        HorizontalContentAlignment="Center"/>
               <Button Classes="admin-icon-button"
                       Command="{Binding PreviousPageCommand}"
                       IsEnabled="{Binding CanGoPreviousPage}"
@@ -142,8 +136,6 @@
               </Button>
             </StackPanel>
           </Grid>
-        </Grid>
-      </Border>
-    </StackPanel>
-  </ScrollViewer>
+      </Grid>
+    </Border>
 </UserControl>

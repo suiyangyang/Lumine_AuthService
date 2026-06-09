@@ -4,9 +4,7 @@
              xmlns:model="using:Lumine.AuthPortal.Models"
              x:Class="Lumine.AuthPortal.Views.Pages.MenusManagementPageView"
              x:DataType="vm:MenusManagementPageViewModel">
-  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-    <StackPanel Spacing="16">
-      <Border Classes="admin-panel" Padding="18">
+  <Border Classes="admin-panel" Padding="18">
         <Grid RowDefinitions="Auto,*,Auto" RowSpacing="14">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
             <StackPanel Spacing="4">
@@ -135,11 +133,8 @@
             <StackPanel Spacing="4">
               <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
               <TextBlock Text="{Binding SelectedItem.Title, StringFormat=当前选择：{0}, TargetNullValue=当前选择：未选择菜单}" Classes="admin-hint"/>
-              <TextBlock Text="{Binding PermissionSummaryText}" Classes="admin-hint" TextWrapping="Wrap"/>
             </StackPanel>
           </Border>
         </Grid>
       </Border>
-    </StackPanel>
-  </ScrollViewer>
 </UserControl>

@@ -33,6 +33,11 @@ public partial class MainViewModel : ViewModelBase
                 OnPropertyChanged(nameof(HasAdminAccess));
             }
 
+            if (args.PropertyName == nameof(PortalSession.IsAuthenticated))
+            {
+                HandleAuthenticationStateChanged();
+            }
+
             if (args.PropertyName is nameof(PortalSession.AccessToken)
                 or nameof(PortalSession.IsAuthenticated)
                 or nameof(PortalSession.UserName)
@@ -127,7 +132,7 @@ public partial class MainViewModel : ViewModelBase
         }
         else
         {
-            Navigate("login");
+            ShowLoginPage();
         }
     }
 
@@ -292,8 +297,8 @@ public partial class MainViewModel : ViewModelBase
             await _apiClient.LogoutAsync(_session.AccessToken);
         }
 
+        _session.SetPendingLoginMessage("已安全退出登录。", isSuccess: true);
         _session.Clear();
-        Navigate("login");
     }
 
     private void UpdateSelectedNavigation(string key)
@@ -340,6 +345,31 @@ public partial class MainViewModel : ViewModelBase
                 IsAccountMenuOpen = false;
                 UpdateSelectedNavigation("login");
             });
+    }
+
+    private void HandleAuthenticationStateChanged()
+    {
+        if (IsAuthenticated || IsLoginPageSelected || IsRegisterPageSelected)
+        {
+            return;
+        }
+
+        if (_session.TryConsumePendingLoginMessage(out var message, out var isSuccess))
+        {
+            ShowLoginPage(message, isSuccess);
+            return;
+        }
+
+        ShowLoginPage();
+    }
+
+    private void ShowLoginPage(string? initialStatusMessage = null, bool initialSuccessMessage = false)
+    {
+        CurrentPage = CreateLoginPage(initialStatusMessage: initialStatusMessage, initialSuccessMessage: initialSuccessMessage);
+        CurrentPageTitle = "登录";
+        CurrentPageKey = "login";
+        IsAccountMenuOpen = false;
+        UpdateSelectedNavigation("login");
     }
 
     partial void OnCurrentPageKeyChanged(string value)
