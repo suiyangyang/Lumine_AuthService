@@ -1,0 +1,272 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:Lumine.AuthPortal"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels"
+             xmlns:vmPages="using:Lumine.AuthPortal.ViewModels.Pages"
+             xmlns:views="using:Lumine.AuthPortal.Views.Pages"
+             x:Class="Lumine.AuthPortal.App"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Resources>
+        <FontFamily x:Key="ChineseFont">avares://Lumine.AuthPortal/Assets/SimHei.ttf#SimHei, Microsoft YaHei UI, Segoe UI, Segoe UI Emoji, Segoe UI Symbol</FontFamily>
+        <FontFamily x:Key="EmojiFont">Segoe UI Emoji, Segoe UI Symbol, Microsoft YaHei UI, avares://Lumine.AuthPortal/Assets/SimHei.ttf#SimHei</FontFamily>
+    </Application.Resources>
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+        <DataTemplate DataType="vmPages:DashboardPageViewModel">
+            <views:DashboardPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:LoginPageViewModel">
+            <views:LoginPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:RegisterPageViewModel">
+            <views:RegisterPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:ConsentPageViewModel">
+            <views:ConsentPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:UsersManagementPageViewModel">
+            <views:UsersManagementPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:RolesManagementPageViewModel">
+            <views:RolesManagementPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:PermissionsManagementPageViewModel">
+            <views:PermissionsManagementPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:ClientsManagementPageViewModel">
+            <views:ClientsManagementPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:AuditLogsPageViewModel">
+            <views:AuditLogsPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:OidcPlaygroundPageViewModel">
+            <views:OidcPlaygroundPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:ProfileCenterPageViewModel">
+            <views:ProfileCenterPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vmPages:SecuritySettingsPageViewModel">
+            <views:SecuritySettingsPageView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:PlaceholderPageViewModel">
+            <views:PlaceholderPageView />
+        </DataTemplate>
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <FluentTheme />
+        <Style Selector="Border.dialog-backdrop">
+            <Setter Property="Background" Value="#AA020617" />
+        </Style>
+        <Style Selector="Border.dialog-card">
+            <Setter Property="Background" Value="#111827" />
+            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Padding" Value="22" />
+        </Style>
+        <Style Selector="Border.info-card">
+            <Setter Property="Background" Value="#0F172A" />
+            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="14" />
+        </Style>
+        <Style Selector="Border.admin-panel">
+            <Setter Property="Background" Value="#111827" />
+            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Padding" Value="20" />
+        </Style>
+        <Style Selector="Border.admin-status-banner">
+            <Setter Property="Background" Value="#0F172A" />
+            <Setter Property="BorderBrush" Value="#1D4ED8" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style Selector="Border.admin-danger-banner">
+            <Setter Property="Background" Value="#2B1220" />
+            <Setter Property="BorderBrush" Value="#7F1D1D" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style Selector="Border.admin-row-card">
+            <Setter Property="Background" Value="#172132" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style Selector="Border.admin-content-block">
+            <Setter Property="Background" Value="#0F172A" />
+            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+        <Style Selector="Border.admin-reference-card">
+            <Setter Property="Background" Value="#1F2937" />
+            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Padding" Value="20,16" />
+        </Style>
+        <Style Selector="Border.admin-pill">
+            <Setter Property="CornerRadius" Value="999" />
+            <Setter Property="Padding" Value="8,4" />
+        </Style>
+        <Style Selector="Border.admin-pill.admin-pill-muted">
+            <Setter Property="Background" Value="#1E293B" />
+            <Setter Property="Padding" Value="10,4" />
+        </Style>
+        <Style Selector="Border.admin-pill.admin-pill-success">
+            <Setter Property="Background" Value="#0F766E" />
+        </Style>
+        <Style Selector="Border.admin-pill.admin-pill-danger">
+            <Setter Property="Background" Value="#7F1D1D" />
+        </Style>
+        <Style Selector="TextBlock.admin-section-title">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="TextBlock.admin-reference-title">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="TextBlock.admin-reference-line">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="#E5E7EB" />
+        </Style>
+        <Style Selector="TextBlock.admin-card-title">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="TextBlock.admin-hint">
+            <Setter Property="Foreground" Value="#94A3B8" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style Selector="TextBlock.admin-table-header">
+            <Setter Property="Foreground" Value="#CBD5E1" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style Selector="TextBlock.admin-muted">
+            <Setter Property="Foreground" Value="#94A3B8" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style Selector="TextBlock.admin-info-title">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="TextBlock.admin-info-body">
+            <Setter Property="Foreground" Value="#D1D5DB" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style Selector="Button.admin-button">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="MinWidth" Value="92" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Background" Value="#1F2937" />
+            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-compact">
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="MinWidth" Value="72" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary">
+            <Setter Property="Background" Value="#2563EB" />
+            <Setter Property="BorderBrush" Value="#60A5FA" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success">
+            <Setter Property="Background" Value="#059669" />
+            <Setter Property="BorderBrush" Value="#34D399" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger">
+            <Setter Property="Background" Value="#111827" />
+            <Setter Property="BorderBrush" Value="#7F1D1D" />
+            <Setter Property="Foreground" Value="#FCA5A5" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid">
+            <Setter Property="Background" Value="#DC2626" />
+            <Setter Property="BorderBrush" Value="#F87171" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-row-action">
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Background" Value="#1F2937" />
+            <Setter Property="Foreground" Value="#E5E7EB" />
+            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.admin-row-action.admin-danger">
+            <Setter Property="Background" Value="#7F1D1D" />
+            <Setter Property="BorderBrush" Value="#B91C1C" />
+            <Setter Property="Foreground" Value="#FEE2E2" />
+        </Style>
+        <Style Selector="Button.admin-copy-button">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Background" Value="#111827" />
+            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="Button.admin-copy-button:pointerover">
+            <Setter Property="Background" Value="#172033" />
+            <Setter Property="BorderBrush" Value="#60A5FA" />
+        </Style>
+        <Style Selector="TextBox.admin-form-input">
+            <Setter Property="Background" Value="#0F172A" />
+            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+        <Style Selector="SelectableTextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+        <Style Selector="CheckBox">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+        <Style Selector="RadioButton">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+        <Style Selector="ComboBoxItem">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+        <Style Selector="MenuItem">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />
+        </Style>
+    </Application.Styles>
+</Application>

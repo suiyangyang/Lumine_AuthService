@@ -1,0 +1,31 @@
+name: lumine-auth-local
+
+services:
+  auth-mysql-dev:
+    image: mysql:9.4
+    container_name: lumine-auth-mysql-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: Lumine.AuthDb
+      MYSQL_USER: lumine
+      MYSQL_PASSWORD: ${LUMINE_AUTH_MYSQL_PASSWORD:?Set LUMINE_AUTH_MYSQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${LUMINE_AUTH_MYSQL_ROOT_PASSWORD:?Set LUMINE_AUTH_MYSQL_ROOT_PASSWORD in .env}
+    ports:
+      - "3307:3306"
+    volumes:
+      - lumine-auth-mysql-dev-data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysqladmin ping -h 127.0.0.1 -ulumine -p$${MYSQL_PASSWORD} --silent
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+
+volumes:
+  lumine-auth-mysql-dev-data:
+    name: lumine-auth-mysql-dev-data

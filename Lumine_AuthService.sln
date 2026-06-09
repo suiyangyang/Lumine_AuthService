@@ -1,0 +1,71 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lumine.AuthServer", "Lumine.AuthServer\Lumine.AuthServer.csproj", "{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10} = {E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lumine.AuthPortal", "Lumine.AuthPortal", "{0E6BE3C0-F087-B744-099C-F04F31748D8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lumine.AuthPortal", "Lumine.AuthPortal\Lumine.AuthPortal\Lumine.AuthPortal.csproj", "{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lumine.AuthPortal.Browser", "Lumine.AuthPortal\Lumine.AuthPortal.Browser\Lumine.AuthPortal.Browser.csproj", "{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Debug|x64.Build.0 = Debug|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Debug|x86.Build.0 = Debug|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Release|x64.ActiveCfg = Release|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Release|x64.Build.0 = Release|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Release|x86.ActiveCfg = Release|Any CPU
+		{9C46F981-8BE8-4EA0-BF40-67F59A9141BA}.Release|x86.Build.0 = Release|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Debug|x64.Build.0 = Debug|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Debug|x86.Build.0 = Debug|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Release|x64.ActiveCfg = Release|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Release|x64.Build.0 = Release|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Release|x86.ActiveCfg = Release|Any CPU
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F}.Release|x86.Build.0 = Release|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Debug|x64.Build.0 = Debug|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Debug|x86.Build.0 = Debug|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Release|x64.ActiveCfg = Release|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Release|x64.Build.0 = Release|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Release|x86.ActiveCfg = Release|Any CPU
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4085AFFD-F31B-4B7C-86A4-8FB4EDD05C4F} = {0E6BE3C0-F087-B744-099C-F04F31748D8E}
+		{E73F0DAA-BF9B-49FA-BD07-90A363CF1B10} = {0E6BE3C0-F087-B744-099C-F04F31748D8E}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             x:Class="Lumine.AuthPortal.Views.Pages.RegisterPageView"
+             x:DataType="vm:RegisterPageViewModel">
+  <Border Background="#111827" CornerRadius="16" Padding="24" MaxWidth="620">
+    <StackPanel Spacing="14">
+      <TextBlock Text="注册" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
+      <TextBox Text="{Binding UserName}" Watermark="用户名"/>
+      <TextBox Text="{Binding Email}" Watermark="邮箱"/>
+      <TextBox Text="{Binding Password}" PasswordChar="*" Watermark="密码"/>
+      <TextBox Text="{Binding NickName}" Watermark="昵称"/>
+      <TextBox Text="{Binding PhoneNumber}" Watermark="手机号"/>
+      <Button Content="提交注册" Command="{Binding RegisterCommand}"/>
+      <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+    </StackPanel>
+  </Border>
+</UserControl>

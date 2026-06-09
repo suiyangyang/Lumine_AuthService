@@ -1,0 +1,344 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Name="Root"
+             x:Class="Lumine.AuthPortal.Views.MainView"
+             x:DataType="vm:MainViewModel">
+  <UserControl.Styles>
+    <Style Selector="Border.nav-section-container">
+      <Setter Property="BorderBrush" Value="#1F2937"/>
+      <Setter Property="BorderThickness" Value="0,1,0,0"/>
+      <Setter Property="Padding" Value="0,14,0,0"/>
+      <Setter Property="Margin" Value="0,0,0,6"/>
+    </Style>
+    <Style Selector="Button.nav-item">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#D1D5DB"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Margin" Value="0,0,0,4"/>
+      <Setter Property="Padding" Value="12,9"/>
+      <Setter Property="MinHeight" Value="38"/>
+    </Style>
+    <Style Selector="Button.nav-item:pointerover">
+      <Setter Property="Background" Value="#1A2332"/>
+      <Setter Property="Foreground" Value="#F3F4F6"/>
+    </Style>
+    <Style Selector="Button.nav-item.selected">
+      <Setter Property="Background" Value="#1F2937"/>
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="BorderBrush" Value="#3B82F6"/>
+      <Setter Property="BorderThickness" Value="3,0,0,0"/>
+    </Style>
+    <Style Selector="Button.nav-item.selected:pointerover">
+      <Setter Property="Background" Value="#243041"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+    </Style>
+    <Style Selector="Border.nav-section-children">
+      <Setter Property="Margin" Value="0,6,0,0"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+    <Style Selector="TextBlock.nav-section-title">
+      <Setter Property="Foreground" Value="#94A3B8"/>
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="TextBlock.nav-icon">
+      <Setter Property="FontFamily" Value="{StaticResource EmojiFont}"/>
+    </Style>
+    <Style Selector="TextBlock.nav-item-icon">
+      <Setter Property="Foreground" Value="#9CA3AF"/>
+    </Style>
+    <Style Selector="TextBlock.nav-item-label">
+      <Setter Property="Foreground" Value="#D1D5DB"/>
+    </Style>
+    <Style Selector="Button.nav-item:pointerover TextBlock.nav-item-icon">
+      <Setter Property="Foreground" Value="#BFDBFE"/>
+    </Style>
+    <Style Selector="Button.nav-item:pointerover TextBlock.nav-item-label">
+      <Setter Property="Foreground" Value="#F3F4F6"/>
+    </Style>
+    <Style Selector="Button.nav-item.selected TextBlock.nav-item-icon">
+      <Setter Property="Foreground" Value="#93C5FD"/>
+    </Style>
+    <Style Selector="Button.nav-item.selected TextBlock.nav-item-label">
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.nav-section-toggle">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#94A3B8"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="0"/>
+      <Setter Property="Padding" Value="0,0,0,0"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="MinHeight" Value="24"/>
+    </Style>
+    <Style Selector="Button.nav-section-toggle:pointerover">
+      <Setter Property="Foreground" Value="#CBD5E1"/>
+    </Style>
+    <Style Selector="Button.account-trigger">
+      <Setter Property="Background" Value="#111827"/>
+      <Setter Property="BorderBrush" Value="#374151"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="999"/>
+      <Setter Property="Padding" Value="10,8"/>
+    </Style>
+    <Style Selector="Button.account-trigger:pointerover">
+      <Setter Property="Background" Value="#172033"/>
+      <Setter Property="BorderBrush" Value="#4B5563"/>
+    </Style>
+    <Style Selector="Border.account-avatar">
+      <Setter Property="Background" Value="#2563EB"/>
+      <Setter Property="CornerRadius" Value="999"/>
+      <Setter Property="Width" Value="32"/>
+      <Setter Property="Height" Value="32"/>
+    </Style>
+    <Style Selector="Border.account-menu">
+      <Setter Property="Background" Value="#111827"/>
+      <Setter Property="BorderBrush" Value="#374151"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="14"/>
+      <Setter Property="Padding" Value="14"/>
+    </Style>
+    <Style Selector="TextBlock.account-label">
+      <Setter Property="Foreground" Value="#94A3B8"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Border.account-chip">
+      <Setter Property="Background" Value="#1F2937"/>
+      <Setter Property="BorderBrush" Value="#334155"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="999"/>
+      <Setter Property="Padding" Value="8,4"/>
+    </Style>
+    <Style Selector="Button.account-menu-item">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#E5E7EB"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="10,8"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    </Style>
+    <Style Selector="Button.account-menu-item:pointerover">
+      <Setter Property="Background" Value="#1F2937"/>
+    </Style>
+  </UserControl.Styles>
+  <Grid ColumnDefinitions="260,*" RowDefinitions="Auto,*" Background="#0B1220">
+    <Border Grid.RowSpan="2" Background="#111827" Padding="20,20,16,20">
+      <StackPanel Spacing="16">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Lumine AuthPortal" FontSize="22" FontWeight="Bold" Foreground="#F9FAFB"/>
+          <TextBlock Text="Avalonia Web 管理骨架" Foreground="#9CA3AF"/>
+        </StackPanel>
+
+        <ItemsControl ItemsSource="{Binding VisibleNavigationSections}" HorizontalAlignment="Stretch">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:NavigationSectionViewModel">
+              <Border Classes="nav-section-container">
+                <StackPanel Spacing="6">
+                  <Button Classes="nav-section-toggle"
+                          Command="{Binding DataContext.ToggleSectionCommand, ElementName=Root}"
+                          CommandParameter="{Binding}">
+                    <Grid ColumnDefinitions="*,16" HorizontalAlignment="Stretch">
+                      <TextBlock Grid.Column="0"
+                                 Text="{Binding Title}"
+                                 Classes="nav-section-title"
+                                 VerticalAlignment="Center"/>
+                      <TextBlock Grid.Column="1"
+                               Text="{Binding ExpandGlyph}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"
+                               Foreground="#64748B"
+                               FontSize="12"
+                               FontWeight="SemiBold"/>
+                    </Grid>
+                  </Button>
+
+                  <Border Classes="nav-section-children"
+                          ClipToBounds="True"
+                          MaxHeight="{Binding ChildrenMaxHeight}"
+                          Opacity="{Binding ChildrenOpacity}">
+                    <Border.Transitions>
+                      <Transitions>
+                        <DoubleTransition Property="MaxHeight" Duration="0:0:0.18"/>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.14"/>
+                      </Transitions>
+                    </Border.Transitions>
+                    <ItemsControl ItemsSource="{Binding Items}" HorizontalAlignment="Stretch">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:NavigationItemViewModel">
+                          <Button Command="{Binding DataContext.NavigateCommand, ElementName=Root}"
+                                  CommandParameter="{Binding Key}"
+                                  Classes="nav-item"
+                                  Classes.selected="{Binding IsSelected}"
+                                  IsVisible="{Binding IsVisible}"
+                                  HorizontalAlignment="Stretch"
+                                  HorizontalContentAlignment="Stretch">
+                            <Grid ColumnDefinitions="24,*" HorizontalAlignment="Stretch">
+                              <TextBlock Grid.Column="0"
+                                         Text="{Binding IconGlyph}"
+                                         Classes="nav-icon nav-item-icon"
+                                         VerticalAlignment="Center"
+                                         HorizontalAlignment="Center"
+                                         FontSize="16"/>
+                              <TextBlock Grid.Column="1"
+                                         Text="{Binding Title}"
+                                         Classes="nav-item-label"
+                                         VerticalAlignment="Center"
+                                         TextTrimming="CharacterEllipsis"/>
+                            </Grid>
+                          </Button>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </Border>
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="1" Grid.Column="1" Padding="24" Background="#0B1220">
+      <ContentControl Content="{Binding CurrentPage}"/>
+    </Border>
+
+    <Button Grid.ColumnSpan="2"
+            Grid.RowSpan="2"
+            Background="Transparent"
+            BorderThickness="0"
+            IsVisible="{Binding IsAccountMenuOpen}"
+            Command="{Binding CloseAccountMenuCommand}"/>
+
+    <Border Grid.Column="1" Background="#111827" BorderBrush="#1F2937" BorderThickness="0,0,0,1" Padding="24,16">
+      <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+          <TextBlock Text="{Binding CurrentPageTitle}" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
+          <TextBlock Text="{Binding HasAdminAccess, StringFormat=后台菜单可见：{0}}" VerticalAlignment="Center" Foreground="#9CA3AF"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Spacing="8" HorizontalAlignment="Right">
+          <Button Classes="account-trigger"
+                  Command="{Binding ToggleAccountMenuCommand}"
+                  HorizontalAlignment="Right"
+                  IsVisible="{Binding IsAuthenticated}">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+              <Border Classes="account-avatar" VerticalAlignment="Center">
+                <TextBlock Text="{Binding AccountInitial}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           TextAlignment="Center"
+                           Foreground="#F9FAFB"
+                           FontWeight="Bold"/>
+              </Border>
+              <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center">
+                <TextBlock Text="{Binding AccountDisplayName}" FontWeight="SemiBold" Foreground="#F9FAFB"/>
+                <TextBlock Text="{Binding AccountRolesSummary}" Classes="account-label" MaxWidth="240" TextTrimming="CharacterEllipsis"/>
+              </StackPanel>
+              <TextBlock Grid.Column="2"
+                         Text="▾"
+                         Foreground="#94A3B8"
+                         VerticalAlignment="Center"/>
+            </Grid>
+          </Button>
+
+          <Border Classes="account-menu"
+                  HorizontalAlignment="Right"
+                  Width="280"
+                  IsVisible="{Binding IsAccountMenuOpen}">
+            <StackPanel Spacing="12">
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <Border Classes="account-avatar">
+                  <TextBlock Text="{Binding AccountInitial}"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             TextAlignment="Center"
+                             Foreground="#F9FAFB"
+                             FontWeight="Bold"/>
+                </Border>
+                <StackPanel Spacing="2">
+                  <TextBlock Text="{Binding AccountDisplayName}" FontWeight="Bold" Foreground="#F9FAFB"/>
+                  <TextBlock Text="{Binding AccountStatusText}" Classes="account-label"/>
+                </StackPanel>
+              </StackPanel>
+
+              <Border Background="#1F2937" CornerRadius="10" Padding="10">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="邮箱" Classes="account-label"/>
+                  <TextBlock Text="{Binding AccountEmail}" Foreground="#E5E7EB" TextWrapping="Wrap"/>
+                  <TextBlock Text="{Binding AccountRolesSummary}" Foreground="#E5E7EB" TextWrapping="Wrap"/>
+                </StackPanel>
+              </Border>
+
+              <StackPanel Spacing="6">
+                <TextBlock Text="角色标签" Classes="account-label"/>
+                <ItemsControl ItemsSource="{Binding AccountRoles}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel ItemHeight="28"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border Classes="account-chip" Margin="0,0,8,8">
+                        <TextBlock Text="{Binding .}" Foreground="#E5E7EB" FontSize="12"/>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+
+              <StackPanel Spacing="4">
+                <Button Classes="account-menu-item"
+                        Command="{Binding OpenProfileCenterCommand}"
+                        Content="个人中心"/>
+                <Button Classes="account-menu-item"
+                        Command="{Binding OpenSecuritySettingsCommand}"
+                        Content="安全设置"/>
+              </StackPanel>
+
+              <Button Content="退出登录"
+                      Command="{Binding LogoutCommand}"
+                      Background="#DC2626"
+                      Foreground="#F9FAFB"
+                      BorderBrush="#EF4444"
+                      BorderThickness="1"
+                      CornerRadius="8"
+                      Padding="12,6"
+                      MinHeight="34" />
+            </StackPanel>
+          </Border>
+
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" IsVisible="{Binding IsAnonymous}">
+            <Button Content="去登录"
+                    Command="{Binding NavigateCommand}"
+                    CommandParameter="login"
+                    Background="#2563EB"
+                    Foreground="#F9FAFB"
+                    BorderBrush="#60A5FA"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="12,6"/>
+            <Button Content="去注册"
+                    Command="{Binding NavigateCommand}"
+                    CommandParameter="register"
+                    Background="#374151"
+                    Foreground="#F9FAFB"
+                    BorderBrush="#4B5563"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="12,6"/>
+          </StackPanel>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+  </Grid>
+</UserControl>

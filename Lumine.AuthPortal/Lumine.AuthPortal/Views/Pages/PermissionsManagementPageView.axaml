@@ -1,0 +1,172 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             xmlns:models="using:Lumine.AuthPortal.ViewModels.Pages"
+             x:Class="Lumine.AuthPortal.Views.Pages.PermissionsManagementPageView"
+             x:Name="Root"
+             x:DataType="vm:PermissionsManagementPageViewModel">
+  <Grid>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="20">
+        <Border Background="#111827" CornerRadius="24" Padding="28" BorderBrush="#1F2937" BorderThickness="1">
+          <StackPanel Spacing="18">
+            <StackPanel Spacing="4">
+              <TextBlock Text="4 权限管理" FontSize="30" FontWeight="Bold" Foreground="#F9FAFB"/>
+              <TextBlock Text="权限新增、编辑与删除提示已统一到同一套深色管理界面。" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <ItemsControl ItemsSource="{Binding ReferenceSections}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:PermissionReferenceSection">
+                  <StackPanel Spacing="10" Margin="0,0,0,12">
+                    <TextBlock Text="{Binding Title}" Classes="admin-reference-title"/>
+                    <Border Classes="admin-reference-card">
+                      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <ItemsControl ItemsSource="{Binding Lines}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                              <TextBlock Text="{Binding}" Classes="admin-reference-line" Margin="0,0,0,6"/>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Button Grid.Column="1"
+                                Classes="admin-copy-button"
+                                Content="⧉"
+                                Tag="{Binding CopyText}"
+                                Click="OnCopySectionClick"
+                                VerticalAlignment="Top"/>
+                      </Grid>
+                    </Border>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <Grid ColumnDefinitions="1.2*,*" ColumnSpacing="16">
+          <Border Classes="admin-panel">
+            <StackPanel Spacing="14">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="权限列表" FontSize="20" FontWeight="Bold" Foreground="#F9FAFB"/>
+                  <TextBlock Text="{Binding PermissionCountText}" Foreground="#9CA3AF"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Button Classes="admin-button" Content="刷新列表" Command="{Binding LoadCommand}"/>
+                  <Button Classes="admin-button admin-primary" Content="新增权限" Command="{Binding OpenCreateDialogCommand}"/>
+                  <Button Classes="admin-button" Content="编辑" Command="{Binding OpenEditDialogCommand}"/>
+                </StackPanel>
+              </Grid>
+
+              <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+                <TextBox x:Name="PermissionSearchTextBox" Text="{Binding SearchKeyword}" Watermark="搜索权限名称 / 显示名" KeyDown="PermissionSearchTextBox_OnKeyDown"/>
+                <Button Grid.Column="1" Classes="admin-button" Content="搜索" Command="{Binding SearchCommand}"/>
+                <ComboBox Grid.Column="2" Width="96" ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding SelectedPageSize}" HorizontalContentAlignment="Center"/>
+                <Button Grid.Column="3" Classes="admin-button" Content="上一页" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPreviousPage}"/>
+                <Button Grid.Column="4" Classes="admin-button" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
+              </Grid>
+
+              <Border Classes="admin-status-banner">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                  <TextBlock Text="{Binding StatusMessage}" Foreground="#93C5FD" TextWrapping="Wrap"/>
+                  <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="#93C5FD" VerticalAlignment="Center"/>
+                </Grid>
+              </Border>
+
+              <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Background="Transparent" BorderThickness="0">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <Border Margin="0,0,0,10" Padding="14" Background="#1F2937" BorderBrush="#374151" BorderThickness="1" CornerRadius="14">
+                      <StackPanel Spacing="6">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                          <TextBlock Text="{Binding PermissionName}" FontSize="15" FontWeight="SemiBold" Foreground="#F9FAFB"/>
+                          <TextBlock Grid.Column="1" Text="{Binding Id}" Foreground="#9CA3AF" FontSize="12"/>
+                        </Grid>
+                        <TextBlock Text="{Binding DisplayName}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+
+              <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}">
+                <StackPanel Spacing="10">
+                  <TextBlock Text="删除确认" Foreground="#FCA5A5" FontWeight="Bold"/>
+                  <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="#F8FAFC" TextWrapping="Wrap"/>
+                  <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button Classes="admin-button admin-danger-solid" Content="确认删除" Command="{Binding ConfirmDeleteCommand}"/>
+                    <Button Classes="admin-button" Content="取消" Command="{Binding CancelDeleteCommand}"/>
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </Border>
+
+          <StackPanel Grid.Column="1" Spacing="16">
+            <Border Classes="info-card">
+              <StackPanel Spacing="8">
+                <TextBlock Text="当前选择" FontSize="20" FontWeight="Bold" Foreground="#F9FAFB"/>
+                <TextBlock Text="{Binding EditorTitle}" Foreground="#D1D5DB"/>
+                <TextBlock Text="用于维护权限名称与显示名称，便于后续映射菜单、页面和 API。" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="info-card">
+              <StackPanel Spacing="8">
+                <TextBlock Text="当前状态" FontSize="20" FontWeight="Bold" Foreground="#F9FAFB"/>
+                <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding PermissionCountText}" Foreground="#9CA3AF"/>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="info-card">
+              <StackPanel Spacing="8">
+                <TextBlock Text="命名建议" FontSize="20" FontWeight="Bold" Foreground="#F9FAFB"/>
+                <TextBlock Text="推荐格式：资源.动作，例如 `user.read`、`role.manage`、`audit.view`。" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </Grid>
+      </StackPanel>
+    </ScrollViewer>
+
+    <Border Classes="dialog-backdrop" IsVisible="{Binding IsPermissionDialogOpen}">
+      <Grid>
+        <Button Background="Transparent" BorderThickness="0" Command="{Binding ClosePermissionDialogCommand}"/>
+        <Border Classes="dialog-card" Width="560" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+              <StackPanel Spacing="4">
+                <TextBlock Text="{Binding PermissionDialogTitle}" FontSize="22" FontWeight="Bold" Foreground="#F9FAFB"/>
+                <TextBlock Text="用于维护权限名称与显示名称。" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+              </StackPanel>
+              <Button Grid.Column="1" Classes="admin-button" Content="关闭" Command="{Binding ClosePermissionDialogCommand}"/>
+            </Grid>
+
+            <StackPanel Grid.Row="1" Spacing="6">
+              <TextBlock Text="权限编码" Foreground="#F9FAFB" FontWeight="SemiBold"/>
+              <TextBox Text="{Binding PermissionName}" Watermark="例如：user.read"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="2" Spacing="6">
+              <TextBlock Text="显示名称" Foreground="#F9FAFB" FontWeight="SemiBold"/>
+              <TextBox Text="{Binding DisplayName}" Watermark="例如：查看用户"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="3" Spacing="10">
+              <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+              <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <Button Classes="admin-button" Content="取消" Command="{Binding ClosePermissionDialogCommand}"/>
+                <Button Classes="admin-button admin-danger" Content="删除所选" Command="{Binding DeleteCommand}"/>
+                <Button Classes="admin-button admin-primary" Content="保存权限" Command="{Binding SaveCommand}"/>
+              </StackPanel>
+            </StackPanel>
+          </Grid>
+        </Border>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

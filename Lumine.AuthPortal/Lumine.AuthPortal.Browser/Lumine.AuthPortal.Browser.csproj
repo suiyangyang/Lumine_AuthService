@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+	<PropertyGroup>
+		<TargetFramework>net10.0-browser</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantGlobalization>false</InvariantGlobalization>
+		<BlazorIcuDataFileName>icudt_CJK.dat</BlazorIcuDataFileName>
+		<PublishTrimmed>false</PublishTrimmed>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<WasmBuildNative>true</WasmBuildNative>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia.Browser" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Lumine.AuthPortal\Lumine.AuthPortal.csproj" />
+	</ItemGroup>
+
+	<Target Name="CleanPublishOutput" BeforeTargets="Publish">
+		<RemoveDir Directories="$(PublishDir)" Condition="'$(PublishDir)' != '' and Exists('$(PublishDir)')" />
+	</Target>
+
+	<Target Name="StageBrowserPublishOutput" AfterTargets="Publish" Condition="'$(PublishDir)' != ''">
+		<ItemGroup>
+			<BrowserProjectStaticAssets Include="wwwroot\**\*.*" />
+			<BrowserBuildFrameworkAssets Include="$(OutputPath)wwwroot\_framework\**\*.*"
+										Condition="Exists('$(OutputPath)wwwroot\_framework')" />
+			<BrowserBuildContentAssets Include="$(OutputPath)wwwroot\_content\**\*.*"
+									  Condition="Exists('$(OutputPath)wwwroot\_content')" />
+		</ItemGroup>
+
+		<MakeDir Directories="$(PublishDir)" />
+
+		<Copy SourceFiles="@(BrowserProjectStaticAssets)"
+			  DestinationFiles="@(BrowserProjectStaticAssets->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')"
+			  SkipUnchangedFiles="true" />
+
+		<Copy SourceFiles="@(BrowserBuildFrameworkAssets)"
+			  DestinationFiles="@(BrowserBuildFrameworkAssets->'$(PublishDir)_framework\%(RecursiveDir)%(Filename)%(Extension)')"
+			  SkipUnchangedFiles="true"
+			  Condition="'@(BrowserBuildFrameworkAssets)' != ''" />
+
+		<Copy SourceFiles="@(BrowserBuildContentAssets)"
+			  DestinationFiles="@(BrowserBuildContentAssets->'$(PublishDir)_content\%(RecursiveDir)%(Filename)%(Extension)')"
+			  SkipUnchangedFiles="true"
+			  Condition="'@(BrowserBuildContentAssets)' != ''" />
+	</Target>
+
+	<Target Name="CopyPackageStaticAssetsToOutput" AfterTargets="Build">
+		<ItemGroup>
+			<AvaloniaPackageStaticAssets Include="$(NuGetPackageRoot)avalonia.browser\*\staticwebassets\*.*"
+								 Condition="Exists('$(NuGetPackageRoot)avalonia.browser')" />
+			<HotReloadPackageStaticAssets Include="$(NuGetPackageRoot)microsoft.dotnet.hotreload.webassembly.browser\*\staticwebassets\*.*"
+								  Condition="Exists('$(NuGetPackageRoot)microsoft.dotnet.hotreload.webassembly.browser')" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(AvaloniaPackageStaticAssets)"
+			  DestinationFolder="$(OutputPath)wwwroot\_framework"
+			  SkipUnchangedFiles="true"
+			  Condition="'@(AvaloniaPackageStaticAssets)' != ''" />
+
+		<Copy SourceFiles="@(HotReloadPackageStaticAssets)"
+			  DestinationFolder="$(OutputPath)wwwroot\_content\Microsoft.DotNet.HotReload.WebAssembly.Browser"
+			  SkipUnchangedFiles="true"
+			  Condition="'@(HotReloadPackageStaticAssets)' != ''" />
+	</Target>
+</Project>

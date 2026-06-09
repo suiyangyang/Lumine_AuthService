@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             x:Class="Lumine.AuthPortal.Views.Pages.DashboardPageView"
+             x:DataType="vm:DashboardPageViewModel">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <StackPanel Spacing="16">
+      <Border Background="#111827" CornerRadius="18" Padding="20">
+        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="10" ColumnSpacing="16">
+          <StackPanel Spacing="10">
+            <TextBlock Text="系统总体信息" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
+            <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding LastUpdatedText}" Foreground="#9CA3AF"/>
+          </StackPanel>
+
+          <StackPanel Grid.Column="1" Spacing="10" HorizontalAlignment="Right">
+            <TextBox Width="320" Text="{Binding BackendBaseUrl}" Watermark="http://localhost:5115"/>
+            <Button Content="刷新仪表盘" Command="{Binding RefreshCommand}" HorizontalAlignment="Right" IsEnabled="{Binding CanRefresh}"/>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <ItemsControl ItemsSource="{Binding SummaryCards}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <UniformGrid Columns="4"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:DashboardStatCardItemViewModel">
+            <Border Background="#1F2937" BorderBrush="{Binding AccentBrush}" BorderThickness="1.5" CornerRadius="14" Margin="0,0,12,0" Padding="16">
+              <StackPanel Spacing="8">
+                <TextBlock Text="{Binding Title}" Foreground="#9CA3AF"/>
+                <TextBlock Text="{Binding ValueText}" FontSize="28" FontWeight="Bold" Foreground="#F9FAFB"/>
+                <TextBlock Text="{Binding Description}" Foreground="#CBD5E1" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+        <Border Background="#111827" CornerRadius="16" Padding="20">
+          <StackPanel Spacing="14">
+            <TextBlock Text="登录趋势" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+            <TextBlock Text="{Binding LoginTrendHint}" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+            <TextBlock Text="暂无数据" Foreground="#6B7280" IsVisible="{Binding ShowLoginTrendEmptyState}"/>
+            <ItemsControl ItemsSource="{Binding LoginTrendItems}" IsVisible="{Binding HasLoginTrendData}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <UniformGrid Columns="7"/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:DashboardTrendBarItemViewModel">
+                  <StackPanel Spacing="6" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+                    <TextBlock Text="{Binding ValueText}" HorizontalAlignment="Center" Foreground="#D1D5DB"/>
+                    <Grid Height="120" VerticalAlignment="Bottom">
+                      <Border Width="28" Height="{Binding BarHeight}" Background="{Binding BarBrush}" CornerRadius="10,10,4,4" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                    </Grid>
+                    <TextBlock Text="{Binding Label}" HorizontalAlignment="Center" Foreground="#9CA3AF"/>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1" Background="#111827" CornerRadius="16" Padding="20">
+          <StackPanel Spacing="14">
+            <TextBlock Text="Token 签发趋势" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+            <TextBlock Text="{Binding TokenTrendHint}" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+            <TextBlock Text="暂无数据" Foreground="#6B7280" IsVisible="{Binding ShowTokenTrendEmptyState}"/>
+            <ItemsControl ItemsSource="{Binding TokenTrendItems}" IsVisible="{Binding HasTokenTrendData}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <UniformGrid Columns="7"/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:DashboardTrendBarItemViewModel">
+                  <StackPanel Spacing="6" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+                    <TextBlock Text="{Binding ValueText}" HorizontalAlignment="Center" Foreground="#D1D5DB"/>
+                    <Grid Height="120" VerticalAlignment="Bottom">
+                      <Border Width="28" Height="{Binding BarHeight}" Background="{Binding BarBrush}" CornerRadius="10,10,4,4" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                    </Grid>
+                    <TextBlock Text="{Binding Label}" HorizontalAlignment="Center" Foreground="#9CA3AF"/>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="16">
+        <Border Background="#111827" CornerRadius="16" Padding="20">
+          <StackPanel Spacing="14">
+            <TextBlock Text="最近登录用户" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+            <TextBlock Text="{Binding RecentLoginUsersHint}" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+            <TextBlock Text="暂无最近登录用户" Foreground="#6B7280" IsVisible="{Binding ShowRecentLoginUsersEmptyState}"/>
+            <ItemsControl ItemsSource="{Binding RecentLoginUsers}" IsVisible="{Binding HasRecentLoginUsers}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:RecentLoginUserItemViewModel">
+                  <Border Background="#1F2937" CornerRadius="12" Padding="14" Margin="0,0,0,10">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                      <Border Width="42" Height="42" CornerRadius="21" Background="#374151" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding AvatarText}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#F9FAFB" FontWeight="Bold"/>
+                      </Border>
+                      <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="{Binding UserName}" Foreground="#F9FAFB" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Email}" Foreground="#9CA3AF"/>
+                        <TextBlock Text="{Binding ClientName}" Foreground="#CBD5E1"/>
+                      </StackPanel>
+                      <TextBlock Grid.Column="2" Text="{Binding LoginTimeText}" Foreground="#9CA3AF" VerticalAlignment="Top"/>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1" Background="#111827" CornerRadius="16" Padding="20">
+          <StackPanel Spacing="10">
+            <TextBlock Text="OIDC Discovery" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+            <TextBlock Text="{Binding DiscoverySummary}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+          </StackPanel>
+        </Border>
+      </Grid>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

@@ -1,0 +1,45 @@
+# Lumine.AuthPortal
+
+`Lumine.AuthPortal` 是 `Lumine.AuthServer` 的 `Avalonia Web` 前端骨架，当前覆盖：
+
+- 登录页框架
+- 注册页框架
+- 授权确认页框架
+- 后台布局、导航与权限守卫
+- 用户/角色/权限/客户端基础管理页
+- 审计日志占位页
+- OIDC 授权码联调页
+- 统一 API 调用层
+- Browser 启动项目
+
+## 项目结构
+
+- `Lumine.AuthPortal/`：共享 UI、ViewModel、服务层
+- `Lumine.AuthPortal.Browser/`：WebAssembly 启动项目
+- `Lumine.AuthPortal.Desktop/`：桌面调试入口
+
+## 默认后端地址
+
+默认指向 `http://localhost:5115/`，可在首页“仪表盘”中修改。
+
+## 运行方式
+
+先启动后端，再启动 Browser：
+
+```powershell
+dotnet run --project "e:\Work\Code\LumineSolution\Lumine_AuthService\Lumine.AuthPortal\Lumine.AuthPortal.Browser\Lumine.AuthPortal.Browser.csproj"
+```
+
+如仅调试共享 UI，也可以运行桌面入口：
+
+```powershell
+dotnet run --project "e:\Work\Code\LumineSolution\Lumine_AuthService\Lumine.AuthPortal\Lumine.AuthPortal.Desktop\Lumine.AuthPortal.Desktop.csproj"
+```
+
+## 当前状态
+
+- 可访问基础页面与后台壳布局
+- 可调用后端 `discovery`、`login`、`register`、`userinfo` 与管理摘要 API
+- 可通过 Web 端执行基础的用户、角色、权限、客户端增删改
+- 审计日志页当前为占位骨架
+- 可在 `OIDC Discovery` 页面执行 `authorize -> token -> userinfo` 调试链路

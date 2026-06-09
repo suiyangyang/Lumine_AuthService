@@ -1,0 +1,136 @@
+using System;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Lumine.AuthPortal.Models;
+using Lumine.AuthPortal.Services;
+
+namespace Lumine.AuthPortal.ViewModels.Pages;
+
+public partial class LoginPageViewModel : ViewModelBase
+{
+    private readonly PortalApiClient _apiClient;
+    private readonly PortalSession _session;
+    private readonly Action _onLoginSucceeded;
+
+    [ObservableProperty]
+    private string _userName = "admin";
+
+    [ObservableProperty]
+    private string _password = string.Empty;
+
+    [ObservableProperty]
+    private string _scope = "openid profile email roles permissions";
+
+    [ObservableProperty]
+    private string _clientId = "lumine-demo-client";
+
+    [ObservableProperty]
+    private string _nonce = "portal-login-nonce";
+
+    [ObservableProperty]
+    private bool _isBusy;
+
+    [ObservableProperty]
+    private string _statusMessage = "请输入账号密码后登录。";
+
+    public LoginPageViewModel(PortalApiClient apiClient, PortalSession session, Action onLoginSucceeded)
+    {
+        _apiClient = apiClient;
+        _session = session;
+        _onLoginSucceeded = onLoginSucceeded;
+    }
+
+    [RelayCommand]
+    private async Task LoginAsync()
+    {
+        IsBusy = true;
+        StatusMessage = "正在调用登录接口...";
+
+        var result = await _apiClient.LoginAsync(new LoginRequestDto(UserName, Password, Scope, ClientId, Nonce));
+        if (result.IsSuccess && result.Data != null)
+        {
+            _session.ApplyLogin(result.Data);
+            StatusMessage = $"登录成功，欢迎 {result.Data.User?.UserName ?? UserName}。";
+            _onLoginSucceeded();
+        }
+        else
+        {
+            StatusMessage = result.ErrorMessage ?? "登录失败。";
+        }
+
+        IsBusy = false;
+    }
+}
+
+public partial class RegisterPageViewModel : ViewModelBase
+{
+    private readonly PortalApiClient _apiClient;
+
+    [ObservableProperty]
+    private string _userName = string.Empty;
+
+    [ObservableProperty]
+    private string _email = string.Empty;
+
+    [ObservableProperty]
+    private string _password = string.Empty;
+
+    [ObservableProperty]
+    private string _nickName = string.Empty;
+
+    [ObservableProperty]
+    private string _phoneNumber = string.Empty;
+
+    [ObservableProperty]
+    private string _statusMessage = "填写信息后即可创建账号。";
+
+    [ObservableProperty]
+    private bool _isBusy;
+
+    public RegisterPageViewModel(PortalApiClient apiClient)
+    {
+        _apiClient = apiClient;
+    }
+
+    [RelayCommand]
+    private async Task RegisterAsync()
+    {
+        IsBusy = true;
+        StatusMessage = "正在调用注册接口...";
+
+        var result = await _apiClient.RegisterAsync(new RegisterRequestDto(UserName, Email, Password, NickName, PhoneNumber));
+        StatusMessage = result.IsSuccess && result.Data != null
+            ? $"注册成功：{result.Data.UserName}"
+            : result.ErrorMessage ?? "注册失败。";
+
+        IsBusy = false;
+    }
+}
+
+public partial class ConsentPageViewModel : ViewModelBase
+{
+    [ObservableProperty]
+    private string _clientName = "Lumine Demo Client";
+
+    [ObservableProperty]
+    private string _requestedScopes = "openid profile email roles permissions";
+
+    [ObservableProperty]
+    private string _state = "state-001";
+
+    [ObservableProperty]
+    private string _decisionMessage = "可作为授权确认页骨架，后续接入 `/connect/authorize` 的 `consent=approve|deny`。";
+
+    [RelayCommand]
+    private void Approve()
+    {
+        DecisionMessage = "已模拟同意授权，下一步可接入真实授权码回调流程。";
+    }
+
+    [RelayCommand]
+    private void Deny()
+    {
+        DecisionMessage = "已模拟拒绝授权，后续可带 `error=access_denied` 回跳。";
+    }
+}

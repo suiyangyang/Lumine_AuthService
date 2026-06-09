@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             x:Class="Lumine.AuthPortal.Views.Pages.OidcPlaygroundPageView"
+             x:DataType="vm:OidcPlaygroundPageViewModel">
+  <Grid ColumnDefinitions="1.1*,*" ColumnSpacing="16">
+    <Border Background="#111827" CornerRadius="16" Padding="20">
+      <StackPanel Spacing="10">
+        <TextBlock Text="OIDC Discovery" FontSize="22" FontWeight="Bold" Foreground="#F9FAFB"/>
+        <TextBox Text="{Binding ClientId}" Watermark="client_id"/>
+        <TextBox Text="{Binding RedirectUri}" Watermark="redirect_uri"/>
+        <TextBox Text="{Binding Scope}" Watermark="scope"/>
+        <TextBox Text="{Binding State}" Watermark="state"/>
+        <TextBox Text="{Binding Nonce}" Watermark="nonce"/>
+        <TextBox Text="{Binding CodeVerifier}" Watermark="code_verifier" AcceptsReturn="True" Height="60"/>
+        <TextBox Text="{Binding CodeChallenge}" Watermark="code_challenge" AcceptsReturn="True" Height="60"/>
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <Button Content="重置 PKCE" Command="{Binding RegeneratePkceCommand}"/>
+          <Button Content="1. 获取授权码" Command="{Binding RequestAuthorizeCommand}"/>
+          <Button Content="2. 换 Token" Command="{Binding ExchangeTokenCommand}"/>
+          <Button Content="3. 调 UserInfo" Command="{Binding LoadUserInfoCommand}"/>
+        </StackPanel>
+        <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+      </StackPanel>
+    </Border>
+
+    <StackPanel Grid.Column="1" Spacing="16">
+      <Border Background="#111827" CornerRadius="16" Padding="20">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Authorize 结果" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+          <TextBox Text="{Binding AuthorizeCode}" Watermark="authorization code" AcceptsReturn="True" Height="60"/>
+          <TextBox Text="{Binding AuthorizeRedirectUrl}" Watermark="redirect url" AcceptsReturn="True" Height="80"/>
+        </StackPanel>
+      </Border>
+      <Border Background="#111827" CornerRadius="16" Padding="20">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Token 结果" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+          <TextBox Text="{Binding TokenAccessToken}" Watermark="access token" AcceptsReturn="True" Height="90"/>
+          <TextBox Text="{Binding TokenIdToken}" Watermark="id token" AcceptsReturn="True" Height="90"/>
+        </StackPanel>
+      </Border>
+      <Border Background="#111827" CornerRadius="16" Padding="20">
+        <StackPanel Spacing="8">
+          <TextBlock Text="UserInfo" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+          <TextBox Text="{Binding UserInfoSummary}" AcceptsReturn="True" Height="140"/>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </Grid>
+</UserControl>

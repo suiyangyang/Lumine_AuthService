@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             x:Class="Lumine.AuthPortal.Views.Pages.AuditLogsPageView"
+             x:DataType="vm:AuditLogsPageViewModel">
+  <Border Background="#111827" CornerRadius="16" Padding="24" MaxWidth="760">
+    <StackPanel Spacing="12">
+      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
+      <TextBlock Text="{Binding Description}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+    </StackPanel>
+  </Border>
+</UserControl>

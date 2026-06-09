@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             x:Class="Lumine.AuthPortal.Views.Pages.LoginPageView"
+             x:DataType="vm:LoginPageViewModel">
+  <Border Background="#111827" CornerRadius="16" Padding="24" MaxWidth="540">
+    <StackPanel Spacing="14">
+      <TextBlock Text="登录" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
+      <TextBox Text="{Binding UserName}" Watermark="用户名"/>
+      <TextBox Text="{Binding Password}" PasswordChar="*" Watermark="密码"/>
+      <TextBox Text="{Binding Scope}" Watermark="openid profile email roles permissions"/>
+      <TextBox Text="{Binding ClientId}" Watermark="client_id"/>
+      <TextBox Text="{Binding Nonce}" Watermark="nonce"/>
+      <Button Content="登录并进入后台"
+              Command="{Binding LoginCommand}"
+              Background="#2563EB"
+              Foreground="#F9FAFB"
+              BorderBrush="#60A5FA"
+              BorderThickness="1"
+              CornerRadius="10"
+              Padding="16,10"
+              FontWeight="SemiBold"/>
+      <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+    </StackPanel>
+  </Border>
+</UserControl>

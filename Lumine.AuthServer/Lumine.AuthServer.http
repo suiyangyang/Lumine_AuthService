@@ -1,0 +1,145 @@
+@Lumine.AuthServer_HostAddress = http://localhost:5115
+@token = replace-with-jwt-token
+@userId = replace-with-user-id
+@roleId = replace-with-role-id
+@permissionId = replace-with-permission-id
+@clientRecordId = replace-with-client-record-id
+@redirectUri = http://localhost:5173/signin-oidc
+@codeVerifier = dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk
+@codeChallenge = E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM
+@authorizationCode = replace-with-authorization-code
+@adminPassword = replace-with-admin-password
+
+### OIDC Discovery
+GET {{Lumine.AuthServer_HostAddress}}/.well-known/openid-configuration
+Accept: application/json
+
+### JWKS
+GET {{Lumine.AuthServer_HostAddress}}/jwks.json
+Accept: application/json
+
+### 登录
+POST {{Lumine.AuthServer_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+	"userName": "admin",
+	"password": "{{adminPassword}}",
+	"scope": "openid profile email roles permissions",
+	"clientId": "lumine-demo-client",
+	"nonce": "sample-nonce-001"
+}
+
+### 注册
+POST {{Lumine.AuthServer_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+	"userName": "oidc-user",
+	"email": "oidc-user@example.com",
+	"password": "{{adminPassword}}",
+	"nickName": "OIDC 用户",
+	"phoneNumber": "13800000001"
+}
+
+### 查询客户端列表
+GET {{Lumine.AuthServer_HostAddress}}/api/clients?pageIndex=1&pageSize=20
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 新增客户端
+POST {{Lumine.AuthServer_HostAddress}}/api/clients
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"clientId": "lumine-web-client",
+	"clientName": "Lumine Web Client",
+	"clientType": "public",
+	"allowedScopes": ["openid", "profile", "email", "roles", "permissions"],
+	"redirectUris": ["http://localhost:5173/signin-oidc"],
+	"requirePkce": true,
+	"isActive": true,
+	"description": "Web 联调客户端"
+}
+
+### 发起授权请求（首次返回确认信息）
+GET {{Lumine.AuthServer_HostAddress}}/connect/authorize?response_type=code&client_id=lumine-demo-client&redirect_uri={{redirectUri}}&scope=openid%20profile%20email%20roles%20permissions&state=state-001&nonce=nonce-001&code_challenge={{codeChallenge}}&code_challenge_method=S256
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 确认授权并签发授权码
+GET {{Lumine.AuthServer_HostAddress}}/connect/authorize?response_type=code&client_id=lumine-demo-client&redirect_uri={{redirectUri}}&scope=openid%20profile%20email%20roles%20permissions&state=state-001&nonce=nonce-001&code_challenge={{codeChallenge}}&code_challenge_method=S256&consent=approve
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 用授权码换 token
+POST {{Lumine.AuthServer_HostAddress}}/connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&client_id=lumine-demo-client&code={{authorizationCode}}&redirect_uri={{redirectUri}}&code_verifier={{codeVerifier}}
+
+### 获取 OIDC UserInfo
+GET {{Lumine.AuthServer_HostAddress}}/connect/userinfo
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 查询用户列表
+GET {{Lumine.AuthServer_HostAddress}}/api/users?pageIndex=1&pageSize=20
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### 新增权限
+POST {{Lumine.AuthServer_HostAddress}}/api/permissions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"permissionName": "users.manage",
+	"displayName": "用户管理"
+}
+
+### 新增角色
+POST {{Lumine.AuthServer_HostAddress}}/api/roles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"name": "Admin",
+	"permissionIds": []
+}
+
+### 新增用户
+POST {{Lumine.AuthServer_HostAddress}}/api/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"userName": "new-admin",
+	"email": "new-admin@example.com",
+	"password": "{{adminPassword}}",
+	"nickName": "新管理员",
+	"phoneNumber": "13800000000",
+	"isActive": true,
+	"roleIds": []
+}
+
+### 替换用户角色
+PUT {{Lumine.AuthServer_HostAddress}}/api/users/{{userId}}/roles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"roleIds": ["{{roleId}}"]
+}
+
+### 替换角色权限
+PUT {{Lumine.AuthServer_HostAddress}}/api/roles/{{roleId}}/permissions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+	"permissionIds": ["{{permissionId}}"]
+}
