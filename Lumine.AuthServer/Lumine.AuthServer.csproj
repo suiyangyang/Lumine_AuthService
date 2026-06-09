@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileRunEnvironmentFiles>$(MSBuildProjectDirectory)\..\.env</DockerfileRunEnvironmentFiles>
     <AuthPortalBrowserProjectDir>$(MSBuildProjectDirectory)\..\Lumine.AuthPortal\Lumine.AuthPortal.Browser</AuthPortalBrowserProjectDir>
     <AuthPortalBrowserProjectPath>$(AuthPortalBrowserProjectDir)\Lumine.AuthPortal.Browser.csproj</AuthPortalBrowserProjectPath>
     <AuthPortalBrowserBuildWwwroot>$(AuthPortalBrowserProjectDir)\bin\$(Configuration)\net10.0-browser\wwwroot</AuthPortalBrowserBuildWwwroot>
