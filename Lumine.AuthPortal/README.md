@@ -41,6 +41,7 @@ dotnet run --project "e:\Work\Code\LumineSolution\Lumine_AuthService\Lumine.Auth
 - 默认启动时仅展示登录/注册入口，不显示后台导航壳
 - 注册成功后会自动回到登录页，并回填刚注册的用户名
 - 浏览器端和桌面端都会尝试恢复最近一次有效登录会话
+- 退出登录会调用后端接口并记录登出审计日志
 - 可调用后端 `discovery`、`login`、`register`、`userinfo`、授权确认与后台管理 API
 - 可通过 Web 端执行用户、角色、权限、用户组、客户端、Token、菜单、审计日志等后台操作或查询
 - 可在 `OIDC Discovery` 页面执行 `authorize -> token -> userinfo` 调试链路

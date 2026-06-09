@@ -284,9 +284,14 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void Logout()
+    private async Task LogoutAsync()
     {
         IsAccountMenuOpen = false;
+        if (!string.IsNullOrWhiteSpace(_session.AccessToken))
+        {
+            await _apiClient.LogoutAsync(_session.AccessToken);
+        }
+
         _session.Clear();
         Navigate("login");
     }

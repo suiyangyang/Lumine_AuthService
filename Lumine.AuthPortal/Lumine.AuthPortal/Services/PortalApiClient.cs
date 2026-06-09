@@ -46,6 +46,11 @@ public sealed class PortalApiClient
         return SendAsync<RegisterResponseDto>(HttpMethod.Post, "/api/auth/register", request, cancellationToken: cancellationToken);
     }
 
+    public Task<ApiResult<object>> LogoutAsync(string accessToken, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<object>(HttpMethod.Post, "/api/auth/logout", bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
     public Task<ApiResult<UserInfoDto>> GetUserInfoAsync(string accessToken, CancellationToken cancellationToken = default)
     {
         return SendAsync<UserInfoDto>(HttpMethod.Get, "/connect/userinfo", bearerToken: accessToken, cancellationToken: cancellationToken);
