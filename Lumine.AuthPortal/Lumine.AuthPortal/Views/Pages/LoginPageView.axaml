@@ -10,30 +10,55 @@
       <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
     <Style Selector="TextBox.login-input">
-      <Setter Property="MinHeight" Value="40"/>
+      <Setter Property="MinHeight" Value="44"/>
       <Setter Property="Background" Value="#0F172A"/>
       <Setter Property="Foreground" Value="#F8FAFC"/>
       <Setter Property="BorderBrush" Value="#334155"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="12,10"/>
+      <Setter Property="CaretBrush" Value="#F8FAFC"/>
+      <Setter Property="SelectionBrush" Value="#2563EB"/>
+    </Style>
+    <Style Selector="TextBox.login-input /template/ Border#border">
+      <Setter Property="Background" Value="#0F172A"/>
+      <Setter Property="BorderBrush" Value="#334155"/>
+    </Style>
+    <Style Selector="TextBox.login-input /template/ ScrollViewer#PART_ScrollViewer">
+      <Setter Property="Background" Value="#0F172A"/>
+    </Style>
+    <Style Selector="TextBox.login-input:pointerover">
+      <Setter Property="BorderBrush" Value="#475569"/>
+    </Style>
+    <Style Selector="TextBox.login-input:pointerover /template/ Border#border">
+      <Setter Property="BorderBrush" Value="#475569"/>
     </Style>
     <Style Selector="TextBox.login-input:focus">
+      <Setter Property="Background" Value="#111C31"/>
+      <Setter Property="Foreground" Value="#F8FAFC"/>
       <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="CaretBrush" Value="#F8FAFC"/>
+    </Style>
+    <Style Selector="TextBox.login-input:focus /template/ Border#border">
+      <Setter Property="Background" Value="#111C31"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+    </Style>
+    <Style Selector="TextBox.login-input:focus /template/ ScrollViewer#PART_ScrollViewer">
+      <Setter Property="Background" Value="#111C31"/>
     </Style>
   </UserControl.Styles>
 
   <Grid RowDefinitions="*,Auto,*" ColumnDefinitions="*,Auto,*" Background="#0B1220">
     <Border Grid.Row="1"
             Grid.Column="1"
-            MinWidth="340"
-            MaxWidth="980"
+            MinWidth="360"
+            MaxWidth="1080"
             Background="#111827"
             BorderBrush="#1F2937"
             BorderThickness="1"
             CornerRadius="8"
             ClipToBounds="True">
-      <Grid ColumnDefinitions="1.05*,1.1*" MinHeight="560">
+      <Grid ColumnDefinitions="1.02*,1.08*" MinHeight="600">
         <Border Background="#0F172A" Padding="34">
           <Grid RowDefinitions="Auto,*,Auto">
             <StackPanel Spacing="12">
@@ -45,26 +70,34 @@
                          Foreground="#93C5FD"
                          FontSize="16"
                          FontWeight="SemiBold"/>
-              <TextBlock Text="用于账号、角色、权限、OAuth 客户端和审计数据的集中管理。"
+              <TextBlock Text="登录后台后，可分别进入用户、角色、权限、OAuth 客户端和授权确认等管理页面。"
                          Foreground="#94A3B8"
                          TextWrapping="Wrap"
                          LineHeight="22"/>
             </StackPanel>
 
-            <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="14">
+            <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="12">
               <Border Background="#1E293B" CornerRadius="8" Padding="16">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="OIDC / OAuth 2.1" Foreground="#F8FAFC" FontWeight="SemiBold"/>
-                  <TextBlock Text="使用后台账号登录后进入管理控制台。"
+                  <TextBlock Text="后台登录" Foreground="#F8FAFC" FontWeight="SemiBold"/>
+                  <TextBlock Text="使用后台账号完成认证，进入控制台首页。"
                              Foreground="#94A3B8"
                              TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
               <Border Background="#172554" CornerRadius="8" Padding="16">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Admin Console" Foreground="#DBEAFE" FontWeight="SemiBold"/>
-                  <TextBlock Text="登录成功后会根据当前用户权限展示可访问菜单。"
+                  <TextBlock Text="OIDC Discovery" Foreground="#DBEAFE" FontWeight="SemiBold"/>
+                  <TextBlock Text="登录后可进入独立的 OIDC 页面查看 discovery、token 与 userinfo 调试能力。"
                              Foreground="#BFDBFE"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+              </Border>
+              <Border Background="#10243D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="授权与客户端" Foreground="#E0F2FE" FontWeight="SemiBold"/>
+                  <TextBlock Text="OAuth 客户端、授权确认等元素在对应页面单独维护，不与登录表单混排。"
+                             Foreground="#BAE6FD"
                              TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
@@ -77,14 +110,14 @@
           </Grid>
         </Border>
 
-        <Border Grid.Column="1" Background="#111827" Padding="40,38">
+        <Border Grid.Column="1" Background="#111827" Padding="40,34">
           <Grid RowDefinitions="Auto,*,Auto">
             <StackPanel Spacing="8">
               <TextBlock Text="登录后台"
                          FontSize="26"
                          FontWeight="Bold"
                          Foreground="#F9FAFB"/>
-              <TextBlock Text="请输入本地调试或服务器环境中的后台账号。"
+              <TextBlock Text="账号认证与授权参数已拆分显示，便于区分后台登录和 OIDC 调试配置。"
                          Foreground="#94A3B8"
                          TextWrapping="Wrap"/>
             </StackPanel>
@@ -92,62 +125,83 @@
             <StackPanel Grid.Row="1"
                         VerticalAlignment="Center"
                         Spacing="16">
-              <StackPanel Spacing="7">
-                <TextBlock Text="用户名" Classes="form-label"/>
-                <TextBox Text="{Binding UserName}"
-                         Classes="login-input"
-                         Watermark="admin"/>
-              </StackPanel>
+              <Border Background="#0F172A"
+                      BorderBrush="#1E293B"
+                      BorderThickness="1"
+                      CornerRadius="10"
+                      Padding="16">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="账号认证" Foreground="#F8FAFC" FontWeight="SemiBold"/>
 
-              <StackPanel Spacing="7">
-                <TextBlock Text="密码" Classes="form-label"/>
-                <TextBox Text="{Binding Password}"
-                         Classes="login-input"
-                         PasswordChar="*"
-                         Watermark="请输入密码"/>
-              </StackPanel>
+                  <StackPanel Spacing="7">
+                    <TextBlock Text="用户名" Classes="form-label"/>
+                    <TextBox Text="{Binding UserName}"
+                             Classes="login-input"
+                             Watermark="admin"
+                             KeyDown="LoginInput_OnKeyDown"/>
+                  </StackPanel>
+
+                  <StackPanel Spacing="7">
+                    <TextBlock Text="密码" Classes="form-label"/>
+                    <TextBox Text="{Binding Password}"
+                             Classes="login-input"
+                             PasswordChar="*"
+                             Watermark="请输入密码"
+                             KeyDown="LoginInput_OnKeyDown"/>
+                  </StackPanel>
+
+                  <Button Content="登录并进入后台"
+                          Command="{Binding LoginCommand}"
+                          Background="#2563EB"
+                          Foreground="#F9FAFB"
+                          BorderBrush="#60A5FA"
+                          BorderThickness="1"
+                          CornerRadius="8"
+                          Padding="16,11"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Center"
+                          FontWeight="SemiBold"/>
+                </StackPanel>
+              </Border>
 
               <Border Background="#0F172A"
                       BorderBrush="#1E293B"
                       BorderThickness="1"
-                      CornerRadius="8"
-                      Padding="14">
+                      CornerRadius="10"
+                      Padding="16">
                 <StackPanel Spacing="12">
-                  <TextBlock Text="授权参数" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="OIDC 调试参数" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                    <TextBlock Text="这些参数用于后续授权联调，和后台账号认证分开显示。"
+                               Foreground="#94A3B8"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+
                   <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
                     <StackPanel Grid.ColumnSpan="2" Spacing="6">
                       <TextBlock Text="Scope" Classes="form-label"/>
                       <TextBox Text="{Binding Scope}"
                                Classes="login-input"
-                               Watermark="openid profile email roles permissions"/>
+                               Watermark="openid profile email roles permissions"
+                               KeyDown="LoginInput_OnKeyDown"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1" Spacing="6">
                       <TextBlock Text="Client ID" Classes="form-label"/>
                       <TextBox Text="{Binding ClientId}"
                                Classes="login-input"
-                               Watermark="client_id"/>
+                               Watermark="client_id"
+                               KeyDown="LoginInput_OnKeyDown"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1" Grid.Column="1" Spacing="6">
                       <TextBlock Text="Nonce" Classes="form-label"/>
                       <TextBox Text="{Binding Nonce}"
                                Classes="login-input"
-                               Watermark="nonce"/>
+                               Watermark="nonce"
+                               KeyDown="LoginInput_OnKeyDown"/>
                     </StackPanel>
                   </Grid>
                 </StackPanel>
               </Border>
-
-              <Button Content="登录并进入后台"
-                      Command="{Binding LoginCommand}"
-                      Background="#2563EB"
-                      Foreground="#F9FAFB"
-                      BorderBrush="#60A5FA"
-                      BorderThickness="1"
-                      CornerRadius="8"
-                      Padding="16,11"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Center"
-                      FontWeight="SemiBold"/>
             </StackPanel>
 
             <Border Grid.Row="2"
