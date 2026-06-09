@@ -5,31 +5,31 @@
              x:DataType="vm:ProfileCenterPageViewModel">
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <StackPanel Spacing="16">
-      <Border Background="#111827" CornerRadius="18" Padding="20">
+      <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="18" Padding="20">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
           <Border Width="64" Height="64" CornerRadius="32" Background="#2563EB" VerticalAlignment="Top">
             <TextBlock Text="{Binding DisplayName}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
-                       Foreground="#F9FAFB"
+                       Foreground="{DynamicResource TextOnAccentBrush}"
                        FontSize="18"
                        FontWeight="Bold"/>
           </Border>
           <StackPanel Grid.Column="1" Spacing="8">
-            <TextBlock Text="个人中心" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
-            <TextBlock Text="{Binding LoginStatus}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
-            <TextBlock Text="{Binding StatusMessage}" Foreground="#60A5FA" TextWrapping="Wrap"/>
+            <TextBlock Text="个人中心" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <TextBlock Text="{Binding LoginStatus}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-              <Border Background="#1F2937" CornerRadius="12" Padding="14">
+              <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="显示名称" Foreground="#9CA3AF"/>
-                  <TextBlock Text="{Binding DisplayName}" Foreground="#F9FAFB" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                  <TextBlock Text="显示名称" Foreground="{DynamicResource TextMutedBrush}"/>
+                  <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
-              <Border Grid.Column="1" Background="#1F2937" CornerRadius="12" Padding="14">
+              <Border Grid.Column="1" Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="主角色" Foreground="#9CA3AF"/>
-                  <TextBlock Text="{Binding PrimaryRole}" Foreground="#F9FAFB" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                  <TextBlock Text="主角色" Foreground="{DynamicResource TextMutedBrush}"/>
+                  <TextBlock Text="{Binding PrimaryRole}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
             </Grid>
@@ -45,11 +45,11 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:ProfileInfoCardItemViewModel">
-            <Border Background="#1F2937" BorderBrush="{Binding AccentColor}" BorderThickness="1.5" CornerRadius="14" Margin="0,0,12,0" Padding="16">
+            <Border Background="{DynamicResource SurfaceRaisedBrush}" BorderBrush="{Binding AccentColor}" BorderThickness="1.5" CornerRadius="14" Margin="0,0,12,0" Padding="16">
               <StackPanel Spacing="8">
-                <TextBlock Text="{Binding Title}" Foreground="#9CA3AF"/>
-                <TextBlock Text="{Binding Value}" FontSize="26" FontWeight="Bold" Foreground="#F9FAFB"/>
-                <TextBlock Text="{Binding Description}" Foreground="#CBD5E1" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextMutedBrush}"/>
+                <TextBlock Text="{Binding Value}" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
               </StackPanel>
             </Border>
           </DataTemplate>
@@ -57,26 +57,26 @@
       </ItemsControl>
 
       <Grid ColumnDefinitions="1.1*,0.9*" ColumnSpacing="16">
-        <Border Background="#111827" CornerRadius="16" Padding="20">
+        <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
           <StackPanel Spacing="14">
-            <TextBlock Text="资料编辑" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+            <TextBlock Text="资料编辑" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
               <StackPanel Spacing="6">
-                <TextBlock Text="用户名" Foreground="#9CA3AF"/>
+                <TextBlock Text="用户名" Foreground="{DynamicResource TextMutedBrush}"/>
                 <TextBox Text="{Binding UserName}" Watermark="请输入用户名"/>
               </StackPanel>
               <StackPanel Grid.Column="1" Spacing="6">
-                <TextBlock Text="邮箱" Foreground="#9CA3AF"/>
+                <TextBlock Text="邮箱" Foreground="{DynamicResource TextMutedBrush}"/>
                 <TextBox Text="{Binding Email}" Watermark="请输入邮箱"/>
               </StackPanel>
             </Grid>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
               <StackPanel Spacing="6">
-                <TextBlock Text="昵称" Foreground="#9CA3AF"/>
+                <TextBlock Text="昵称" Foreground="{DynamicResource TextMutedBrush}"/>
                 <TextBox Text="{Binding NickName}" Watermark="选填"/>
               </StackPanel>
               <StackPanel Grid.Column="1" Spacing="6">
-                <TextBlock Text="手机号" Foreground="#9CA3AF"/>
+                <TextBlock Text="手机号" Foreground="{DynamicResource TextMutedBrush}"/>
                 <TextBox Text="{Binding PhoneNumber}" Watermark="选填"/>
               </StackPanel>
             </Grid>
@@ -93,9 +93,9 @@
           </StackPanel>
         </Border>
 
-        <Border Grid.Column="1" Background="#111827" CornerRadius="16" Padding="20">
+        <Border Grid.Column="1" Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
           <StackPanel Spacing="14">
-            <TextBlock Text="角色标签" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+            <TextBlock Text="角色标签" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
             <ItemsControl ItemsSource="{Binding RoleTags}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -110,12 +110,12 @@
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <TextBlock Text="权限摘要" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
-            <TextBlock Text="{Binding PermissionSummary}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
-            <Border Background="#1F2937" CornerRadius="12" Padding="14">
+            <TextBlock Text="权限摘要" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <TextBlock Text="{Binding PermissionSummary}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+            <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14">
               <StackPanel Spacing="6">
-                <TextBlock Text="当前主角色" Foreground="#9CA3AF"/>
-                <TextBlock Text="{Binding PrimaryRole}" Foreground="#F9FAFB" FontWeight="SemiBold"/>
+                <TextBlock Text="当前主角色" Foreground="{DynamicResource TextMutedBrush}"/>
+                <TextBlock Text="{Binding PrimaryRole}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
               </StackPanel>
             </Border>
           </StackPanel>

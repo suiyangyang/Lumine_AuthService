@@ -3,17 +3,17 @@
              xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
              x:Class="Lumine.AuthPortal.Views.Pages.ConsentPageView"
              x:DataType="vm:ConsentPageViewModel">
-  <Border Background="#111827" CornerRadius="16" Padding="24" MaxWidth="700">
+  <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="24" MaxWidth="700">
     <StackPanel Spacing="16">
-      <TextBlock Text="授权确认" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
-      <TextBlock Text="{Binding ClientName, StringFormat=第三方客户端：{0}}" Foreground="#D1D5DB"/>
-      <TextBlock Text="{Binding RequestedScopes, StringFormat=申请 scope：{0}}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
-      <TextBlock Text="{Binding State, StringFormat=请求 state：{0}}" Foreground="#9CA3AF"/>
+      <TextBlock Text="授权确认" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+      <TextBlock Text="{Binding ClientName, StringFormat=第三方客户端：{0}}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+      <TextBlock Text="{Binding RequestedScopes, StringFormat=申请 scope：{0}}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+      <TextBlock Text="{Binding State, StringFormat=请求 state：{0}}" Foreground="{DynamicResource TextMutedBrush}"/>
       <StackPanel Orientation="Horizontal" Spacing="12">
         <Button Content="同意" Command="{Binding ApproveCommand}"/>
         <Button Content="拒绝" Command="{Binding DenyCommand}"/>
       </StackPanel>
-      <TextBlock Text="{Binding DecisionMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+      <TextBlock Text="{Binding DecisionMessage}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
     </StackPanel>
   </Border>
 </UserControl>

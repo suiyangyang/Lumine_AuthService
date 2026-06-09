@@ -11,6 +11,30 @@
     <Application.Resources>
         <FontFamily x:Key="ChineseFont">avares://Lumine.AuthPortal/Assets/SimHei.ttf#SimHei, Microsoft YaHei UI, Segoe UI, Segoe UI Emoji, Segoe UI Symbol</FontFamily>
         <FontFamily x:Key="EmojiFont">Segoe UI Emoji, Segoe UI Symbol, Microsoft YaHei UI, avares://Lumine.AuthPortal/Assets/SimHei.ttf#SimHei</FontFamily>
+        <SolidColorBrush x:Key="AppBackgroundBrush" Color="#F3F6FB" />
+        <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="TopbarBackgroundBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="SurfacePanelBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="#EEF3F8" />
+        <SolidColorBrush x:Key="SurfaceInsetBrush" Color="#F7F9FC" />
+        <SolidColorBrush x:Key="SurfaceSoftBrush" Color="#E8EEF6" />
+        <SolidColorBrush x:Key="BorderSubtleBrush" Color="#D5DEEA" />
+        <SolidColorBrush x:Key="BorderStrongBrush" Color="#C2CEDD" />
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#0F172A" />
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#334155" />
+        <SolidColorBrush x:Key="TextMutedBrush" Color="#64748B" />
+        <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#E8EEF6" />
+        <SolidColorBrush x:Key="SurfacePressedBrush" Color="#DDE7F4" />
+        <SolidColorBrush x:Key="SurfaceSelectedBrush" Color="#DBEAFE" />
+        <SolidColorBrush x:Key="SurfaceSelectedHoverBrush" Color="#D3E4FB" />
+        <SolidColorBrush x:Key="SurfaceSelectedPressedBrush" Color="#C7DBF8" />
+        <SolidColorBrush x:Key="BorderHoverBrush" Color="#94A3B8" />
+        <SolidColorBrush x:Key="BorderActiveBrush" Color="#3B82F6" />
+        <SolidColorBrush x:Key="BorderActiveStrongBrush" Color="#2563EB" />
+        <SolidColorBrush x:Key="TextOnAccentBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="TextOnSelectedBrush" Color="#0F172A" />
+        <SolidColorBrush x:Key="TextAccentSoftBrush" Color="#1D4ED8" />
+        <SolidColorBrush x:Key="StatusInfoBrush" Color="#1D4ED8" />
     </Application.Resources>
 
     <Application.DataTemplates>
@@ -65,29 +89,29 @@
             <Setter Property="Background" Value="#AA020617" />
         </Style>
         <Style Selector="Border.dialog-card">
-            <Setter Property="Background" Value="#111827" />
-            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="18" />
             <Setter Property="Padding" Value="22" />
         </Style>
         <Style Selector="Border.info-card">
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="14" />
             <Setter Property="Padding" Value="14" />
         </Style>
         <Style Selector="Border.admin-panel">
-            <Setter Property="Background" Value="#111827" />
-            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="18" />
             <Setter Property="Padding" Value="20" />
         </Style>
         <Style Selector="Border.admin-status-banner">
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#1D4ED8" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="12" />
             <Setter Property="Padding" Value="12" />
@@ -100,20 +124,20 @@
             <Setter Property="Padding" Value="12" />
         </Style>
         <Style Selector="Border.admin-row-card">
-            <Setter Property="Background" Value="#172132" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
             <Setter Property="CornerRadius" Value="12" />
             <Setter Property="Padding" Value="12" />
         </Style>
         <Style Selector="Border.admin-content-block">
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="16" />
             <Setter Property="Padding" Value="16" />
         </Style>
         <Style Selector="Border.admin-reference-card">
-            <Setter Property="Background" Value="#1F2937" />
-            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="18" />
             <Setter Property="Padding" Value="20,16" />
@@ -123,7 +147,7 @@
             <Setter Property="Padding" Value="8,4" />
         </Style>
         <Style Selector="Border.admin-pill.admin-pill-muted">
-            <Setter Property="Background" Value="#1E293B" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
             <Setter Property="Padding" Value="10,4" />
         </Style>
         <Style Selector="Border.admin-pill.admin-pill-success">
@@ -135,116 +159,116 @@
         <Style Selector="TextBlock.admin-section-title">
             <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="TextBlock.admin-reference-title">
             <Setter Property="FontSize" Value="15" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="TextBlock.admin-reference-line">
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Foreground" Value="#E5E7EB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
         </Style>
         <Style Selector="TextBlock.admin-card-title">
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="TextBlock.admin-hint">
-            <Setter Property="Foreground" Value="#94A3B8" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
             <Setter Property="FontSize" Value="12" />
         </Style>
         <Style Selector="TextBlock.admin-table-header">
-            <Setter Property="Foreground" Value="#CBD5E1" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="FontSize" Value="12" />
         </Style>
         <Style Selector="TextBlock.admin-muted">
-            <Setter Property="Foreground" Value="#94A3B8" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
             <Setter Property="FontSize" Value="12" />
         </Style>
         <Style Selector="TextBlock.admin-info-title">
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="TextBlock.admin-info-body">
-            <Setter Property="Foreground" Value="#D1D5DB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
         <Style Selector="Button.admin-button">
             <Setter Property="CornerRadius" Value="10" />
             <Setter Property="Padding" Value="14,8" />
             <Setter Property="MinWidth" Value="92" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
-            <Setter Property="Background" Value="#1F2937" />
-            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
         <Style Selector="Button.admin-button /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-button /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#1F2937" />
-            <Setter Property="BorderBrush" Value="#374151" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-button /template/ Border#border">
-            <Setter Property="Background" Value="#1F2937" />
-            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
         </Style>
         <Style Selector="Button.admin-button:pointerover">
-            <Setter Property="Background" Value="#273449" />
-            <Setter Property="BorderBrush" Value="#64748B" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#273449" />
-            <Setter Property="BorderBrush" Value="#64748B" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-button:pointerover /template/ Border#border">
-            <Setter Property="Background" Value="#273449" />
-            <Setter Property="BorderBrush" Value="#64748B" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
         </Style>
         <Style Selector="Button.admin-button:pressed">
-            <Setter Property="Background" Value="#334155" />
-            <Setter Property="BorderBrush" Value="#94A3B8" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-button:pressed /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#334155" />
-            <Setter Property="BorderBrush" Value="#94A3B8" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-button:pressed /template/ Border#border">
-            <Setter Property="Background" Value="#334155" />
-            <Setter Property="BorderBrush" Value="#94A3B8" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
         </Style>
         <Style Selector="Button.admin-button:disabled">
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#1F2937" />
-            <Setter Property="Foreground" Value="#64748B" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
             <Setter Property="Opacity" Value="0.9" />
         </Style>
         <Style Selector="Button.admin-button:disabled /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="#64748B" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         </Style>
         <Style Selector="Button.admin-button:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#1F2937" />
-            <Setter Property="Foreground" Value="#64748B" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         </Style>
         <Style Selector="Button.admin-button:disabled /template/ Border#border">
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
         </Style>
         <Style Selector="Button.admin-button.admin-compact">
             <Setter Property="Padding" Value="12,8" />
@@ -256,25 +280,25 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="MinWidth" Value="40" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Background" Value="#1F2937" />
-            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Foreground" Value="#E5E7EB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button:pointerover">
-            <Setter Property="Background" Value="#273449" />
-            <Setter Property="BorderBrush" Value="#64748B" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button:pressed">
-            <Setter Property="Background" Value="#334155" />
-            <Setter Property="BorderBrush" Value="#94A3B8" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button:disabled">
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#1F2937" />
-            <Setter Property="Foreground" Value="#64748B" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         </Style>
         <Style Selector="Button.admin-icon-button.admin-primary">
             <Setter Property="Background" Value="#2563EB" />
@@ -310,15 +334,15 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="MinWidth" Value="32" />
             <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Background" Value="#1F2937" />
-            <Setter Property="Foreground" Value="#E5E7EB" />
-            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
         <Style Selector="Button.admin-row-icon-button:pointerover">
-            <Setter Property="Background" Value="#273449" />
-            <Setter Property="BorderBrush" Value="#60A5FA" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-row-icon-button.admin-danger">
             <Setter Property="Background" Value="#7F1D1D" />
@@ -546,20 +570,20 @@
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="8,4" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Background" Value="#1F2937" />
-            <Setter Property="Foreground" Value="#E5E7EB" />
-            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
         <Style Selector="Button.admin-row-action:pointerover">
-            <Setter Property="Background" Value="#273449" />
-            <Setter Property="BorderBrush" Value="#60A5FA" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-row-action:pressed">
-            <Setter Property="Background" Value="#334155" />
-            <Setter Property="BorderBrush" Value="#93C5FD" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-row-action.admin-danger">
             <Setter Property="Background" Value="#7F1D1D" />
@@ -581,42 +605,42 @@
             <Setter Property="Height" Value="32" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Background" Value="#111827" />
-            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-copy-button:pointerover">
-            <Setter Property="Background" Value="#172033" />
-            <Setter Property="BorderBrush" Value="#60A5FA" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-copy-button:pressed">
-            <Setter Property="Background" Value="#1D2A44" />
-            <Setter Property="BorderBrush" Value="#93C5FD" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="Button.admin-copy-button:disabled">
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#1F2937" />
-            <Setter Property="Foreground" Value="#64748B" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         </Style>
         <Style Selector="TextBox.admin-form-input">
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="TextBox.admin-form-input:pointerover">
-            <Setter Property="Background" Value="#111D31" />
-            <Setter Property="BorderBrush" Value="#475569" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="TextBox.admin-form-input:focus">
-            <Setter Property="Background" Value="#14233A" />
-            <Setter Property="BorderBrush" Value="#60A5FA" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />

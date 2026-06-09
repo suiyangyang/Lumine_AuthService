@@ -3,10 +3,10 @@
              xmlns:vm="using:Lumine.AuthPortal.ViewModels"
              x:Class="Lumine.AuthPortal.Views.Pages.PlaceholderPageView"
              x:DataType="vm:PlaceholderPageViewModel">
-  <Border Background="#111827" CornerRadius="16" Padding="24" MaxWidth="680">
+  <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="24" MaxWidth="680">
     <StackPanel Spacing="12">
-      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
-      <TextBlock Text="{Binding Description}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+      <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+      <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
     </StackPanel>
   </Border>
 </UserControl>

@@ -8,11 +8,11 @@
   <Grid>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
       <StackPanel Spacing="20">
-        <Border Background="#111827" CornerRadius="24" Padding="28" BorderBrush="#1F2937" BorderThickness="1">
+        <Border Background="{DynamicResource SurfacePanelBrush}" CornerRadius="24" Padding="28" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1">
           <StackPanel Spacing="18">
             <StackPanel Spacing="4">
-              <TextBlock Text="4 权限管理" FontSize="30" FontWeight="Bold" Foreground="#F9FAFB"/>
-              <TextBlock Text="权限新增、编辑与删除提示已统一到同一套深色管理界面。" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+              <TextBlock Text="4 权限管理" FontSize="30" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+              <TextBlock Text="权限新增、编辑与删除提示已统一到同一套深色管理界面。" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
             </StackPanel>
 
             <ItemsControl ItemsSource="{Binding ReferenceSections}">
@@ -50,8 +50,8 @@
             <StackPanel Spacing="14">
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <StackPanel Spacing="4">
-                  <TextBlock Text="权限列表" FontSize="20" FontWeight="Bold" Foreground="#F9FAFB"/>
-                  <TextBlock Text="{Binding PermissionCountText}" Foreground="#9CA3AF"/>
+                  <TextBlock Text="权限列表" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                  <TextBlock Text="{Binding PermissionCountText}" Foreground="{DynamicResource TextMutedBrush}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Spacing="8">
@@ -71,21 +71,21 @@
 
               <Border Classes="admin-status-banner">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                  <TextBlock Text="{Binding StatusMessage}" Foreground="#93C5FD" TextWrapping="Wrap"/>
-                  <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="#93C5FD" VerticalAlignment="Center"/>
+                  <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
+                  <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource StatusInfoBrush}" VerticalAlignment="Center"/>
                 </Grid>
               </Border>
 
               <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Background="Transparent" BorderThickness="0">
                 <ListBox.ItemTemplate>
                   <DataTemplate>
-                    <Border Margin="0,0,0,10" Padding="14" Background="#1F2937" BorderBrush="#374151" BorderThickness="1" CornerRadius="14">
+                    <Border Margin="0,0,0,10" Padding="14" Background="{DynamicResource SurfaceRaisedBrush}" BorderBrush="{DynamicResource BorderStrongBrush}" BorderThickness="1" CornerRadius="14">
                       <StackPanel Spacing="6">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                          <TextBlock Text="{Binding PermissionName}" FontSize="15" FontWeight="SemiBold" Foreground="#F9FAFB"/>
-                          <TextBlock Grid.Column="1" Text="{Binding Id}" Foreground="#9CA3AF" FontSize="12"/>
+                          <TextBlock Text="{Binding PermissionName}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                          <TextBlock Grid.Column="1" Text="{Binding Id}" Foreground="{DynamicResource TextMutedBrush}" FontSize="12"/>
                         </Grid>
-                        <TextBlock Text="{Binding DisplayName}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
                       </StackPanel>
                     </Border>
                   </DataTemplate>
@@ -95,7 +95,7 @@
               <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}">
                 <StackPanel Spacing="10">
                   <TextBlock Text="删除确认" Foreground="#FCA5A5" FontWeight="Bold"/>
-                  <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="#F8FAFC" TextWrapping="Wrap"/>
+                  <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap"/>
                   <StackPanel Orientation="Horizontal" Spacing="10">
                     <Button Classes="admin-button admin-danger-solid" Content="确认删除" Command="{Binding ConfirmDeleteCommand}"/>
                     <Button Classes="admin-button" Content="取消" Command="{Binding CancelDeleteCommand}"/>
@@ -108,24 +108,24 @@
           <StackPanel Grid.Column="1" Spacing="16">
             <Border Classes="info-card">
               <StackPanel Spacing="8">
-                <TextBlock Text="当前选择" FontSize="20" FontWeight="Bold" Foreground="#F9FAFB"/>
-                <TextBlock Text="{Binding EditorTitle}" Foreground="#D1D5DB"/>
-                <TextBlock Text="用于维护权限名称与显示名称，便于后续映射菜单、页面和 API。" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+                <TextBlock Text="当前选择" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="{Binding EditorTitle}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                <TextBlock Text="用于维护权限名称与显示名称，便于后续映射菜单、页面和 API。" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
               </StackPanel>
             </Border>
 
             <Border Classes="info-card">
               <StackPanel Spacing="8">
-                <TextBlock Text="当前状态" FontSize="20" FontWeight="Bold" Foreground="#F9FAFB"/>
-                <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding PermissionCountText}" Foreground="#9CA3AF"/>
+                <TextBlock Text="当前状态" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding PermissionCountText}" Foreground="{DynamicResource TextMutedBrush}"/>
               </StackPanel>
             </Border>
 
             <Border Classes="info-card">
               <StackPanel Spacing="8">
-                <TextBlock Text="命名建议" FontSize="20" FontWeight="Bold" Foreground="#F9FAFB"/>
-                <TextBlock Text="推荐格式：资源.动作，例如 `user.read`、`role.manage`、`audit.view`。" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+                <TextBlock Text="命名建议" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="推荐格式：资源.动作，例如 `user.read`、`role.manage`、`audit.view`。" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
               </StackPanel>
             </Border>
           </StackPanel>
@@ -140,24 +140,24 @@
           <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
               <StackPanel Spacing="4">
-                <TextBlock Text="{Binding PermissionDialogTitle}" FontSize="22" FontWeight="Bold" Foreground="#F9FAFB"/>
-                <TextBlock Text="用于维护权限名称与显示名称。" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding PermissionDialogTitle}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="用于维护权限名称与显示名称。" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
               </StackPanel>
               <Button Grid.Column="1" Classes="admin-button" Content="关闭" Command="{Binding ClosePermissionDialogCommand}"/>
             </Grid>
 
             <StackPanel Grid.Row="1" Spacing="6">
-              <TextBlock Text="权限编码" Foreground="#F9FAFB" FontWeight="SemiBold"/>
+              <TextBlock Text="权限编码" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
               <TextBox Text="{Binding PermissionName}" Watermark="例如：user.read"/>
             </StackPanel>
 
             <StackPanel Grid.Row="2" Spacing="6">
-              <TextBlock Text="显示名称" Foreground="#F9FAFB" FontWeight="SemiBold"/>
+              <TextBlock Text="显示名称" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
               <TextBox Text="{Binding DisplayName}" Watermark="例如：查看用户"/>
             </StackPanel>
 
             <StackPanel Grid.Row="3" Spacing="10">
-              <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
               <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <Button Classes="admin-button" Content="取消" Command="{Binding ClosePermissionDialogCommand}"/>
                 <Button Classes="admin-button admin-danger" Content="删除所选" Command="{Binding DeleteCommand}"/>

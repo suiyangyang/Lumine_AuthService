@@ -24,6 +24,7 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         Services = ConfigureServices();
+        Services.GetRequiredService<ThemeService>().ApplyCurrentTheme();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -65,6 +66,7 @@ public partial class App : Application
         services.AddSingleton(new HttpClient { BaseAddress = new Uri(AppEnvironment.EnsureTrailingSlash(AppEnvironment.ServerBaseUrl)) });
         services.AddSingleton<PortalApiClient>();
         services.AddSingleton<PortalSession>();
+        services.AddSingleton<ThemeService>();
         services.AddTransient<MainViewModel>();
         return services.BuildServiceProvider();
     }

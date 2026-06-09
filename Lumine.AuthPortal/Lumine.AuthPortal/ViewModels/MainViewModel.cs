@@ -11,13 +11,15 @@ public partial class MainViewModel : ViewModelBase
 {
     private readonly PortalApiClient _apiClient;
     private readonly PortalSession _session;
+    private readonly ThemeService _themeService;
     private readonly Dictionary<string, Func<ViewModelBase>> _pageFactory;
     private readonly Dictionary<string, NavigationItemViewModel> _navigationLookup;
 
-    public MainViewModel(PortalApiClient apiClient, PortalSession session)
+    public MainViewModel(PortalApiClient apiClient, PortalSession session, ThemeService themeService)
     {
         _apiClient = apiClient;
         _session = session;
+        _themeService = themeService;
         _session.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName is nameof(PortalSession.AccessToken) or nameof(PortalSession.Permissions))
@@ -40,6 +42,17 @@ public partial class MainViewModel : ViewModelBase
                 OnPropertyChanged(nameof(AccountRolesSummary));
                 OnPropertyChanged(nameof(AccountRoles));
                 OnPropertyChanged(nameof(AccountStatusText));
+            }
+        };
+
+        _themeService.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(ThemeService.SelectedTheme))
+            {
+                OnPropertyChanged(nameof(ThemeToggleIconData));
+                OnPropertyChanged(nameof(CurrentThemeLabel));
+                OnPropertyChanged(nameof(IsFluentThemeSelected));
+                OnPropertyChanged(nameof(IsLumineDarkThemeSelected));
             }
         };
 
@@ -100,7 +113,7 @@ public partial class MainViewModel : ViewModelBase
             ["tokens"] = () => new PlaceholderPageViewModel("Token 管理", "预留后台入口，后续可接入访问令牌、刷新令牌与吊销记录管理。"),
             ["oidc"] = () => new OidcPlaygroundPageViewModel(_apiClient, _session),
             ["menus"] = () => new PlaceholderPageViewModel("菜单管理", "预留后台入口，后续可接入菜单树、路由元数据与权限绑定配置。"),
-            ["settings"] = () => new SystemSettingsPageViewModel(),
+            ["settings"] = () => new SystemSettingsPageViewModel(_themeService),
             ["audit"] = () => new AuditLogsPageViewModel()
         };
 
@@ -125,6 +138,14 @@ public partial class MainViewModel : ViewModelBase
     public PortalSession Session => _session;
 
     public StreamGeometry AccountMenuChevronIconData => NavigationIconData.Get("chevron-down");
+
+    public StreamGeometry ThemeToggleIconData => NavigationIconData.Get(IsFluentThemeSelected ? "moon" : "sun");
+
+    public string CurrentThemeLabel => _themeService.CurrentThemeLabel;
+
+    public bool IsFluentThemeSelected => _themeService.IsFluentThemeSelected;
+
+    public bool IsLumineDarkThemeSelected => _themeService.IsLumineDarkThemeSelected;
 
     public bool HasAdminAccess => VisibleNavigationSections
         .SelectMany(section => section.Items)
@@ -236,6 +257,13 @@ public partial class MainViewModel : ViewModelBase
         CurrentPage = new SecuritySettingsPageViewModel(_apiClient, _session);
         CurrentPageTitle = "安全设置";
         UpdateSelectedNavigation(string.Empty);
+    }
+
+    [RelayCommand]
+    private void ToggleTheme()
+    {
+        _themeService.ToggleTheme();
+        OnPropertyChanged(nameof(ThemeToggleIconData));
     }
 
     [RelayCommand]

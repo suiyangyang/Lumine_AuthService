@@ -5,11 +5,11 @@
              x:DataType="vm:SecuritySettingsPageViewModel">
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <StackPanel Spacing="16">
-      <Border Background="#111827" CornerRadius="18" Padding="20">
+      <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="18" Padding="20">
         <StackPanel Spacing="10">
-          <TextBlock Text="安全设置" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
-          <TextBlock Text="{Binding SecurityStatus}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
-          <TextBlock Text="{Binding StatusMessage}" Foreground="#60A5FA" TextWrapping="Wrap"/>
+          <TextBlock Text="安全设置" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <TextBlock Text="{Binding SecurityStatus}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
 
@@ -21,11 +21,11 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:SecurityCardItemViewModel">
-            <Border Background="#1F2937" CornerRadius="14" Margin="0,0,12,0" Padding="16">
+            <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="14" Margin="0,0,12,0" Padding="16">
               <StackPanel Spacing="8">
-                <TextBlock Text="{Binding Title}" Foreground="#9CA3AF"/>
-                <TextBlock Text="{Binding Value}" FontSize="22" FontWeight="Bold" Foreground="#F9FAFB"/>
-                <TextBlock Text="{Binding Description}" Foreground="#CBD5E1" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextMutedBrush}"/>
+                <TextBlock Text="{Binding Value}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
               </StackPanel>
             </Border>
           </DataTemplate>
@@ -33,19 +33,19 @@
       </ItemsControl>
 
       <Grid ColumnDefinitions="1.1*,0.9*" ColumnSpacing="16">
-        <Border Background="#111827" CornerRadius="16" Padding="20">
+        <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
           <StackPanel Spacing="14">
-            <TextBlock Text="修改密码" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+            <TextBlock Text="修改密码" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
             <StackPanel Spacing="6">
-              <TextBlock Text="当前密码" Foreground="#9CA3AF"/>
+              <TextBlock Text="当前密码" Foreground="{DynamicResource TextMutedBrush}"/>
               <TextBox Text="{Binding CurrentPassword}" PasswordChar="●" Watermark="请输入当前密码"/>
             </StackPanel>
             <StackPanel Spacing="6">
-              <TextBlock Text="新密码" Foreground="#9CA3AF"/>
+              <TextBlock Text="新密码" Foreground="{DynamicResource TextMutedBrush}"/>
               <TextBox Text="{Binding NewPassword}" PasswordChar="●" Watermark="请输入新密码"/>
             </StackPanel>
             <StackPanel Spacing="6">
-              <TextBlock Text="确认新密码" Foreground="#9CA3AF"/>
+              <TextBlock Text="确认新密码" Foreground="{DynamicResource TextMutedBrush}"/>
               <TextBox Text="{Binding ConfirmNewPassword}" PasswordChar="●" Watermark="请再次输入新密码"/>
             </StackPanel>
             <Button Content="立即修改密码"
@@ -53,14 +53,14 @@
                     Command="{Binding ChangePasswordCommand}"
                     Padding="14,8"/>
 
-            <TextBlock Text="安全建议" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB" Margin="0,8,0,0"/>
+            <TextBlock Text="安全建议" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,8,0,0"/>
             <ItemsControl ItemsSource="{Binding SecurityTips}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <Border Background="#1F2937" CornerRadius="12" Padding="14" Margin="0,0,0,10">
+                  <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14" Margin="0,0,0,10">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                      <TextBlock Text="•" Foreground="#60A5FA" FontSize="18" VerticalAlignment="Top"/>
-                      <TextBlock Grid.Column="1" Text="{Binding .}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+                      <TextBlock Text="•" Foreground="{DynamicResource StatusInfoBrush}" FontSize="18" VerticalAlignment="Top"/>
+                      <TextBlock Grid.Column="1" Text="{Binding .}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
                     </Grid>
                   </Border>
                 </DataTemplate>
@@ -69,20 +69,20 @@
           </StackPanel>
         </Border>
 
-        <Border Grid.Column="1" Background="#111827" CornerRadius="16" Padding="20">
+        <Border Grid.Column="1" Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
           <StackPanel Spacing="14">
-            <TextBlock Text="设备与会话" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB"/>
+            <TextBlock Text="设备与会话" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
             <ItemsControl ItemsSource="{Binding DeviceActivities}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="vm:SecurityActivityItemViewModel">
-                  <Border Background="#1F2937" CornerRadius="12" Padding="14" Margin="0,0,0,10">
+                  <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14" Margin="0,0,0,10">
                     <StackPanel Spacing="6">
                       <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                        <TextBlock Text="{Binding Title}" Foreground="#F9FAFB" FontWeight="SemiBold"/>
-                        <TextBlock Grid.Column="1" Text="{Binding TimeText}" Foreground="#9CA3AF"/>
+                        <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TimeText}" Foreground="{DynamicResource TextMutedBrush}"/>
                       </Grid>
-                      <TextBlock Text="{Binding Status}" Foreground="#60A5FA"/>
-                      <TextBlock Text="{Binding Description}" Foreground="#CBD5E1" TextWrapping="Wrap"/>
+                      <TextBlock Text="{Binding Status}" Foreground="{DynamicResource StatusInfoBrush}"/>
+                      <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
                     </StackPanel>
                   </Border>
                 </DataTemplate>

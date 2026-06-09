@@ -5,100 +5,161 @@
              x:DataType="vm:LoginPageViewModel">
   <UserControl.Styles>
     <Style Selector="TextBlock.form-label">
-      <Setter Property="Foreground" Value="#C7D2E5"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
       <Setter Property="FontSize" Value="13"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
     <Style Selector="TextBox.login-input">
       <Setter Property="MinHeight" Value="44"/>
-      <Setter Property="Background" Value="#162033"/>
-      <Setter Property="Foreground" Value="#F8FAFC"/>
-      <Setter Property="BorderBrush" Value="#2C3A55"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="10"/>
       <Setter Property="Padding" Value="12,10"/>
-      <Setter Property="CaretBrush" Value="#F8FAFC"/>
+      <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}"/>
       <Setter Property="SelectionBrush" Value="#3B82F6"/>
     </Style>
     <Style Selector="TextBox.login-input /template/ Border#border">
-      <Setter Property="Background" Value="#162033"/>
-      <Setter Property="BorderBrush" Value="#2C3A55"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
     </Style>
     <Style Selector="TextBox.login-input /template/ ScrollViewer#PART_ScrollViewer">
-      <Setter Property="Background" Value="#162033"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
     </Style>
     <Style Selector="TextBox.login-input:pointerover">
-      <Setter Property="Background" Value="#18253A"/>
-      <Setter Property="BorderBrush" Value="#466089"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
     </Style>
     <Style Selector="TextBox.login-input:pointerover /template/ Border#border">
-      <Setter Property="Background" Value="#18253A"/>
-      <Setter Property="BorderBrush" Value="#466089"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
     </Style>
     <Style Selector="TextBox.login-input:focus">
-      <Setter Property="Background" Value="#1A2942"/>
-      <Setter Property="Foreground" Value="#F8FAFC"/>
-      <Setter Property="BorderBrush" Value="#7CB4FF"/>
-      <Setter Property="CaretBrush" Value="#F8FAFC"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="TextBox.login-input:focus /template/ Border#border">
-      <Setter Property="Background" Value="#1A2942"/>
-      <Setter Property="BorderBrush" Value="#7CB4FF"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
     <Style Selector="TextBox.login-input:focus /template/ ScrollViewer#PART_ScrollViewer">
-      <Setter Property="Background" Value="#1A2942"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
     </Style>
     <Style Selector="Border.login-panel">
-      <Setter Property="Background" Value="#101827"/>
-      <Setter Property="BorderBrush" Value="#22304A"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="12"/>
       <Setter Property="Padding" Value="18"/>
     </Style>
+    <Style Selector="Border.login-shell">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="36,34"/>
+    </Style>
+    <Style Selector="Border.password-input-shell">
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="0,0,6,0"/>
+      <Setter Property="MinHeight" Value="44"/>
+    </Style>
+    <Style Selector="Border.password-input-shell:pointerover">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
+    </Style>
+    <Style Selector="Border.password-input-shell:focus-within">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+    </Style>
+    <Style Selector="TextBox.password-input">
+      <Setter Property="MinHeight" Value="42"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="12,10,8,10"/>
+      <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="SelectionBrush" Value="#3B82F6"/>
+    </Style>
+    <Style Selector="TextBox.password-input /template/ Border#border">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="TextBox.password-input /template/ ScrollViewer#PART_ScrollViewer">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.password-visibility-button">
+      <Setter Property="Width" Value="32"/>
+      <Setter Property="Height" Value="32"/>
+      <Setter Property="MinWidth" Value="32"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+    </Style>
+    <Style Selector="Button.password-visibility-button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.password-visibility-button:pressed">
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="PathIcon.password-visibility-icon">
+      <Setter Property="Width" Value="16"/>
+      <Setter Property="Height" Value="16"/>
+    </Style>
     <Style Selector="Button.login-primary-action">
       <Setter Property="Background" Value="#2563EB"/>
-      <Setter Property="Foreground" Value="#F9FAFB"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="8"/>
       <Setter Property="Padding" Value="16,11"/>
     </Style>
     <Style Selector="Button.login-primary-action /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#2563EB"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action /template/ Border#border">
       <Setter Property="Background" Value="#2563EB"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pointerover">
       <Setter Property="Background" Value="#1D4ED8"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
-      <Setter Property="BorderBrush" Value="#93C5FD"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pointerover /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#1D4ED8"/>
-      <Setter Property="BorderBrush" Value="#93C5FD"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pointerover /template/ Border#border">
       <Setter Property="Background" Value="#1D4ED8"/>
-      <Setter Property="BorderBrush" Value="#93C5FD"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pressed">
       <Setter Property="Background" Value="#1E40AF"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
       <Setter Property="BorderBrush" Value="#BFDBFE"/>
     </Style>
     <Style Selector="Button.login-primary-action:pressed /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
     </Style>
     <Style Selector="Button.login-primary-action:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#1E40AF"/>
@@ -127,132 +188,75 @@
       <Setter Property="BorderBrush" Value="#314666"/>
     </Style>
     <Style Selector="Button.login-secondary-action">
-      <Setter Property="Background" Value="#162033"/>
-      <Setter Property="Foreground" Value="#D6E4FF"/>
-      <Setter Property="BorderBrush" Value="#314666"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="10"/>
       <Setter Property="Padding" Value="14,10"/>
     </Style>
     <Style Selector="Button.login-secondary-action /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#D6E4FF"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#162033"/>
-      <Setter Property="BorderBrush" Value="#314666"/>
-      <Setter Property="Foreground" Value="#D6E4FF"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action /template/ Border#border">
-      <Setter Property="Background" Value="#162033"/>
-      <Setter Property="BorderBrush" Value="#314666"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action:pointerover">
-      <Setter Property="Background" Value="#1C2940"/>
-      <Setter Property="Foreground" Value="#F8FAFC"/>
-      <Setter Property="BorderBrush" Value="#55739F"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action:pointerover /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#F8FAFC"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#1C2940"/>
-      <Setter Property="BorderBrush" Value="#55739F"/>
-      <Setter Property="Foreground" Value="#F8FAFC"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action:pointerover /template/ Border#border">
-      <Setter Property="Background" Value="#1C2940"/>
-      <Setter Property="BorderBrush" Value="#55739F"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action:pressed">
-      <Setter Property="Background" Value="#22314C"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
-      <Setter Property="BorderBrush" Value="#7CB4FF"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action:pressed /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#22314C"/>
-      <Setter Property="BorderBrush" Value="#7CB4FF"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.login-secondary-action:pressed /template/ Border#border">
-      <Setter Property="Background" Value="#22314C"/>
-      <Setter Property="BorderBrush" Value="#7CB4FF"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
   </UserControl.Styles>
 
-  <Grid RowDefinitions="*,Auto,*" ColumnDefinitions="*,Auto,*" Background="#0B1220">
+  <Grid RowDefinitions="*,Auto,*" ColumnDefinitions="*,Auto,*" Background="{DynamicResource AppBackgroundBrush}">
     <Border Grid.Row="1"
             Grid.Column="1"
             MinWidth="360"
-            MaxWidth="1080"
-            Background="#111827"
-            BorderBrush="#1F2937"
-            BorderThickness="1"
-            CornerRadius="8"
-            ClipToBounds="True">
-      <Grid ColumnDefinitions="1.02*,1.08*" MinHeight="600">
-        <Border Background="#0F172A" Padding="34">
-          <Grid RowDefinitions="Auto,*,Auto">
-            <StackPanel Spacing="12">
-              <TextBlock Text="Lumine AuthPortal"
-                         Foreground="#F8FAFC"
-                         FontSize="28"
-                         FontWeight="Bold"/>
-              <TextBlock Text="统一身份认证后台"
-                         Foreground="#93C5FD"
-                         FontSize="16"
-                         FontWeight="SemiBold"/>
-              <TextBlock Text="登录后台后，可分别进入用户、角色、权限、OAuth 客户端和授权确认等管理页面。"
-                         Foreground="#94A3B8"
-                         TextWrapping="Wrap"
-                         LineHeight="22"/>
-            </StackPanel>
-
-            <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="12">
-              <Border Background="#1E293B" CornerRadius="8" Padding="16">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="后台登录" Foreground="#F8FAFC" FontWeight="SemiBold"/>
-                  <TextBlock Text="使用后台账号完成认证，进入控制台首页。"
-                             Foreground="#94A3B8"
-                             TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
-              <Border Background="#172554" CornerRadius="8" Padding="16">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="OIDC Discovery" Foreground="#DBEAFE" FontWeight="SemiBold"/>
-                  <TextBlock Text="登录后可进入独立的 OIDC 页面查看 discovery、token 与 userinfo 调试能力。"
-                             Foreground="#BFDBFE"
-                             TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
-              <Border Background="#10243D" CornerRadius="8" Padding="16">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="授权与客户端" Foreground="#E0F2FE" FontWeight="SemiBold"/>
-                  <TextBlock Text="OAuth 客户端、授权确认等元素在对应页面单独维护，不与登录表单混排。"
-                             Foreground="#BAE6FD"
-                             TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
-            </StackPanel>
-
-            <TextBlock Grid.Row="2"
-                       Text="Lumine Identity Service"
-                       Foreground="#64748B"
-                       FontSize="12"/>
-          </Grid>
-        </Border>
-
-        <Border Grid.Column="1" Background="#111827" Padding="40,34">
+            MaxWidth="560">
+      <Border Classes="login-shell">
           <Grid RowDefinitions="Auto,*,Auto">
             <StackPanel Spacing="8">
               <TextBlock Text="登录后台"
                          FontSize="26"
                          FontWeight="Bold"
-                         Foreground="#F9FAFB"/>
+                         Foreground="{DynamicResource TextPrimaryBrush}"/>
               <TextBlock Text="默认仅展示后台登录所需项，联调时再展开 OIDC 参数。"
-                         Foreground="#94A3B8"
+                         Foreground="{DynamicResource TextMutedBrush}"
                          TextWrapping="Wrap"/>
             </StackPanel>
 
@@ -261,7 +265,7 @@
                         Spacing="16">
               <Border Classes="login-panel">
                 <StackPanel Spacing="12">
-                  <TextBlock Text="账号认证" Foreground="#F8FAFC" FontWeight="SemiBold"/>
+                  <TextBlock Text="账号认证" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
 
                   <StackPanel Spacing="7">
                     <TextBlock Text="用户名" Classes="form-label"/>
@@ -273,11 +277,22 @@
 
                   <StackPanel Spacing="7">
                     <TextBlock Text="密码" Classes="form-label"/>
-                    <TextBox Text="{Binding Password}"
-                             Classes="login-input"
-                             PasswordChar="*"
-                             Watermark="请输入密码"
-                             KeyDown="LoginInput_OnKeyDown"/>
+                    <Border Classes="password-input-shell">
+                      <Grid ColumnDefinitions="*,Auto">
+                        <TextBox Text="{Binding Password}"
+                                 Classes="password-input"
+                                 PasswordChar="{Binding PasswordMaskChar}"
+                                 Watermark="请输入密码"
+                                 KeyDown="LoginInput_OnKeyDown"/>
+                        <Button Grid.Column="1"
+                                Classes="password-visibility-button"
+                                Command="{Binding TogglePasswordVisibilityCommand}"
+                                ToolTip.Tip="{Binding PasswordVisibilityToolTip}">
+                          <PathIcon Data="{Binding PasswordVisibilityIconData}"
+                                    Classes="password-visibility-icon"/>
+                        </Button>
+                      </Grid>
+                    </Border>
                   </StackPanel>
 
                   <Button Classes="login-primary-action"
@@ -300,9 +315,9 @@
                         IsVisible="{Binding ShowOidcParameters}">
                   <StackPanel Spacing="12">
                     <StackPanel Spacing="4">
-                      <TextBlock Text="OIDC 调试参数" Foreground="#D6E4FF" FontWeight="SemiBold"/>
+                      <TextBlock Text="OIDC 调试参数" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
                       <TextBlock Text="仅在第三方授权联调、协议验证或问题排查时填写。"
-                                 Foreground="#8EA0BC"
+                                 Foreground="{DynamicResource TextMutedBrush}"
                                  TextWrapping="Wrap"/>
                     </StackPanel>
 
@@ -335,20 +350,19 @@
             </StackPanel>
 
             <Border Grid.Row="2"
-                    Background="#0F172A"
-                    BorderBrush="#1E293B"
+                    Background="{DynamicResource SurfaceInsetBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="12"
                     MinHeight="46">
               <TextBlock Text="{Binding StatusMessage}"
-                         Foreground="#CBD5E1"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
                          TextWrapping="Wrap"
                          VerticalAlignment="Center"/>
             </Border>
           </Grid>
-        </Border>
-      </Grid>
+      </Border>
     </Border>
   </Grid>
 </UserControl>

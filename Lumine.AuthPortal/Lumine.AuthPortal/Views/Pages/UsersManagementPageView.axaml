@@ -7,8 +7,8 @@
              x:DataType="vm:UsersManagementPageViewModel">
   <UserControl.Styles>
     <Style Selector="Border.admin-search-shell">
-      <Setter Property="Background" Value="#0F172A"/>
-      <Setter Property="BorderBrush" Value="#243041"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="12"/>
       <Setter Property="Padding" Value="0,0,6,0"/>
@@ -18,7 +18,7 @@
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Foreground" Value="#F8FAFC"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
       <Setter Property="Padding" Value="14,10"/>
     </Style>
   </UserControl.Styles>
@@ -77,10 +77,10 @@
         </Border>
 
         <Border Grid.Row="2" Classes="admin-status-banner" Padding="10,8">
-          <TextBlock Text="{Binding StatusMessage}" Foreground="#93C5FD" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
         </Border>
 
-        <Border Grid.Row="3" Background="#0F172A" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="12" Padding="12">
+        <Border Grid.Row="3" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
           <Grid RowDefinitions="Auto,Auto,*">
             <Grid ColumnDefinitions="190,130,220,72,132,132,*,212" ColumnSpacing="12" Margin="2,0,2,10">
               <TextBlock Text="ID" Classes="admin-table-header"/>
@@ -93,7 +93,7 @@
               <TextBlock Grid.Column="7" Text="操作" Classes="admin-table-header"/>
             </Grid>
 
-            <Border Grid.Row="1" Height="1" Background="#243041"/>
+            <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtleBrush}"/>
 
             <Grid Grid.Row="2">
               <ListBox ItemsSource="{Binding Items}"
@@ -107,8 +107,8 @@
                     <Border Classes="admin-row-card" Margin="0,0,0,8" Padding="10">
                       <Grid ColumnDefinitions="190,130,220,72,132,132,*,212" ColumnSpacing="12">
                         <TextBlock Text="{Binding Id}" Classes="admin-muted" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                        <TextBlock Grid.Column="1" Text="{Binding UserName}" Foreground="#F9FAFB" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Email}" Foreground="#D1D5DB" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Grid.Column="1" Text="{Binding UserName}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Grid.Column="2" Text="{Binding Email}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
 
                         <Border Grid.Column="3" Classes="admin-pill admin-pill-success" HorizontalAlignment="Left" VerticalAlignment="Center" IsVisible="{Binding IsActive}">
                           <TextBlock Text="启用" Foreground="#ECFDF5" FontSize="12"/>
@@ -119,7 +119,7 @@
 
                         <TextBlock Grid.Column="4" Text="{Binding CreatedAtDisplay}" Classes="admin-muted" VerticalAlignment="Center"/>
                         <TextBlock Grid.Column="5" Text="{Binding LastLoginAtDisplay}" Classes="admin-muted" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="6" Text="{Binding RolesDisplay}" Foreground="#D1D5DB" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Grid.Column="6" Text="{Binding RolesDisplay}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
 
                         <WrapPanel Grid.Column="7" Orientation="Horizontal" ItemHeight="32" VerticalAlignment="Center">
                           <Button Classes="admin-row-icon-button"
@@ -165,7 +165,7 @@
 
               <Border Classes="info-card" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsVisible="{Binding ShowUsersEmptyState}">
                 <StackPanel Spacing="8" HorizontalAlignment="Center">
-                  <TextBlock Text="暂无用户数据" FontSize="18" FontWeight="SemiBold" Foreground="#F9FAFB" HorizontalAlignment="Center"/>
+                  <TextBlock Text="暂无用户数据" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
                   <TextBlock Text="可调整搜索条件后重试，或点击右上角新增图标创建第一个账号。" Classes="admin-hint" HorizontalAlignment="Center"/>
                 </StackPanel>
               </Border>
@@ -176,7 +176,7 @@
         <Grid Grid.Row="4" ColumnDefinitions="*,Auto" ColumnSpacing="12">
           <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}" HorizontalAlignment="Left">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-              <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="#F8FAFC" TextWrapping="Wrap" VerticalAlignment="Center"/>
+              <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
               <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
                 <Button Classes="admin-icon-button admin-danger-solid"
                         Command="{Binding ConfirmDeleteCommand}"
@@ -200,7 +200,7 @@
               <PathIcon Data="{Binding PreviousPageIconData}" Classes="admin-button-icon"/>
             </Button>
             <Border Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
-              <TextBlock Text="{Binding PaginationSummaryText}" Foreground="#E2E8F0"/>
+              <TextBlock Text="{Binding PaginationSummaryText}" Foreground="{DynamicResource TextSecondaryBrush}"/>
             </Border>
             <Button Classes="admin-icon-button"
                     Command="{Binding NextPageCommand}"
@@ -222,8 +222,8 @@
           <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto" RowSpacing="12">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
               <StackPanel Spacing="4">
-                <TextBlock Text="{Binding FormTitle}" FontSize="22" FontWeight="Bold" Foreground="#F9FAFB"/>
-                <TextBlock Text="{Binding SelectedUserIdText, StringFormat=当前用户 ID：{0}}" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding FormTitle}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <TextBlock Text="{Binding SelectedUserIdText, StringFormat=当前用户 ID：{0}}" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
               </StackPanel>
               <Button Grid.Column="1"
                       Classes="admin-icon-button"
@@ -251,9 +251,9 @@
 
             <CheckBox Grid.Row="4" IsChecked="{Binding IsActive}" Content="启用用户" IsEnabled="{Binding IsStatusEditable}"/>
 
-            <Border Grid.Row="5" Background="#0F172A" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="12" Padding="12">
+            <Border Grid.Row="5" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
               <StackPanel Spacing="10">
-                <TextBlock Text="角色" Foreground="#F9FAFB" FontWeight="SemiBold"/>
+                <TextBlock Text="角色" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
                 <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
                   <ItemsControl ItemsSource="{Binding AvailableRoles}">
                     <ItemsControl.ItemTemplate>
@@ -267,7 +267,7 @@
             </Border>
 
             <StackPanel Grid.Row="6" Spacing="10">
-              <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
               <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
                 <Button Classes="admin-icon-button"
                         Command="{Binding CloseEditorDialogCommand}"

@@ -9,14 +9,14 @@
              x:DataType="vm:MainViewModel">
   <UserControl.Styles>
     <Style Selector="Border.nav-section-container">
-      <Setter Property="BorderBrush" Value="#1F2937"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
       <Setter Property="BorderThickness" Value="0,1,0,0"/>
       <Setter Property="Padding" Value="0,14,0,0"/>
       <Setter Property="Margin" Value="0,0,0,6"/>
     </Style>
     <Style Selector="Button.nav-item">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="#D1D5DB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="8"/>
@@ -25,73 +25,73 @@
       <Setter Property="MinHeight" Value="38"/>
     </Style>
     <Style Selector="Button.nav-item:pointerover">
-      <Setter Property="Background" Value="#1A2332"/>
-      <Setter Property="Foreground" Value="#F3F4F6"/>
-      <Setter Property="BorderBrush" Value="#334155"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.nav-item:pressed">
-      <Setter Property="Background" Value="#243041"/>
-      <Setter Property="Foreground" Value="#F9FAFB"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.nav-item.selected">
-      <Setter Property="Background" Value="#1F2937"/>
-      <Setter Property="Foreground" Value="#F9FAFB"/>
-      <Setter Property="BorderBrush" Value="#3B82F6"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceSelectedBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnSelectedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
       <Setter Property="BorderThickness" Value="3,0,0,0"/>
     </Style>
     <Style Selector="Button.nav-item.selected:pointerover">
-      <Setter Property="Background" Value="#243041"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceSelectedHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
     <Style Selector="Button.nav-item.selected:pressed">
-      <Setter Property="Background" Value="#293548"/>
-      <Setter Property="BorderBrush" Value="#93C5FD"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceSelectedPressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
     </Style>
     <Style Selector="Border.nav-section-children">
       <Setter Property="Margin" Value="0,6,0,0"/>
       <Setter Property="Padding" Value="0"/>
     </Style>
     <Style Selector="TextBlock.nav-section-title">
-      <Setter Property="Foreground" Value="#94A3B8"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
       <Setter Property="FontSize" Value="12"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
     <Style Selector="PathIcon.nav-section-icon">
-      <Setter Property="Foreground" Value="#64748B"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
     </Style>
     <Style Selector="PathIcon.nav-expand-icon">
-      <Setter Property="Foreground" Value="#64748B"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
     </Style>
     <Style Selector="PathIcon.nav-item-icon">
-      <Setter Property="Foreground" Value="#9CA3AF"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
     </Style>
     <Style Selector="TextBlock.nav-item-label">
-      <Setter Property="Foreground" Value="#D1D5DB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
     </Style>
     <Style Selector="Button.nav-section-toggle:pointerover PathIcon.nav-section-icon">
-      <Setter Property="Foreground" Value="#CBD5E1"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.nav-section-toggle:pointerover PathIcon.nav-expand-icon">
-      <Setter Property="Foreground" Value="#CBD5E1"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.nav-item:pointerover PathIcon.nav-item-icon">
-      <Setter Property="Foreground" Value="#BFDBFE"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextAccentSoftBrush}"/>
     </Style>
     <Style Selector="Button.nav-item:pointerover TextBlock.nav-item-label">
-      <Setter Property="Foreground" Value="#F3F4F6"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.nav-item.selected PathIcon.nav-item-icon">
-      <Setter Property="Foreground" Value="#93C5FD"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextAccentSoftBrush}"/>
     </Style>
     <Style Selector="Button.nav-item.selected TextBlock.nav-item-label">
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnSelectedBrush}"/>
     </Style>
     <Style Selector="Button.nav-section-toggle">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="#94A3B8"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="0"/>
@@ -100,63 +100,63 @@
       <Setter Property="MinHeight" Value="24"/>
     </Style>
     <Style Selector="Button.nav-section-toggle:pointerover">
-      <Setter Property="Foreground" Value="#CBD5E1"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.nav-section-toggle:pressed">
-      <Setter Property="Foreground" Value="#E2E8F0"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger">
-      <Setter Property="Background" Value="#111827"/>
-      <Setter Property="BorderBrush" Value="#374151"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="999"/>
       <Setter Property="Padding" Value="10,8"/>
     </Style>
     <Style Selector="Button.account-trigger /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#111827"/>
-      <Setter Property="BorderBrush" Value="#374151"/>
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger /template/ Border#border">
-      <Setter Property="Background" Value="#111827"/>
-      <Setter Property="BorderBrush" Value="#374151"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger:pointerover">
-      <Setter Property="Background" Value="#172033"/>
-      <Setter Property="BorderBrush" Value="#4B5563"/>
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger:pointerover /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#172033"/>
-      <Setter Property="BorderBrush" Value="#4B5563"/>
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger:pointerover /template/ Border#border">
-      <Setter Property="Background" Value="#172033"/>
-      <Setter Property="BorderBrush" Value="#4B5563"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger:pressed">
-      <Setter Property="Background" Value="#1D2A44"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger:pressed /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#1D2A44"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-trigger:pressed /template/ Border#border">
-      <Setter Property="Background" Value="#1D2A44"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
     <Style Selector="Border.account-avatar">
       <Setter Property="Background" Value="#2563EB"/>
@@ -165,26 +165,26 @@
       <Setter Property="Height" Value="32"/>
     </Style>
     <Style Selector="Border.account-menu">
-      <Setter Property="Background" Value="#111827"/>
-      <Setter Property="BorderBrush" Value="#374151"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="14"/>
       <Setter Property="Padding" Value="14"/>
     </Style>
     <Style Selector="TextBlock.account-label">
-      <Setter Property="Foreground" Value="#94A3B8"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
       <Setter Property="FontSize" Value="12"/>
     </Style>
     <Style Selector="Border.account-chip">
-      <Setter Property="Background" Value="#1F2937"/>
-      <Setter Property="BorderBrush" Value="#334155"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="999"/>
       <Setter Property="Padding" Value="8,4"/>
     </Style>
     <Style Selector="Button.account-menu-item">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="#E5E7EB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="8"/>
@@ -192,58 +192,58 @@
       <Setter Property="HorizontalContentAlignment" Value="Left"/>
     </Style>
     <Style Selector="Button.account-menu-item /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#E5E7EB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
     </Style>
     <Style Selector="Button.account-menu-item /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
-      <Setter Property="Foreground" Value="#E5E7EB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
     </Style>
     <Style Selector="Button.account-menu-item /template/ Border#border">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
     </Style>
     <Style Selector="Button.account-menu-item:pointerover">
-      <Setter Property="Background" Value="#243041"/>
-      <Setter Property="BorderBrush" Value="#334155"/>
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-menu-item:pointerover /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-menu-item:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#243041"/>
-      <Setter Property="BorderBrush" Value="#334155"/>
-      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-menu-item:pointerover /template/ Border#border">
-      <Setter Property="Background" Value="#243041"/>
-      <Setter Property="BorderBrush" Value="#334155"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
     </Style>
     <Style Selector="Button.account-menu-item:pressed">
-      <Setter Property="Background" Value="#293548"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-menu-item:pressed /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-menu-item:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#293548"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.account-menu-item:pressed /template/ Border#border">
-      <Setter Property="Background" Value="#293548"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
   </UserControl.Styles>
-  <Grid ColumnDefinitions="260,*" RowDefinitions="Auto,*" Background="#0B1220">
-    <Border Grid.RowSpan="2" Background="#111827" Padding="20,20,16,20">
+  <Grid ColumnDefinitions="260,*" RowDefinitions="Auto,*" Background="{DynamicResource AppBackgroundBrush}">
+    <Border Grid.RowSpan="2" Background="{DynamicResource SidebarBackgroundBrush}" Padding="20,20,16,20">
       <StackPanel Spacing="16">
         <StackPanel Spacing="6">
-          <TextBlock Text="Lumine AuthPortal" FontSize="22" FontWeight="Bold" Foreground="#F9FAFB"/>
-          <TextBlock Text="Avalonia Web 管理骨架" Foreground="#9CA3AF"/>
+          <TextBlock Text="Lumine AuthPortal" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <TextBlock Text="Avalonia Web 管理骨架" Foreground="{DynamicResource TextMutedBrush}"/>
         </StackPanel>
 
         <ItemsControl ItemsSource="{Binding VisibleNavigationSections}" HorizontalAlignment="Stretch">
@@ -252,7 +252,7 @@
               <Border Classes="nav-section-container">
                 <StackPanel Spacing="6">
                   <Button Classes="nav-section-toggle"
-                          Command="{Binding DataContext.ToggleSectionCommand, ElementName=Root}"
+                          Command="{Binding ToggleSectionCommand, ElementName=Root}"
                           CommandParameter="{Binding}">
                     <Grid ColumnDefinitions="18,*,16" ColumnSpacing="8" HorizontalAlignment="Stretch">
                       <PathIcon Grid.Column="0"
@@ -289,7 +289,7 @@
                     <ItemsControl ItemsSource="{Binding Items}" HorizontalAlignment="Stretch">
                       <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:NavigationItemViewModel">
-                          <Button Command="{Binding DataContext.NavigateCommand, ElementName=Root}"
+                          <Button Command="{Binding NavigateCommand, ElementName=Root}"
                                   CommandParameter="{Binding Key}"
                                   Classes="nav-item"
                                   Classes.selected="{Binding IsSelected}"
@@ -323,7 +323,7 @@
       </StackPanel>
     </Border>
 
-    <Border Grid.Row="1" Grid.Column="1" Padding="24" Background="#0B1220">
+    <Border Grid.Row="1" Grid.Column="1" Padding="24" Background="{DynamicResource AppBackgroundBrush}">
       <ContentControl Content="{Binding CurrentPage}"/>
     </Border>
 
@@ -334,18 +334,18 @@
             IsVisible="{Binding IsAccountMenuOpen}"
             Command="{Binding CloseAccountMenuCommand}"/>
 
-    <Border Grid.Column="1" Background="#111827" BorderBrush="#1F2937" BorderThickness="0,0,0,1" Padding="24,16">
+    <Border Grid.Column="1" Background="{DynamicResource TopbarBackgroundBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0,1" Padding="24,16">
       <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
         <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-          <TextBlock Text="{Binding CurrentPageTitle}" FontSize="24" FontWeight="Bold" Foreground="#F9FAFB"/>
-          <TextBlock Text="{Binding HasAdminAccess, StringFormat=后台菜单可见：{0}}" VerticalAlignment="Center" Foreground="#9CA3AF"/>
+          <TextBlock Text="{Binding CurrentPageTitle}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <TextBlock Text="{Binding HasAdminAccess, StringFormat=后台菜单可见：{0}}" VerticalAlignment="Center" Foreground="{DynamicResource TextMutedBrush}"/>
         </StackPanel>
 
-        <StackPanel Grid.Column="1" Spacing="8" HorizontalAlignment="Right">
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" VerticalAlignment="Center">
           <Button x:Name="AccountMenuButton"
                   Classes="account-trigger"
                   Command="{Binding ToggleAccountMenuCommand}"
-                  HorizontalAlignment="Right"
+                  VerticalAlignment="Center"
                   IsVisible="{Binding IsAuthenticated}">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
               <Border Classes="account-avatar" VerticalAlignment="Center">
@@ -353,20 +353,29 @@
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            TextAlignment="Center"
-                           Foreground="#F9FAFB"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
                            FontWeight="Bold"/>
               </Border>
               <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center">
-                <TextBlock Text="{Binding AccountDisplayName}" FontWeight="SemiBold" Foreground="#F9FAFB"/>
+                <TextBlock Text="{Binding AccountDisplayName}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
                 <TextBlock Text="{Binding AccountRolesSummary}" Classes="account-label" MaxWidth="240" TextTrimming="CharacterEllipsis"/>
               </StackPanel>
               <PathIcon Grid.Column="2"
                         Data="{Binding AccountMenuChevronIconData}"
                         Width="14"
                         Height="14"
-                        Foreground="#94A3B8"
+                        Foreground="{DynamicResource TextMutedBrush}"
                         VerticalAlignment="Center"/>
             </Grid>
+          </Button>
+          <Button Classes="account-trigger"
+                  Command="{Binding ToggleThemeCommand}"
+                  VerticalAlignment="Center"
+                  ToolTip.Tip="{Binding CurrentThemeLabel}">
+            <PathIcon Data="{Binding ThemeToggleIconData}"
+                      Width="16"
+                      Height="16"
+                      Foreground="{DynamicResource TextPrimaryBrush}"/>
           </Button>
 
           <Popup IsOpen="{Binding IsAccountMenuOpen}"
@@ -383,20 +392,20 @@
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                TextAlignment="Center"
-                               Foreground="#F9FAFB"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
                                FontWeight="Bold"/>
                   </Border>
                   <StackPanel Spacing="2">
-                    <TextBlock Text="{Binding AccountDisplayName}" FontWeight="Bold" Foreground="#F9FAFB"/>
+                    <TextBlock Text="{Binding AccountDisplayName}" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
                     <TextBlock Text="{Binding AccountStatusText}" Classes="account-label"/>
                   </StackPanel>
                 </StackPanel>
 
-                <Border Background="#1F2937" CornerRadius="10" Padding="10">
+                <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="10" Padding="10">
                   <StackPanel Spacing="6">
                     <TextBlock Text="邮箱" Classes="account-label"/>
-                    <TextBlock Text="{Binding AccountEmail}" Foreground="#E5E7EB" TextWrapping="Wrap"/>
-                    <TextBlock Text="{Binding AccountRolesSummary}" Foreground="#E5E7EB" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding AccountEmail}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding AccountRolesSummary}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
                   </StackPanel>
                 </Border>
 
@@ -411,7 +420,7 @@
                     <ItemsControl.ItemTemplate>
                       <DataTemplate>
                         <Border Classes="account-chip" Margin="0,0,8,8">
-                          <TextBlock Text="{Binding .}" Foreground="#E5E7EB" FontSize="12"/>
+                          <TextBlock Text="{Binding .}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"/>
                         </Border>
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -435,7 +444,7 @@
             </Border>
           </Popup>
 
-          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" IsVisible="{Binding IsAnonymous}">
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" IsVisible="{Binding IsAnonymous}">
             <Button Classes="admin-button admin-primary admin-compact"
                     Content="去登录"
                     Command="{Binding NavigateCommand}"
