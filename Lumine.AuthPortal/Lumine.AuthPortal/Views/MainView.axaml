@@ -47,22 +47,31 @@
       <Setter Property="FontSize" Value="12"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
-    <Style Selector="TextBlock.nav-icon">
-      <Setter Property="FontFamily" Value="{StaticResource EmojiFont}"/>
+    <Style Selector="PathIcon.nav-section-icon">
+      <Setter Property="Foreground" Value="#64748B"/>
     </Style>
-    <Style Selector="TextBlock.nav-item-icon">
+    <Style Selector="PathIcon.nav-expand-icon">
+      <Setter Property="Foreground" Value="#64748B"/>
+    </Style>
+    <Style Selector="PathIcon.nav-item-icon">
       <Setter Property="Foreground" Value="#9CA3AF"/>
     </Style>
     <Style Selector="TextBlock.nav-item-label">
       <Setter Property="Foreground" Value="#D1D5DB"/>
     </Style>
-    <Style Selector="Button.nav-item:pointerover TextBlock.nav-item-icon">
+    <Style Selector="Button.nav-section-toggle:pointerover PathIcon.nav-section-icon">
+      <Setter Property="Foreground" Value="#CBD5E1"/>
+    </Style>
+    <Style Selector="Button.nav-section-toggle:pointerover PathIcon.nav-expand-icon">
+      <Setter Property="Foreground" Value="#CBD5E1"/>
+    </Style>
+    <Style Selector="Button.nav-item:pointerover PathIcon.nav-item-icon">
       <Setter Property="Foreground" Value="#BFDBFE"/>
     </Style>
     <Style Selector="Button.nav-item:pointerover TextBlock.nav-item-label">
       <Setter Property="Foreground" Value="#F3F4F6"/>
     </Style>
-    <Style Selector="Button.nav-item.selected TextBlock.nav-item-icon">
+    <Style Selector="Button.nav-item.selected PathIcon.nav-item-icon">
       <Setter Property="Foreground" Value="#93C5FD"/>
     </Style>
     <Style Selector="Button.nav-item.selected TextBlock.nav-item-label">
@@ -145,18 +154,25 @@
                   <Button Classes="nav-section-toggle"
                           Command="{Binding DataContext.ToggleSectionCommand, ElementName=Root}"
                           CommandParameter="{Binding}">
-                    <Grid ColumnDefinitions="*,16" HorizontalAlignment="Stretch">
-                      <TextBlock Grid.Column="0"
+                    <Grid ColumnDefinitions="18,*,16" ColumnSpacing="8" HorizontalAlignment="Stretch">
+                      <PathIcon Grid.Column="0"
+                                Data="{Binding IconData}"
+                                Classes="nav-section-icon"
+                                Width="14"
+                                Height="14"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"/>
+                      <TextBlock Grid.Column="1"
                                  Text="{Binding Title}"
                                  Classes="nav-section-title"
                                  VerticalAlignment="Center"/>
-                      <TextBlock Grid.Column="1"
-                               Text="{Binding ExpandGlyph}"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Right"
-                               Foreground="#64748B"
-                               FontSize="12"
-                               FontWeight="SemiBold"/>
+                      <PathIcon Grid.Column="2"
+                                Data="{Binding ExpandIconData}"
+                                Classes="nav-expand-icon"
+                                Width="13"
+                                Height="13"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Right"/>
                     </Grid>
                   </Button>
 
@@ -181,12 +197,13 @@
                                   HorizontalAlignment="Stretch"
                                   HorizontalContentAlignment="Stretch">
                             <Grid ColumnDefinitions="24,*" HorizontalAlignment="Stretch">
-                              <TextBlock Grid.Column="0"
-                                         Text="{Binding IconGlyph}"
-                                         Classes="nav-icon nav-item-icon"
-                                         VerticalAlignment="Center"
-                                         HorizontalAlignment="Center"
-                                         FontSize="16"/>
+                              <PathIcon Grid.Column="0"
+                                        Data="{Binding IconData}"
+                                        Classes="nav-item-icon"
+                                        Width="17"
+                                        Height="17"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"/>
                               <TextBlock Grid.Column="1"
                                          Text="{Binding Title}"
                                          Classes="nav-item-label"
@@ -242,10 +259,12 @@
                 <TextBlock Text="{Binding AccountDisplayName}" FontWeight="SemiBold" Foreground="#F9FAFB"/>
                 <TextBlock Text="{Binding AccountRolesSummary}" Classes="account-label" MaxWidth="240" TextTrimming="CharacterEllipsis"/>
               </StackPanel>
-              <TextBlock Grid.Column="2"
-                         Text="▾"
-                         Foreground="#94A3B8"
-                         VerticalAlignment="Center"/>
+              <PathIcon Grid.Column="2"
+                        Data="{Binding AccountMenuChevronIconData}"
+                        Width="14"
+                        Height="14"
+                        Foreground="#94A3B8"
+                        VerticalAlignment="Center"/>
             </Grid>
           </Button>
 

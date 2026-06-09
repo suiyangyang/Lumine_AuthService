@@ -6,130 +6,150 @@
              x:Name="Root"
              x:DataType="vm:UsersManagementPageViewModel">
   <Grid>
-    <Grid ColumnDefinitions="2.2*,1.15*" ColumnSpacing="16">
-      <Border Classes="admin-panel">
-        <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="12">
-          <StackPanel Orientation="Horizontal" Spacing="12">
-            <Button Classes="admin-button" Content="刷新列表" Command="{Binding LoadCommand}"/>
-            <Button Classes="admin-button admin-success" Content="新增用户" Command="{Binding OpenCreateDialogCommand}"/>
-            <Button Classes="admin-button admin-danger-solid" Content="删除所选" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelectedUser}"/>
+    <Border Classes="admin-panel" Padding="18">
+      <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+          <StackPanel Spacing="4">
+            <TextBlock Text="用户列表" Classes="admin-card-title"/>
+            <TextBlock Text="维护后台账号、启停状态、登录记录和角色分配。" Classes="admin-hint"/>
           </StackPanel>
 
-          <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
-            <TextBox x:Name="SearchKeywordTextBox" Text="{Binding SearchKeyword}" Watermark="搜索用户名 / 邮箱" KeyDown="SearchKeywordTextBox_OnKeyDown"/>
-            <Button Grid.Column="1" Classes="admin-button" Content="搜索" Command="{Binding SearchCommand}"/>
-            <ComboBox Grid.Column="2" Width="96" ItemsSource="{Binding PageSizeOptions}" SelectedItem="{Binding SelectedPageSize}" HorizontalContentAlignment="Center"/>
-            <Button Grid.Column="3" Classes="admin-button" Content="上一页" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPreviousPage}"/>
-            <Button Grid.Column="4" Classes="admin-button" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
-          </Grid>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Classes="admin-button admin-compact" Content="刷新" Command="{Binding LoadCommand}"/>
+            <Button Classes="admin-button admin-primary" Content="新增用户" Command="{Binding OpenCreateDialogCommand}"/>
+            <Button Classes="admin-button admin-danger" Content="删除所选" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelectedUser}"/>
+          </StackPanel>
+        </Grid>
 
-          <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="12">
-            <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1" Text="{Binding PaginationSummaryText}" Foreground="#9CA3AF" VerticalAlignment="Center"/>
-          </Grid>
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+          <TextBox x:Name="SearchKeywordTextBox"
+                   Text="{Binding SearchKeyword}"
+                   Watermark="搜索用户名或邮箱，回车执行"
+                   KeyDown="SearchKeywordTextBox_OnKeyDown"/>
+          <Button Grid.Column="1" Classes="admin-button admin-compact" Content="搜索" Command="{Binding SearchCommand}"/>
+          <ComboBox Grid.Column="2"
+                    Width="108"
+                    ItemsSource="{Binding PageSizeOptions}"
+                    SelectedItem="{Binding SelectedPageSize}"
+                    HorizontalContentAlignment="Center"/>
+        </Grid>
 
-          <Border Grid.Row="3" Classes="admin-status-banner" Padding="12,10">
-            <Grid ColumnDefinitions="1.35*,1.1*,1.2*,0.7*,1.0*,1.0*,1.3*,2.7*" ColumnSpacing="12">
-              <TextBlock Text="ID" Foreground="#9CA3AF" FontWeight="SemiBold"/>
-              <TextBlock Grid.Column="1" Text="用户名" Foreground="#9CA3AF" FontWeight="SemiBold"/>
-              <TextBlock Grid.Column="2" Text="邮箱" Foreground="#9CA3AF" FontWeight="SemiBold"/>
-              <TextBlock Grid.Column="3" Text="状态" Foreground="#9CA3AF" FontWeight="SemiBold"/>
-              <TextBlock Grid.Column="4" Text="创建时间" Foreground="#9CA3AF" FontWeight="SemiBold"/>
-              <TextBlock Grid.Column="5" Text="最后登录" Foreground="#9CA3AF" FontWeight="SemiBold"/>
-              <TextBlock Grid.Column="6" Text="角色" Foreground="#9CA3AF" FontWeight="SemiBold"/>
-              <TextBlock Grid.Column="7" Text="操作" Foreground="#9CA3AF" FontWeight="SemiBold"/>
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+          <Border Classes="admin-status-banner" Padding="10,8">
+            <TextBlock Text="{Binding StatusMessage}" Foreground="#93C5FD" TextWrapping="Wrap"/>
+          </Border>
+          <Border Grid.Column="1" Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
+            <TextBlock Text="{Binding PaginationSummaryText}" Foreground="#E2E8F0"/>
+          </Border>
+        </Grid>
+
+        <Border Grid.Row="3" Background="#0F172A" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="12" Padding="12">
+          <Grid RowDefinitions="Auto,Auto,*">
+            <Grid ColumnDefinitions="190,130,220,72,132,132,*,300" ColumnSpacing="12" Margin="2,0,2,10">
+              <TextBlock Text="ID" Classes="admin-table-header"/>
+              <TextBlock Grid.Column="1" Text="用户名" Classes="admin-table-header"/>
+              <TextBlock Grid.Column="2" Text="邮箱" Classes="admin-table-header"/>
+              <TextBlock Grid.Column="3" Text="状态" Classes="admin-table-header"/>
+              <TextBlock Grid.Column="4" Text="创建时间" Classes="admin-table-header"/>
+              <TextBlock Grid.Column="5" Text="最后登录" Classes="admin-table-header"/>
+              <TextBlock Grid.Column="6" Text="角色" Classes="admin-table-header"/>
+              <TextBlock Grid.Column="7" Text="操作" Classes="admin-table-header"/>
+            </Grid>
+
+            <Border Grid.Row="1" Height="1" Background="#243041"/>
+
+            <Grid Grid.Row="2">
+              <ListBox ItemsSource="{Binding Items}"
+                       SelectedItem="{Binding SelectedItem}"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       Margin="0,10,0,0"
+                       IsVisible="{Binding HasUsers}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate x:DataType="model:UserDto">
+                    <Border Classes="admin-row-card" Margin="0,0,0,8" Padding="10">
+                      <Grid ColumnDefinitions="190,130,220,72,132,132,*,300" ColumnSpacing="12">
+                        <TextBlock Text="{Binding Id}" Classes="admin-muted" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Grid.Column="1" Text="{Binding UserName}" Foreground="#F9FAFB" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Grid.Column="2" Text="{Binding Email}" Foreground="#D1D5DB" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+
+                        <Border Grid.Column="3" Classes="admin-pill admin-pill-success" HorizontalAlignment="Left" VerticalAlignment="Center" IsVisible="{Binding IsActive}">
+                          <TextBlock Text="启用" Foreground="#ECFDF5" FontSize="12"/>
+                        </Border>
+                        <Border Grid.Column="3" Classes="admin-pill admin-pill-danger" HorizontalAlignment="Left" VerticalAlignment="Center" IsVisible="{Binding IsInactive}">
+                          <TextBlock Text="禁用" Foreground="#FEF2F2" FontSize="12"/>
+                        </Border>
+
+                        <TextBlock Grid.Column="4" Text="{Binding CreatedAtDisplay}" Classes="admin-muted" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="5" Text="{Binding LastLoginAtDisplay}" Classes="admin-muted" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="6" Text="{Binding RolesDisplay}" Foreground="#D1D5DB" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+
+                        <WrapPanel Grid.Column="7" Orientation="Horizontal" ItemHeight="30" VerticalAlignment="Center">
+                          <Button Classes="admin-row-action" Content="编辑"
+                                  Command="{Binding DataContext.EditUserCommand, ElementName=Root}"
+                                  CommandParameter="{Binding}"
+                                  Margin="0,0,6,0"/>
+                          <Button Classes="admin-row-action" Content="角色"
+                                  Command="{Binding DataContext.AssignRolesCommand, ElementName=Root}"
+                                  CommandParameter="{Binding}"
+                                  Margin="0,0,6,0"/>
+                          <Button Classes="admin-row-action" Content="重置"
+                                  Command="{Binding DataContext.PrepareResetPasswordCommand, ElementName=Root}"
+                                  CommandParameter="{Binding}"
+                                  Margin="0,0,6,0"/>
+                          <Button Classes="admin-row-action"
+                                  Content="{Binding ToggleStatusActionText}"
+                                  Command="{Binding DataContext.ToggleUserStatusCommand, ElementName=Root}"
+                                  CommandParameter="{Binding}"
+                                  Margin="0,0,6,0"/>
+                          <Button Classes="admin-row-action admin-danger" Content="删除"
+                                  Command="{Binding DataContext.DeleteUserCommand, ElementName=Root}"
+                                  CommandParameter="{Binding}"/>
+                        </WrapPanel>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+
+              <Border Classes="info-card" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsVisible="{Binding ShowUsersEmptyState}">
+                <StackPanel Spacing="8" HorizontalAlignment="Center">
+                  <TextBlock Text="暂无用户数据" FontSize="18" FontWeight="SemiBold" Foreground="#F9FAFB" HorizontalAlignment="Center"/>
+                  <TextBlock Text="可调整搜索条件后重试，或点击“新增用户”创建第一个账号。" Classes="admin-hint" HorizontalAlignment="Center"/>
+                </StackPanel>
+              </Border>
+            </Grid>
+          </Grid>
+        </Border>
+
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+          <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}" HorizontalAlignment="Left">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+              <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="#F8FAFC" TextWrapping="Wrap" VerticalAlignment="Center"/>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <Button Classes="admin-button admin-danger-solid" Content="确认删除" Command="{Binding ConfirmDeleteCommand}"/>
+                <Button Classes="admin-button admin-compact" Content="取消" Command="{Binding CancelDeleteCommand}"/>
+              </StackPanel>
             </Grid>
           </Border>
 
-          <ListBox Grid.Row="4" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Background="Transparent" BorderThickness="0">
-            <ListBox.ItemTemplate>
-              <DataTemplate x:DataType="model:UserDto">
-                <Border Classes="admin-row-card" Margin="0,0,0,10">
-                  <Grid ColumnDefinitions="1.35*,1.1*,1.2*,0.7*,1.0*,1.0*,1.3*,2.7*" ColumnSpacing="12">
-                    <TextBlock Text="{Binding Id}" Classes="admin-muted" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                    <TextBlock Grid.Column="1" Text="{Binding UserName}" Foreground="#F9FAFB" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="2" Text="{Binding Email}" Foreground="#D1D5DB" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                    <Border Grid.Column="3" Classes="admin-pill admin-pill-success" HorizontalAlignment="Left" IsVisible="{Binding IsActive}">
-                      <TextBlock Text="启用" Foreground="#ECFDF5" FontSize="12"/>
-                    </Border>
-                    <Border Grid.Column="3" Classes="admin-pill admin-pill-danger" HorizontalAlignment="Left" IsVisible="{Binding IsInactive}">
-                      <TextBlock Text="禁用" Foreground="#FEF2F2" FontSize="12"/>
-                    </Border>
-                    <TextBlock Grid.Column="4" Text="{Binding CreatedAtDisplay}" Foreground="#D1D5DB" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="5" Text="{Binding LastLoginAtDisplay}" Foreground="#D1D5DB" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                    <TextBlock Grid.Column="6" Text="{Binding RolesDisplay}" Foreground="#D1D5DB" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                    <StackPanel Grid.Column="7" Spacing="6">
-                      <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Button Classes="admin-row-action" Content="编辑"
-                                Command="{Binding DataContext.EditUserCommand, ElementName=Root}"
-                                CommandParameter="{Binding}"/>
-                        <Button Classes="admin-row-action admin-danger" Content="删除"
-                                Command="{Binding DataContext.DeleteUserCommand, ElementName=Root}"
-                          CommandParameter="{Binding}"/>
-                        <Button Classes="admin-row-action" Content="重置密码"
-                                Command="{Binding DataContext.PrepareResetPasswordCommand, ElementName=Root}"
-                                CommandParameter="{Binding}"/>
-                      </StackPanel>
-                      <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Button Classes="admin-row-action"
-                                Content="{Binding ToggleStatusActionText}"
-                                Command="{Binding DataContext.ToggleUserStatusCommand, ElementName=Root}"
-                                CommandParameter="{Binding}"/>
-                        <Button Classes="admin-row-action" Content="分配角色"
-                                Command="{Binding DataContext.AssignRolesCommand, ElementName=Root}"
-                                CommandParameter="{Binding}"/>
-                      </StackPanel>
-                    </StackPanel>
-                  </Grid>
-                </Border>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-        </Grid>
-      </Border>
-
-      <Border Grid.Column="1" Classes="admin-panel">
-        <StackPanel Spacing="14">
-          <StackPanel Spacing="4">
-            <TextBlock Text="用户操作说明" FontSize="20" FontWeight="Bold" Foreground="#F9FAFB"/>
-            <TextBlock Text="新增、编辑、重置密码与角色分配已统一为弹窗操作。" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Classes="admin-button admin-compact" Content="上一页" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPreviousPage}"/>
+            <Border Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
+              <TextBlock Text="{Binding PaginationSummaryText}" Foreground="#E2E8F0"/>
+            </Border>
+            <Button Classes="admin-button admin-compact" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
           </StackPanel>
-
-          <Border Classes="info-card">
-            <StackPanel Spacing="6">
-              <TextBlock Classes="admin-info-title" Text="使用方式"/>
-              <TextBlock Classes="admin-info-body" Text="点击左上角“新增用户”创建账号；点击列表行内按钮可编辑资料、分配角色或重置密码。"/>
-            </StackPanel>
-          </Border>
-
-          <Border Classes="info-card">
-            <StackPanel Spacing="6">
-              <TextBlock Classes="admin-info-title" Text="当前选择"/>
-              <TextBlock Classes="admin-info-body" Text="{Binding SelectedUserIdText, StringFormat=用户 ID：{0}}"/>
-              <TextBlock Classes="admin-info-body" Text="{Binding StatusMessage}"/>
-            </StackPanel>
-          </Border>
-
-          <Border Classes="info-card" IsVisible="{Binding HasPendingDelete}">
-            <StackPanel Spacing="10">
-              <TextBlock Classes="admin-info-title" Text="删除确认"/>
-              <TextBlock Classes="admin-info-body" Text="{Binding DeleteConfirmationText}"/>
-              <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button Classes="admin-button admin-danger-solid" Content="确认删除" Command="{Binding ConfirmDeleteCommand}"/>
-                <Button Classes="admin-button" Content="取消" Command="{Binding CancelDeleteCommand}"/>
-              </StackPanel>
-            </StackPanel>
-          </Border>
-        </StackPanel>
-      </Border>
-    </Grid>
+        </Grid>
+      </Grid>
+    </Border>
 
     <Border Classes="dialog-backdrop" IsVisible="{Binding IsUserDialogOpen}">
       <Grid>
         <Button Background="Transparent" BorderThickness="0" Command="{Binding CloseEditorDialogCommand}" IsVisible="{Binding IsEditorDialogOpen}"/>
         <Button Background="Transparent" BorderThickness="0" Command="{Binding CloseCreateDialogCommand}" IsVisible="{Binding IsCreateDialogOpen}"/>
 
-        <Border Classes="dialog-card" Width="560" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border Classes="dialog-card" Width="560" MaxHeight="760" HorizontalAlignment="Center" VerticalAlignment="Center">
           <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto" RowSpacing="12">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
               <StackPanel Spacing="4">
@@ -137,17 +157,15 @@
                 <TextBlock Text="{Binding SelectedUserIdText, StringFormat=当前用户 ID：{0}}" Foreground="#9CA3AF" TextWrapping="Wrap"/>
               </StackPanel>
               <Button Grid.Column="1"
-                      Content="✕"
-                      Classes="admin-button admin-close-icon"
+                      Content="关闭"
+                      Classes="admin-button admin-compact"
                       Command="{Binding CloseEditorDialogCommand}"
-                      IsVisible="{Binding IsEditorDialogOpen}"
-                      />
+                      IsVisible="{Binding IsEditorDialogOpen}"/>
               <Button Grid.Column="1"
-                      Content="✕"
-                      Classes="admin-button admin-close-icon"
+                      Content="关闭"
+                      Classes="admin-button admin-compact"
                       Command="{Binding CloseCreateDialogCommand}"
-                      IsVisible="{Binding IsCreateDialogOpen}"
-                      />
+                      IsVisible="{Binding IsCreateDialogOpen}"/>
             </Grid>
 
             <TextBox Grid.Row="1" Text="{Binding UserName}" Watermark="用户名" IsEnabled="{Binding IsIdentityEditable}"/>
@@ -160,10 +178,10 @@
 
             <CheckBox Grid.Row="4" IsChecked="{Binding IsActive}" Content="启用用户" IsEnabled="{Binding IsStatusEditable}"/>
 
-            <Border Grid.Row="5" Background="#0F172A" CornerRadius="12" Padding="12">
+            <Border Grid.Row="5" Background="#0F172A" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="12" Padding="12">
               <StackPanel Spacing="10">
                 <TextBlock Text="角色" Foreground="#F9FAFB" FontWeight="SemiBold"/>
-                <ScrollViewer MaxHeight="220">
+                <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
                   <ItemsControl ItemsSource="{Binding AvailableRoles}">
                     <ItemsControl.ItemTemplate>
                       <DataTemplate x:DataType="vm:UserRoleOptionViewModel">
@@ -178,17 +196,15 @@
             <StackPanel Grid.Row="6" Spacing="10">
               <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
               <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Classes="admin-button admin-close-icon"
-                        Content="✕"
+                <Button Classes="admin-button"
+                        Content="取消"
                         Command="{Binding CloseEditorDialogCommand}"
-                        IsVisible="{Binding IsEditorDialogOpen}"
-                        />
-                <Button Classes="admin-button admin-close-icon"
-                        Content="✕"
+                        IsVisible="{Binding IsEditorDialogOpen}"/>
+                <Button Classes="admin-button"
+                        Content="取消"
                         Command="{Binding CloseCreateDialogCommand}"
-                        IsVisible="{Binding IsCreateDialogOpen}"
-                        />
-                <Button Classes="admin-button admin-success" Content="{Binding PrimaryActionText}" Command="{Binding SaveCommand}" IsVisible="{Binding ShowSaveUserButton}"/>
+                        IsVisible="{Binding IsCreateDialogOpen}"/>
+                <Button Classes="admin-button admin-primary" Content="{Binding PrimaryActionText}" Command="{Binding SaveCommand}" IsVisible="{Binding ShowSaveUserButton}"/>
                 <Button Classes="admin-button admin-primary" Content="确认重置密码" Command="{Binding ResetPasswordCommand}" IsVisible="{Binding ShowResetPasswordButton}"/>
               </StackPanel>
             </StackPanel>

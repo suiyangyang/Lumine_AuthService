@@ -279,6 +279,12 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private bool _isCreateDialogOpen;
     [ObservableProperty] private bool _isEditorDialogOpen;
 
+    partial void OnItemsChanged(IReadOnlyList<UserDto> value)
+    {
+        OnPropertyChanged(nameof(HasUsers));
+        OnPropertyChanged(nameof(ShowUsersEmptyState));
+    }
+
     partial void OnSelectedItemChanged(UserDto? value)
     {
         OnPropertyChanged(nameof(HasSelectedUser));
@@ -293,6 +299,10 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     }
 
     public bool HasSelectedUser => SelectedItem != null;
+
+    public bool HasUsers => Items.Count > 0;
+
+    public bool ShowUsersEmptyState => !HasUsers;
 
     public bool ShowEditorPlaceholder => SelectedItem == null;
 

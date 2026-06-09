@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Avalonia.Media;
 using Lumine.AuthPortal.Services;
 using Lumine.AuthPortal.ViewModels.Pages;
 using System.Globalization;
@@ -42,20 +43,20 @@ public partial class MainViewModel : ViewModelBase
             }
         };
 
-        var dashboard = new NavigationItemViewModel("dashboard", "仪表盘", "🏠");
-        var login = new NavigationItemViewModel("login", "登录", "🔐");
-        var register = new NavigationItemViewModel("register", "注册", "📝");
-        var users = new NavigationItemViewModel("users", "用户管理", "👤", "users.view", "users.manage");
-        var roles = new NavigationItemViewModel("roles", "角色管理", "🛡", "roles.view", "roles.manage");
-        var permissions = new NavigationItemViewModel("permissions", "权限管理", "🔑", "permissions.view", "permissions.manage");
-        var userGroups = new NavigationItemViewModel("user-groups", "用户组管理", "👥");
-        var clients = new NavigationItemViewModel("clients", "OAuth 客户端", "🌐", "clients.view", "clients.manage");
-        var consent = new NavigationItemViewModel("consent", "授权确认", "✅");
-        var tokens = new NavigationItemViewModel("tokens", "Token 管理", "🎟️");
-        var oidc = new NavigationItemViewModel("oidc", "OIDC Discovery", "🛰️");
-        var menus = new NavigationItemViewModel("menus", "菜单管理", "🧭");
-        var settings = new NavigationItemViewModel("settings", "系统配置", "⚙️");
-        var audit = new NavigationItemViewModel("audit", "审计日志", "🧾");
+        var dashboard = new NavigationItemViewModel("dashboard", "仪表盘", "dashboard");
+        var login = new NavigationItemViewModel("login", "登录", "login");
+        var register = new NavigationItemViewModel("register", "注册", "register");
+        var users = new NavigationItemViewModel("users", "用户管理", "users", "users.view", "users.manage");
+        var roles = new NavigationItemViewModel("roles", "角色管理", "roles", "roles.view", "roles.manage");
+        var permissions = new NavigationItemViewModel("permissions", "权限管理", "permissions", "permissions.view", "permissions.manage");
+        var userGroups = new NavigationItemViewModel("user-groups", "用户组管理", "user-groups");
+        var clients = new NavigationItemViewModel("clients", "OAuth 客户端", "clients", "clients.view", "clients.manage");
+        var consent = new NavigationItemViewModel("consent", "授权确认", "consent");
+        var tokens = new NavigationItemViewModel("tokens", "Token 管理", "tokens");
+        var oidc = new NavigationItemViewModel("oidc", "OIDC Discovery", "oidc");
+        var menus = new NavigationItemViewModel("menus", "菜单管理", "menus");
+        var settings = new NavigationItemViewModel("settings", "系统配置", "settings");
+        var audit = new NavigationItemViewModel("audit", "审计日志", "audit");
 
         NavigationItems =
         [
@@ -77,10 +78,10 @@ public partial class MainViewModel : ViewModelBase
 
         NavigationSections =
         [
-            new NavigationSectionViewModel("系统概览", "▣", [dashboard]),
-            new NavigationSectionViewModel("身份管理", "👥", [users, roles, permissions, userGroups]),
-            new NavigationSectionViewModel("认证授权", "🔐", [clients, consent, tokens, oidc]),
-            new NavigationSectionViewModel("系统管理", "⚙", [menus, settings, audit])
+            new NavigationSectionViewModel("系统概览", "overview", [dashboard]),
+            new NavigationSectionViewModel("身份管理", "identity", [users, roles, permissions, userGroups]),
+            new NavigationSectionViewModel("认证授权", "auth", [clients, consent, tokens, oidc]),
+            new NavigationSectionViewModel("系统管理", "system", [menus, settings, audit])
         ];
 
         _navigationLookup = NavigationItems.ToDictionary(item => item.Key, StringComparer.OrdinalIgnoreCase);
@@ -122,6 +123,8 @@ public partial class MainViewModel : ViewModelBase
     public bool IsAnonymous => !IsAuthenticated;
 
     public PortalSession Session => _session;
+
+    public StreamGeometry AccountMenuChevronIconData => NavigationIconData.Get("chevron-down");
 
     public bool HasAdminAccess => VisibleNavigationSections
         .SelectMany(section => section.Items)
