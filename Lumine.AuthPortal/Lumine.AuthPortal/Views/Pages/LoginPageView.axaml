@@ -5,46 +5,180 @@
              x:DataType="vm:LoginPageViewModel">
   <UserControl.Styles>
     <Style Selector="TextBlock.form-label">
-      <Setter Property="Foreground" Value="#CBD5E1"/>
+      <Setter Property="Foreground" Value="#C7D2E5"/>
       <Setter Property="FontSize" Value="13"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
     <Style Selector="TextBox.login-input">
       <Setter Property="MinHeight" Value="44"/>
-      <Setter Property="Background" Value="#0F172A"/>
+      <Setter Property="Background" Value="#162033"/>
       <Setter Property="Foreground" Value="#F8FAFC"/>
-      <Setter Property="BorderBrush" Value="#334155"/>
+      <Setter Property="BorderBrush" Value="#2C3A55"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="10"/>
       <Setter Property="Padding" Value="12,10"/>
       <Setter Property="CaretBrush" Value="#F8FAFC"/>
-      <Setter Property="SelectionBrush" Value="#2563EB"/>
+      <Setter Property="SelectionBrush" Value="#3B82F6"/>
     </Style>
     <Style Selector="TextBox.login-input /template/ Border#border">
-      <Setter Property="Background" Value="#0F172A"/>
-      <Setter Property="BorderBrush" Value="#334155"/>
+      <Setter Property="Background" Value="#162033"/>
+      <Setter Property="BorderBrush" Value="#2C3A55"/>
     </Style>
     <Style Selector="TextBox.login-input /template/ ScrollViewer#PART_ScrollViewer">
-      <Setter Property="Background" Value="#0F172A"/>
+      <Setter Property="Background" Value="#162033"/>
     </Style>
     <Style Selector="TextBox.login-input:pointerover">
-      <Setter Property="BorderBrush" Value="#475569"/>
+      <Setter Property="Background" Value="#18253A"/>
+      <Setter Property="BorderBrush" Value="#466089"/>
     </Style>
     <Style Selector="TextBox.login-input:pointerover /template/ Border#border">
-      <Setter Property="BorderBrush" Value="#475569"/>
+      <Setter Property="Background" Value="#18253A"/>
+      <Setter Property="BorderBrush" Value="#466089"/>
     </Style>
     <Style Selector="TextBox.login-input:focus">
-      <Setter Property="Background" Value="#111C31"/>
+      <Setter Property="Background" Value="#1A2942"/>
       <Setter Property="Foreground" Value="#F8FAFC"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="BorderBrush" Value="#7CB4FF"/>
       <Setter Property="CaretBrush" Value="#F8FAFC"/>
     </Style>
     <Style Selector="TextBox.login-input:focus /template/ Border#border">
-      <Setter Property="Background" Value="#111C31"/>
-      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Background" Value="#1A2942"/>
+      <Setter Property="BorderBrush" Value="#7CB4FF"/>
     </Style>
     <Style Selector="TextBox.login-input:focus /template/ ScrollViewer#PART_ScrollViewer">
-      <Setter Property="Background" Value="#111C31"/>
+      <Setter Property="Background" Value="#1A2942"/>
+    </Style>
+    <Style Selector="Border.login-panel">
+      <Setter Property="Background" Value="#101827"/>
+      <Setter Property="BorderBrush" Value="#22304A"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="18"/>
+    </Style>
+    <Style Selector="Button.login-primary-action">
+      <Setter Property="Background" Value="#2563EB"/>
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="16,11"/>
+    </Style>
+    <Style Selector="Button.login-primary-action /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.login-primary-action /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#2563EB"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.login-primary-action /template/ Border#border">
+      <Setter Property="Background" Value="#2563EB"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:pointerover">
+      <Setter Property="Background" Value="#1D4ED8"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="BorderBrush" Value="#93C5FD"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:pointerover /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#1D4ED8"/>
+      <Setter Property="BorderBrush" Value="#93C5FD"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:pointerover /template/ Border#border">
+      <Setter Property="Background" Value="#1D4ED8"/>
+      <Setter Property="BorderBrush" Value="#93C5FD"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:pressed">
+      <Setter Property="Background" Value="#1E40AF"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="BorderBrush" Value="#BFDBFE"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:pressed /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#1E40AF"/>
+      <Setter Property="BorderBrush" Value="#BFDBFE"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:pressed /template/ Border#border">
+      <Setter Property="Background" Value="#1E40AF"/>
+      <Setter Property="BorderBrush" Value="#BFDBFE"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:disabled">
+      <Setter Property="Background" Value="#1E3A5F"/>
+      <Setter Property="Foreground" Value="#94A3B8"/>
+      <Setter Property="BorderBrush" Value="#314666"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:disabled /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#94A3B8"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#1E3A5F"/>
+      <Setter Property="BorderBrush" Value="#314666"/>
+      <Setter Property="Foreground" Value="#94A3B8"/>
+    </Style>
+    <Style Selector="Button.login-primary-action:disabled /template/ Border#border">
+      <Setter Property="Background" Value="#1E3A5F"/>
+      <Setter Property="BorderBrush" Value="#314666"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action">
+      <Setter Property="Background" Value="#162033"/>
+      <Setter Property="Foreground" Value="#D6E4FF"/>
+      <Setter Property="BorderBrush" Value="#314666"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="14,10"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#D6E4FF"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#162033"/>
+      <Setter Property="BorderBrush" Value="#314666"/>
+      <Setter Property="Foreground" Value="#D6E4FF"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action /template/ Border#border">
+      <Setter Property="Background" Value="#162033"/>
+      <Setter Property="BorderBrush" Value="#314666"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action:pointerover">
+      <Setter Property="Background" Value="#1C2940"/>
+      <Setter Property="Foreground" Value="#F8FAFC"/>
+      <Setter Property="BorderBrush" Value="#55739F"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action:pointerover /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F8FAFC"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#1C2940"/>
+      <Setter Property="BorderBrush" Value="#55739F"/>
+      <Setter Property="Foreground" Value="#F8FAFC"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action:pointerover /template/ Border#border">
+      <Setter Property="Background" Value="#1C2940"/>
+      <Setter Property="BorderBrush" Value="#55739F"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action:pressed">
+      <Setter Property="Background" Value="#22314C"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+      <Setter Property="BorderBrush" Value="#7CB4FF"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action:pressed /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#22314C"/>
+      <Setter Property="BorderBrush" Value="#7CB4FF"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.login-secondary-action:pressed /template/ Border#border">
+      <Setter Property="Background" Value="#22314C"/>
+      <Setter Property="BorderBrush" Value="#7CB4FF"/>
     </Style>
   </UserControl.Styles>
 
@@ -117,7 +251,7 @@
                          FontSize="26"
                          FontWeight="Bold"
                          Foreground="#F9FAFB"/>
-              <TextBlock Text="账号认证与授权参数已拆分显示，便于区分后台登录和 OIDC 调试配置。"
+              <TextBlock Text="默认仅展示后台登录所需项，联调时再展开 OIDC 参数。"
                          Foreground="#94A3B8"
                          TextWrapping="Wrap"/>
             </StackPanel>
@@ -125,11 +259,7 @@
             <StackPanel Grid.Row="1"
                         VerticalAlignment="Center"
                         Spacing="16">
-              <Border Background="#0F172A"
-                      BorderBrush="#1E293B"
-                      BorderThickness="1"
-                      CornerRadius="10"
-                      Padding="16">
+              <Border Classes="login-panel">
                 <StackPanel Spacing="12">
                   <TextBlock Text="账号认证" Foreground="#F8FAFC" FontWeight="SemiBold"/>
 
@@ -150,58 +280,58 @@
                              KeyDown="LoginInput_OnKeyDown"/>
                   </StackPanel>
 
-                  <Button Content="登录并进入后台"
+                  <Button Classes="login-primary-action"
+                          Content="登录并进入后台"
                           Command="{Binding LoginCommand}"
-                          Background="#2563EB"
-                          Foreground="#F9FAFB"
-                          BorderBrush="#60A5FA"
-                          BorderThickness="1"
-                          CornerRadius="8"
-                          Padding="16,11"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Center"
                           FontWeight="SemiBold"/>
                 </StackPanel>
               </Border>
 
-              <Border Background="#0F172A"
-                      BorderBrush="#1E293B"
-                      BorderThickness="1"
-                      CornerRadius="10"
-                      Padding="16">
-                <StackPanel Spacing="12">
-                  <StackPanel Spacing="4">
-                    <TextBlock Text="OIDC 调试参数" Foreground="#CBD5E1" FontWeight="SemiBold"/>
-                    <TextBlock Text="这些参数用于后续授权联调，和后台账号认证分开显示。"
-                               Foreground="#94A3B8"
-                               TextWrapping="Wrap"/>
-                  </StackPanel>
+              <StackPanel Spacing="10">
+                <Button Classes="login-secondary-action"
+                        Content="{Binding OidcToggleText}"
+                        Command="{Binding ToggleOidcParametersCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"/>
 
-                  <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
-                    <StackPanel Grid.ColumnSpan="2" Spacing="6">
-                      <TextBlock Text="Scope" Classes="form-label"/>
-                      <TextBox Text="{Binding Scope}"
-                               Classes="login-input"
-                               Watermark="openid profile email roles permissions"
-                               KeyDown="LoginInput_OnKeyDown"/>
+                <Border Classes="login-panel"
+                        IsVisible="{Binding ShowOidcParameters}">
+                  <StackPanel Spacing="12">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="OIDC 调试参数" Foreground="#D6E4FF" FontWeight="SemiBold"/>
+                      <TextBlock Text="仅在第三方授权联调、协议验证或问题排查时填写。"
+                                 Foreground="#8EA0BC"
+                                 TextWrapping="Wrap"/>
                     </StackPanel>
-                    <StackPanel Grid.Row="1" Spacing="6">
-                      <TextBlock Text="Client ID" Classes="form-label"/>
-                      <TextBox Text="{Binding ClientId}"
-                               Classes="login-input"
-                               Watermark="client_id"
-                               KeyDown="LoginInput_OnKeyDown"/>
-                    </StackPanel>
-                    <StackPanel Grid.Row="1" Grid.Column="1" Spacing="6">
-                      <TextBlock Text="Nonce" Classes="form-label"/>
-                      <TextBox Text="{Binding Nonce}"
-                               Classes="login-input"
-                               Watermark="nonce"
-                               KeyDown="LoginInput_OnKeyDown"/>
-                    </StackPanel>
-                  </Grid>
-                </StackPanel>
-              </Border>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                      <StackPanel Grid.ColumnSpan="2" Spacing="6">
+                        <TextBlock Text="Scope" Classes="form-label"/>
+                        <TextBox Text="{Binding Scope}"
+                                 Classes="login-input"
+                                 Watermark="openid profile email roles permissions"
+                                 KeyDown="LoginInput_OnKeyDown"/>
+                      </StackPanel>
+                      <StackPanel Grid.Row="1" Spacing="6">
+                        <TextBlock Text="Client ID" Classes="form-label"/>
+                        <TextBox Text="{Binding ClientId}"
+                                 Classes="login-input"
+                                 Watermark="client_id"
+                                 KeyDown="LoginInput_OnKeyDown"/>
+                      </StackPanel>
+                      <StackPanel Grid.Row="1" Grid.Column="1" Spacing="6">
+                        <TextBlock Text="Nonce" Classes="form-label"/>
+                        <TextBox Text="{Binding Nonce}"
+                                 Classes="login-input"
+                                 Watermark="nonce"
+                                 KeyDown="LoginInput_OnKeyDown"/>
+                      </StackPanel>
+                    </Grid>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
             </StackPanel>
 
             <Border Grid.Row="2"

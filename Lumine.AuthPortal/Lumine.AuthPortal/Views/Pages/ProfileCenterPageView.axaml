@@ -82,20 +82,12 @@
             </Grid>
             <StackPanel Orientation="Horizontal" Spacing="10">
               <Button Content="刷新资料"
+                      Classes="admin-button"
                       Command="{Binding LoadCommand}"
-                      Background="#374151"
-                      Foreground="#F9FAFB"
-                      BorderBrush="#4B5563"
-                      BorderThickness="1"
-                      CornerRadius="8"
                       Padding="14,8"/>
               <Button Content="保存资料"
+                      Classes="admin-button admin-primary"
                       Command="{Binding SaveCommand}"
-                      Background="#2563EB"
-                      Foreground="#F9FAFB"
-                      BorderBrush="#60A5FA"
-                      BorderThickness="1"
-                      CornerRadius="8"
                       Padding="14,8"/>
             </StackPanel>
           </StackPanel>

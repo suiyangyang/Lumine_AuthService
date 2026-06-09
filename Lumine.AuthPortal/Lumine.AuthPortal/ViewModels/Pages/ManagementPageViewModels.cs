@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Avalonia.Media;
 using Lumine.AuthPortal.Models;
 using Lumine.AuthPortal.Services;
 using System.Diagnostics.CodeAnalysis;
@@ -8,9 +9,14 @@ using System.Collections.ObjectModel;
 
 namespace Lumine.AuthPortal.ViewModels.Pages;
 
+public static class PortalUiDefaults
+{
+    public const int ManagementPageSize = 10;
+}
+
 public abstract partial class ManagementPageViewModelBase : ViewModelBase
 {
-    private const int DefaultPageSize = 10;
+    private const int DefaultPageSize = PortalUiDefaults.ManagementPageSize;
 
     protected readonly PortalApiClient ApiClient;
     protected readonly PortalSession Session;
@@ -256,6 +262,11 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     public UsersManagementPageViewModel(PortalApiClient apiClient, PortalSession session) : base(apiClient, session)
     {
         CreateNew();
+
+        if (session.IsAuthenticated)
+        {
+            _ = LoadAsync();
+        }
     }
 
     [ObservableProperty] private IReadOnlyList<UserDto> _items = Array.Empty<UserDto>();
@@ -272,12 +283,12 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private bool _isResetPasswordMode;
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
-    [ObservableProperty] private int _pageSize = 10;
-    [ObservableProperty] private int _selectedPageSize = 10;
+    [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private UserDto? _pendingDeleteUser;
     [ObservableProperty] private bool _isCreateDialogOpen;
     [ObservableProperty] private bool _isEditorDialogOpen;
+    [ObservableProperty] private bool _isSearchVisible;
 
     partial void OnItemsChanged(IReadOnlyList<UserDto> value)
     {
@@ -324,13 +335,41 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
 
     public int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalCount / (double)PageSize));
 
-    public IReadOnlyList<int> PageSizeOptions { get; } = [10, 20, 50, 100];
-
     public bool CanGoPreviousPage => PageIndex > 1;
 
     public bool CanGoNextPage => PageIndex < TotalPages;
 
     public string PaginationSummaryText => $"第 {PageIndex} / {TotalPages} 页 · 共 {TotalCount} 条";
+
+    public bool HasSearchKeyword => !string.IsNullOrWhiteSpace(SearchKeyword);
+
+    public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
+
+    public StreamGeometry AddIconData => NavigationIconData.Get("add");
+
+    public StreamGeometry DeleteIconData => NavigationIconData.Get("trash");
+
+    public StreamGeometry SearchIconData => NavigationIconData.Get(IsSearchVisible ? "close" : "search");
+
+    public StreamGeometry ClearSearchIconData => NavigationIconData.Get("close");
+
+    public StreamGeometry PreviousPageIconData => NavigationIconData.Get("chevron-left");
+
+    public StreamGeometry NextPageIconData => NavigationIconData.Get("chevron-right");
+
+    public StreamGeometry EditIconData => NavigationIconData.Get("edit");
+
+    public StreamGeometry AssignRolesIconData => NavigationIconData.Get("roles");
+
+    public StreamGeometry ResetPasswordIconData => NavigationIconData.Get("reset");
+
+    public StreamGeometry ToggleStatusIconData => NavigationIconData.Get("toggle");
+
+    public StreamGeometry ConfirmDeleteIconData => NavigationIconData.Get("trash");
+
+    public StreamGeometry CancelIconData => NavigationIconData.Get("close");
+
+    public StreamGeometry SaveIconData => NavigationIconData.Get("save");
 
     public bool HasPendingDelete => PendingDeleteUser != null;
 
@@ -364,9 +403,9 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
         NotifyPaginationProperties(includeTotalPages: true);
     }
 
-    partial void OnSelectedPageSizeChanged(int value)
+    partial void OnSearchKeywordChanged(string value)
     {
-        QueuePageSizeChangeIfNeeded(value, PageSize, ApplyPageSizeAsync);
+        OnPropertyChanged(nameof(HasSearchKeyword));
     }
 
     partial void OnTotalCountChanged(int value)
@@ -384,16 +423,6 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     private async Task SearchAsync()
     {
         await SearchFromFirstPageAsync(LoadPageAsync);
-    }
-
-    [RelayCommand]
-    private async Task ApplyPageSizeAsync(int? pageSize = null)
-    {
-        await ApplyPageSizeAndReloadAsync(pageSize, SelectedPageSize, normalizedPageSize =>
-        {
-            SelectedPageSize = normalizedPageSize;
-            PageSize = normalizedPageSize;
-        }, LoadPageAsync);
     }
 
     [RelayCommand]
@@ -428,7 +457,6 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
             TotalCount = usersResult.Data?.TotalCount ?? 0;
             PageIndex = usersResult.Data?.PageIndex ?? normalizedPageIndex;
             PageSize = usersResult.Data?.PageSize ?? PageSize;
-            SelectedPageSize = PageSize;
             AvailableRoles = (rolesResult.Data?.Items ?? Array.Empty<RoleDto>())
                 .OrderBy(role => role.Name)
                 .Select(role => new UserRoleOptionViewModel(role.Id, role.Name))
@@ -513,6 +541,33 @@ public partial class UsersManagementPageViewModel : ManagementPageViewModelBase
     private void CloseCreateDialog()
     {
         RunUiStateChange(() => IsCreateDialogOpen = false, "已关闭新增用户弹窗。");
+    }
+
+    [RelayCommand]
+    private void ToggleSearch()
+    {
+        IsSearchVisible = !IsSearchVisible;
+        OnPropertyChanged(nameof(SearchIconData));
+
+        if (!IsSearchVisible && !string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            SearchKeyword = string.Empty;
+            _ = SearchAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSearch()
+    {
+        if (string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            IsSearchVisible = false;
+            OnPropertyChanged(nameof(SearchIconData));
+            return;
+        }
+
+        SearchKeyword = string.Empty;
+        _ = SearchAsync();
     }
 
     [RelayCommand]
@@ -831,8 +886,8 @@ public partial class RolesManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private string _selectedPermissionSummary = "未分配权限。";
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
-    [ObservableProperty] private int _pageSize = 10;
-    [ObservableProperty] private int _selectedPageSize = 10;
+    [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
+    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private RoleDto? _pendingDeleteRole;
     [ObservableProperty] private bool _isRoleDialogOpen;
@@ -1541,8 +1596,8 @@ public partial class PermissionsManagementPageViewModel : ManagementPageViewMode
     [ObservableProperty] private string _displayName = string.Empty;
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
-    [ObservableProperty] private int _pageSize = 10;
-    [ObservableProperty] private int _selectedPageSize = 10;
+    [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
+    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private PermissionDto? _pendingDeletePermission;
     [ObservableProperty] private bool _isPermissionDialogOpen;
@@ -1805,8 +1860,8 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
     [ObservableProperty] private string _description = string.Empty;
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
-    [ObservableProperty] private int _pageSize = 10;
-    [ObservableProperty] private int _selectedPageSize = 10;
+    [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
+    [ObservableProperty] private int _selectedPageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private OidcClientDto? _pendingDeleteClient;
     [ObservableProperty] private bool _isClientDialogOpen;

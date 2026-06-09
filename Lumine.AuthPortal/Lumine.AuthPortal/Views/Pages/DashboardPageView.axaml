@@ -15,7 +15,11 @@
 
           <StackPanel Grid.Column="1" Spacing="10" HorizontalAlignment="Right">
             <TextBox Width="320" Text="{Binding BackendBaseUrl}" Watermark="http://localhost:5115"/>
-            <Button Content="刷新仪表盘" Command="{Binding RefreshCommand}" HorizontalAlignment="Right" IsEnabled="{Binding CanRefresh}"/>
+            <Button Classes="admin-button admin-primary"
+                    Content="刷新仪表盘"
+                    Command="{Binding RefreshCommand}"
+                    HorizontalAlignment="Right"
+                    IsEnabled="{Binding CanRefresh}"/>
           </StackPanel>
         </Grid>
       </Border>

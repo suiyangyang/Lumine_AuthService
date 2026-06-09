@@ -100,7 +100,7 @@ public partial class MainViewModel : ViewModelBase
             ["tokens"] = () => new PlaceholderPageViewModel("Token 管理", "预留后台入口，后续可接入访问令牌、刷新令牌与吊销记录管理。"),
             ["oidc"] = () => new OidcPlaygroundPageViewModel(_apiClient, _session),
             ["menus"] = () => new PlaceholderPageViewModel("菜单管理", "预留后台入口，后续可接入菜单树、路由元数据与权限绑定配置。"),
-            ["settings"] = () => new PlaceholderPageViewModel("系统配置", "预留后台入口，后续可接入认证参数、租户设置与环境变量映射。"),
+            ["settings"] = () => new SystemSettingsPageViewModel(),
             ["audit"] = () => new AuditLogsPageViewModel()
         };
 

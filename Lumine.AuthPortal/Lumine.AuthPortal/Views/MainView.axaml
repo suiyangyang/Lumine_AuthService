@@ -27,6 +27,14 @@
     <Style Selector="Button.nav-item:pointerover">
       <Setter Property="Background" Value="#1A2332"/>
       <Setter Property="Foreground" Value="#F3F4F6"/>
+      <Setter Property="BorderBrush" Value="#334155"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Button.nav-item:pressed">
+      <Setter Property="Background" Value="#243041"/>
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style Selector="Button.nav-item.selected">
       <Setter Property="Background" Value="#1F2937"/>
@@ -37,6 +45,10 @@
     <Style Selector="Button.nav-item.selected:pointerover">
       <Setter Property="Background" Value="#243041"/>
       <Setter Property="BorderBrush" Value="#60A5FA"/>
+    </Style>
+    <Style Selector="Button.nav-item.selected:pressed">
+      <Setter Property="Background" Value="#293548"/>
+      <Setter Property="BorderBrush" Value="#93C5FD"/>
     </Style>
     <Style Selector="Border.nav-section-children">
       <Setter Property="Margin" Value="0,6,0,0"/>
@@ -90,6 +102,9 @@
     <Style Selector="Button.nav-section-toggle:pointerover">
       <Setter Property="Foreground" Value="#CBD5E1"/>
     </Style>
+    <Style Selector="Button.nav-section-toggle:pressed">
+      <Setter Property="Foreground" Value="#E2E8F0"/>
+    </Style>
     <Style Selector="Button.account-trigger">
       <Setter Property="Background" Value="#111827"/>
       <Setter Property="BorderBrush" Value="#374151"/>
@@ -97,9 +112,51 @@
       <Setter Property="CornerRadius" Value="999"/>
       <Setter Property="Padding" Value="10,8"/>
     </Style>
+    <Style Selector="Button.account-trigger /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.account-trigger /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#111827"/>
+      <Setter Property="BorderBrush" Value="#374151"/>
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.account-trigger /template/ Border#border">
+      <Setter Property="Background" Value="#111827"/>
+      <Setter Property="BorderBrush" Value="#374151"/>
+    </Style>
     <Style Selector="Button.account-trigger:pointerover">
       <Setter Property="Background" Value="#172033"/>
       <Setter Property="BorderBrush" Value="#4B5563"/>
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.account-trigger:pointerover /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.account-trigger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#172033"/>
+      <Setter Property="BorderBrush" Value="#4B5563"/>
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.account-trigger:pointerover /template/ Border#border">
+      <Setter Property="Background" Value="#172033"/>
+      <Setter Property="BorderBrush" Value="#4B5563"/>
+    </Style>
+    <Style Selector="Button.account-trigger:pressed">
+      <Setter Property="Background" Value="#1D2A44"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.account-trigger:pressed /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.account-trigger:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#1D2A44"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.account-trigger:pressed /template/ Border#border">
+      <Setter Property="Background" Value="#1D2A44"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
     </Style>
     <Style Selector="Border.account-avatar">
       <Setter Property="Background" Value="#2563EB"/>
@@ -129,13 +186,56 @@
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="Foreground" Value="#E5E7EB"/>
       <Setter Property="BorderBrush" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="8"/>
       <Setter Property="Padding" Value="10,8"/>
       <Setter Property="HorizontalContentAlignment" Value="Left"/>
     </Style>
+    <Style Selector="Button.account-menu-item /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#E5E7EB"/>
+    </Style>
+    <Style Selector="Button.account-menu-item /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#E5E7EB"/>
+    </Style>
+    <Style Selector="Button.account-menu-item /template/ Border#border">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
     <Style Selector="Button.account-menu-item:pointerover">
-      <Setter Property="Background" Value="#1F2937"/>
+      <Setter Property="Background" Value="#243041"/>
+      <Setter Property="BorderBrush" Value="#334155"/>
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.account-menu-item:pointerover /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.account-menu-item:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#243041"/>
+      <Setter Property="BorderBrush" Value="#334155"/>
+      <Setter Property="Foreground" Value="#F9FAFB"/>
+    </Style>
+    <Style Selector="Button.account-menu-item:pointerover /template/ Border#border">
+      <Setter Property="Background" Value="#243041"/>
+      <Setter Property="BorderBrush" Value="#334155"/>
+    </Style>
+    <Style Selector="Button.account-menu-item:pressed">
+      <Setter Property="Background" Value="#293548"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.account-menu-item:pressed /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.account-menu-item:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#293548"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
+      <Setter Property="Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.account-menu-item:pressed /template/ Border#border">
+      <Setter Property="Background" Value="#293548"/>
+      <Setter Property="BorderBrush" Value="#60A5FA"/>
     </Style>
   </UserControl.Styles>
   <Grid ColumnDefinitions="260,*" RowDefinitions="Auto,*" Background="#0B1220">
@@ -242,7 +342,8 @@
         </StackPanel>
 
         <StackPanel Grid.Column="1" Spacing="8" HorizontalAlignment="Right">
-          <Button Classes="account-trigger"
+          <Button x:Name="AccountMenuButton"
+                  Classes="account-trigger"
                   Command="{Binding ToggleAccountMenuCommand}"
                   HorizontalAlignment="Right"
                   IsVisible="{Binding IsAuthenticated}">
@@ -268,92 +369,81 @@
             </Grid>
           </Button>
 
-          <Border Classes="account-menu"
-                  HorizontalAlignment="Right"
-                  Width="280"
-                  IsVisible="{Binding IsAccountMenuOpen}">
-            <StackPanel Spacing="12">
-              <StackPanel Orientation="Horizontal" Spacing="10">
-                <Border Classes="account-avatar">
-                  <TextBlock Text="{Binding AccountInitial}"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             TextAlignment="Center"
-                             Foreground="#F9FAFB"
-                             FontWeight="Bold"/>
+          <Popup IsOpen="{Binding IsAccountMenuOpen}"
+                 Placement="BottomEdgeAlignedRight"
+                 PlacementTarget="{Binding #AccountMenuButton}"
+                 HorizontalOffset="0"
+                 VerticalOffset="10">
+            <Border Classes="account-menu"
+                    Width="280">
+              <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <Border Classes="account-avatar">
+                    <TextBlock Text="{Binding AccountInitial}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               TextAlignment="Center"
+                               Foreground="#F9FAFB"
+                               FontWeight="Bold"/>
+                  </Border>
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding AccountDisplayName}" FontWeight="Bold" Foreground="#F9FAFB"/>
+                    <TextBlock Text="{Binding AccountStatusText}" Classes="account-label"/>
+                  </StackPanel>
+                </StackPanel>
+
+                <Border Background="#1F2937" CornerRadius="10" Padding="10">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="邮箱" Classes="account-label"/>
+                    <TextBlock Text="{Binding AccountEmail}" Foreground="#E5E7EB" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding AccountRolesSummary}" Foreground="#E5E7EB" TextWrapping="Wrap"/>
+                  </StackPanel>
                 </Border>
-                <StackPanel Spacing="2">
-                  <TextBlock Text="{Binding AccountDisplayName}" FontWeight="Bold" Foreground="#F9FAFB"/>
-                  <TextBlock Text="{Binding AccountStatusText}" Classes="account-label"/>
-                </StackPanel>
-              </StackPanel>
 
-              <Border Background="#1F2937" CornerRadius="10" Padding="10">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="邮箱" Classes="account-label"/>
-                  <TextBlock Text="{Binding AccountEmail}" Foreground="#E5E7EB" TextWrapping="Wrap"/>
-                  <TextBlock Text="{Binding AccountRolesSummary}" Foreground="#E5E7EB" TextWrapping="Wrap"/>
+                  <TextBlock Text="角色标签" Classes="account-label"/>
+                  <ItemsControl ItemsSource="{Binding AccountRoles}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <WrapPanel ItemHeight="28"/>
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Border Classes="account-chip" Margin="0,0,8,8">
+                          <TextBlock Text="{Binding .}" Foreground="#E5E7EB" FontSize="12"/>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
                 </StackPanel>
-              </Border>
 
-              <StackPanel Spacing="6">
-                <TextBlock Text="角色标签" Classes="account-label"/>
-                <ItemsControl ItemsSource="{Binding AccountRoles}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <WrapPanel ItemHeight="28"/>
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                      <Border Classes="account-chip" Margin="0,0,8,8">
-                        <TextBlock Text="{Binding .}" Foreground="#E5E7EB" FontSize="12"/>
-                      </Border>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <StackPanel Spacing="4">
+                  <Button Classes="account-menu-item"
+                          Command="{Binding OpenProfileCenterCommand}"
+                          Content="个人中心"/>
+                  <Button Classes="account-menu-item"
+                          Command="{Binding OpenSecuritySettingsCommand}"
+                          Content="安全设置"/>
+                </StackPanel>
+
+                <Button Classes="admin-button admin-danger-solid"
+                        Content="退出登录"
+                        Command="{Binding LogoutCommand}"
+                        MinHeight="34" />
               </StackPanel>
-
-              <StackPanel Spacing="4">
-                <Button Classes="account-menu-item"
-                        Command="{Binding OpenProfileCenterCommand}"
-                        Content="个人中心"/>
-                <Button Classes="account-menu-item"
-                        Command="{Binding OpenSecuritySettingsCommand}"
-                        Content="安全设置"/>
-              </StackPanel>
-
-              <Button Content="退出登录"
-                      Command="{Binding LogoutCommand}"
-                      Background="#DC2626"
-                      Foreground="#F9FAFB"
-                      BorderBrush="#EF4444"
-                      BorderThickness="1"
-                      CornerRadius="8"
-                      Padding="12,6"
-                      MinHeight="34" />
-            </StackPanel>
-          </Border>
+            </Border>
+          </Popup>
 
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" IsVisible="{Binding IsAnonymous}">
-            <Button Content="去登录"
+            <Button Classes="admin-button admin-primary admin-compact"
+                    Content="去登录"
                     Command="{Binding NavigateCommand}"
-                    CommandParameter="login"
-                    Background="#2563EB"
-                    Foreground="#F9FAFB"
-                    BorderBrush="#60A5FA"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="12,6"/>
-            <Button Content="去注册"
+                    CommandParameter="login"/>
+            <Button Classes="admin-button admin-compact"
+                    Content="去注册"
                     Command="{Binding NavigateCommand}"
-                    CommandParameter="register"
-                    Background="#374151"
-                    Foreground="#F9FAFB"
-                    BorderBrush="#4B5563"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="12,6"/>
+                    CommandParameter="register"/>
           </StackPanel>
         </StackPanel>
       </Grid>

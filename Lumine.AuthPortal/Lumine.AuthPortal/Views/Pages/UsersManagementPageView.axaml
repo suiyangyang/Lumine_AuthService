@@ -5,6 +5,24 @@
              x:Class="Lumine.AuthPortal.Views.Pages.UsersManagementPageView"
              x:Name="Root"
              x:DataType="vm:UsersManagementPageViewModel">
+  <UserControl.Styles>
+    <Style Selector="Border.admin-search-shell">
+      <Setter Property="Background" Value="#0F172A"/>
+      <Setter Property="BorderBrush" Value="#243041"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="0,0,6,0"/>
+      <Setter Property="MinHeight" Value="42"/>
+    </Style>
+    <Style Selector="TextBox.admin-search-input">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="#F8FAFC"/>
+      <Setter Property="Padding" Value="14,10"/>
+    </Style>
+  </UserControl.Styles>
+
   <Grid>
     <Border Classes="admin-panel" Padding="18">
       <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="14">
@@ -15,37 +33,56 @@
           </StackPanel>
 
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <Button Classes="admin-button admin-compact" Content="刷新" Command="{Binding LoadCommand}"/>
-            <Button Classes="admin-button admin-primary" Content="新增用户" Command="{Binding OpenCreateDialogCommand}"/>
-            <Button Classes="admin-button admin-danger" Content="删除所选" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelectedUser}"/>
+            <Button Classes="admin-icon-button"
+                    Command="{Binding ToggleSearchCommand}"
+                    Click="ToggleSearchButton_OnClick"
+                    ToolTip.Tip="搜索用户">
+              <PathIcon Data="{Binding SearchIconData}" Classes="admin-button-icon"/>
+            </Button>
+            <Button Classes="admin-icon-button"
+                    Command="{Binding LoadCommand}"
+                    ToolTip.Tip="刷新列表">
+              <PathIcon Data="{Binding RefreshIconData}" Classes="admin-button-icon"/>
+            </Button>
+            <Button Classes="admin-icon-button admin-primary"
+                    Command="{Binding OpenCreateDialogCommand}"
+                    ToolTip.Tip="新增用户">
+              <PathIcon Data="{Binding AddIconData}" Classes="admin-button-icon"/>
+            </Button>
+            <Button Classes="admin-icon-button admin-danger"
+                    Command="{Binding DeleteCommand}"
+                    IsEnabled="{Binding HasSelectedUser}"
+                    ToolTip.Tip="删除所选用户">
+              <PathIcon Data="{Binding DeleteIconData}" Classes="admin-button-icon"/>
+            </Button>
           </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
-          <TextBox x:Name="SearchKeywordTextBox"
-                   Text="{Binding SearchKeyword}"
-                   Watermark="搜索用户名或邮箱，回车执行"
-                   KeyDown="SearchKeywordTextBox_OnKeyDown"/>
-          <Button Grid.Column="1" Classes="admin-button admin-compact" Content="搜索" Command="{Binding SearchCommand}"/>
-          <ComboBox Grid.Column="2"
-                    Width="108"
-                    ItemsSource="{Binding PageSizeOptions}"
-                    SelectedItem="{Binding SelectedPageSize}"
-                    HorizontalContentAlignment="Center"/>
-        </Grid>
+        <Border Grid.Row="1"
+                Classes="admin-search-shell"
+                IsVisible="{Binding IsSearchVisible}">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+            <TextBox x:Name="SearchKeywordTextBox"
+                     Classes="admin-search-input"
+                     Text="{Binding SearchKeyword}"
+                     Watermark="搜索用户名或邮箱，按 Enter 执行"
+                     KeyDown="SearchKeywordTextBox_OnKeyDown"/>
+            <Button Grid.Column="1"
+                    Classes="admin-row-icon-button"
+                    Command="{Binding ClearSearchCommand}"
+                    ToolTip.Tip="清空搜索">
+              <PathIcon Data="{Binding ClearSearchIconData}" Classes="admin-row-button-icon"/>
+            </Button>
+          </Grid>
+        </Border>
 
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="12">
-          <Border Classes="admin-status-banner" Padding="10,8">
-            <TextBlock Text="{Binding StatusMessage}" Foreground="#93C5FD" TextWrapping="Wrap"/>
-          </Border>
-          <Border Grid.Column="1" Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
-            <TextBlock Text="{Binding PaginationSummaryText}" Foreground="#E2E8F0"/>
-          </Border>
-        </Grid>
+        <Border Grid.Row="2" Classes="admin-status-banner" Padding="10,8">
+          <TextBlock Text="{Binding StatusMessage}" Foreground="#93C5FD" TextWrapping="Wrap"/>
+        </Border>
 
         <Border Grid.Row="3" Background="#0F172A" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="12" Padding="12">
           <Grid RowDefinitions="Auto,Auto,*">
-            <Grid ColumnDefinitions="190,130,220,72,132,132,*,300" ColumnSpacing="12" Margin="2,0,2,10">
+            <Grid ColumnDefinitions="190,130,220,72,132,132,*,212" ColumnSpacing="12" Margin="2,0,2,10">
               <TextBlock Text="ID" Classes="admin-table-header"/>
               <TextBlock Grid.Column="1" Text="用户名" Classes="admin-table-header"/>
               <TextBlock Grid.Column="2" Text="邮箱" Classes="admin-table-header"/>
@@ -68,7 +105,7 @@
                 <ListBox.ItemTemplate>
                   <DataTemplate x:DataType="model:UserDto">
                     <Border Classes="admin-row-card" Margin="0,0,0,8" Padding="10">
-                      <Grid ColumnDefinitions="190,130,220,72,132,132,*,300" ColumnSpacing="12">
+                      <Grid ColumnDefinitions="190,130,220,72,132,132,*,212" ColumnSpacing="12">
                         <TextBlock Text="{Binding Id}" Classes="admin-muted" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                         <TextBlock Grid.Column="1" Text="{Binding UserName}" Foreground="#F9FAFB" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                         <TextBlock Grid.Column="2" Text="{Binding Email}" Foreground="#D1D5DB" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
@@ -84,27 +121,41 @@
                         <TextBlock Grid.Column="5" Text="{Binding LastLoginAtDisplay}" Classes="admin-muted" VerticalAlignment="Center"/>
                         <TextBlock Grid.Column="6" Text="{Binding RolesDisplay}" Foreground="#D1D5DB" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
 
-                        <WrapPanel Grid.Column="7" Orientation="Horizontal" ItemHeight="30" VerticalAlignment="Center">
-                          <Button Classes="admin-row-action" Content="编辑"
+                        <WrapPanel Grid.Column="7" Orientation="Horizontal" ItemHeight="32" VerticalAlignment="Center">
+                          <Button Classes="admin-row-icon-button"
                                   Command="{Binding DataContext.EditUserCommand, ElementName=Root}"
                                   CommandParameter="{Binding}"
-                                  Margin="0,0,6,0"/>
-                          <Button Classes="admin-row-action" Content="角色"
+                                  ToolTip.Tip="编辑用户"
+                                  Margin="0,0,6,0">
+                            <PathIcon Data="{Binding DataContext.EditIconData, ElementName=Root}" Classes="admin-row-button-icon"/>
+                          </Button>
+                          <Button Classes="admin-row-icon-button"
                                   Command="{Binding DataContext.AssignRolesCommand, ElementName=Root}"
                                   CommandParameter="{Binding}"
-                                  Margin="0,0,6,0"/>
-                          <Button Classes="admin-row-action" Content="重置"
+                                  ToolTip.Tip="分配角色"
+                                  Margin="0,0,6,0">
+                            <PathIcon Data="{Binding DataContext.AssignRolesIconData, ElementName=Root}" Classes="admin-row-button-icon"/>
+                          </Button>
+                          <Button Classes="admin-row-icon-button"
                                   Command="{Binding DataContext.PrepareResetPasswordCommand, ElementName=Root}"
                                   CommandParameter="{Binding}"
-                                  Margin="0,0,6,0"/>
-                          <Button Classes="admin-row-action"
-                                  Content="{Binding ToggleStatusActionText}"
+                                  ToolTip.Tip="重置密码"
+                                  Margin="0,0,6,0">
+                            <PathIcon Data="{Binding DataContext.ResetPasswordIconData, ElementName=Root}" Classes="admin-row-button-icon"/>
+                          </Button>
+                          <Button Classes="admin-row-icon-button"
                                   Command="{Binding DataContext.ToggleUserStatusCommand, ElementName=Root}"
                                   CommandParameter="{Binding}"
-                                  Margin="0,0,6,0"/>
-                          <Button Classes="admin-row-action admin-danger" Content="删除"
+                                  ToolTip.Tip="{Binding ToggleStatusActionText}"
+                                  Margin="0,0,6,0">
+                            <PathIcon Data="{Binding DataContext.ToggleStatusIconData, ElementName=Root}" Classes="admin-row-button-icon"/>
+                          </Button>
+                          <Button Classes="admin-row-icon-button admin-danger"
                                   Command="{Binding DataContext.DeleteUserCommand, ElementName=Root}"
-                                  CommandParameter="{Binding}"/>
+                                  CommandParameter="{Binding}"
+                                  ToolTip.Tip="删除用户">
+                            <PathIcon Data="{Binding DataContext.DeleteIconData, ElementName=Root}" Classes="admin-row-button-icon"/>
+                          </Button>
                         </WrapPanel>
                       </Grid>
                     </Border>
@@ -115,7 +166,7 @@
               <Border Classes="info-card" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsVisible="{Binding ShowUsersEmptyState}">
                 <StackPanel Spacing="8" HorizontalAlignment="Center">
                   <TextBlock Text="暂无用户数据" FontSize="18" FontWeight="SemiBold" Foreground="#F9FAFB" HorizontalAlignment="Center"/>
-                  <TextBlock Text="可调整搜索条件后重试，或点击“新增用户”创建第一个账号。" Classes="admin-hint" HorizontalAlignment="Center"/>
+                  <TextBlock Text="可调整搜索条件后重试，或点击右上角新增图标创建第一个账号。" Classes="admin-hint" HorizontalAlignment="Center"/>
                 </StackPanel>
               </Border>
             </Grid>
@@ -127,18 +178,36 @@
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
               <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="#F8FAFC" TextWrapping="Wrap" VerticalAlignment="Center"/>
               <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                <Button Classes="admin-button admin-danger-solid" Content="确认删除" Command="{Binding ConfirmDeleteCommand}"/>
-                <Button Classes="admin-button admin-compact" Content="取消" Command="{Binding CancelDeleteCommand}"/>
+                <Button Classes="admin-icon-button admin-danger-solid"
+                        Command="{Binding ConfirmDeleteCommand}"
+                        ToolTip.Tip="确认删除">
+                  <PathIcon Data="{Binding ConfirmDeleteIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Button Classes="admin-icon-button"
+                        Command="{Binding CancelDeleteCommand}"
+                        ToolTip.Tip="取消删除">
+                  <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
+                </Button>
               </StackPanel>
             </Grid>
           </Border>
 
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <Button Classes="admin-button admin-compact" Content="上一页" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding CanGoPreviousPage}"/>
+            <Button Classes="admin-icon-button"
+                    Command="{Binding PreviousPageCommand}"
+                    IsEnabled="{Binding CanGoPreviousPage}"
+                    ToolTip.Tip="上一页">
+              <PathIcon Data="{Binding PreviousPageIconData}" Classes="admin-button-icon"/>
+            </Button>
             <Border Classes="admin-pill admin-pill-muted" VerticalAlignment="Center">
               <TextBlock Text="{Binding PaginationSummaryText}" Foreground="#E2E8F0"/>
             </Border>
-            <Button Classes="admin-button admin-compact" Content="下一页" Command="{Binding NextPageCommand}" IsEnabled="{Binding CanGoNextPage}"/>
+            <Button Classes="admin-icon-button"
+                    Command="{Binding NextPageCommand}"
+                    IsEnabled="{Binding CanGoNextPage}"
+                    ToolTip.Tip="下一页">
+              <PathIcon Data="{Binding NextPageIconData}" Classes="admin-button-icon"/>
+            </Button>
           </StackPanel>
         </Grid>
       </Grid>
@@ -157,15 +226,19 @@
                 <TextBlock Text="{Binding SelectedUserIdText, StringFormat=当前用户 ID：{0}}" Foreground="#9CA3AF" TextWrapping="Wrap"/>
               </StackPanel>
               <Button Grid.Column="1"
-                      Content="关闭"
-                      Classes="admin-button admin-compact"
+                      Classes="admin-icon-button"
                       Command="{Binding CloseEditorDialogCommand}"
-                      IsVisible="{Binding IsEditorDialogOpen}"/>
+                      IsVisible="{Binding IsEditorDialogOpen}"
+                      ToolTip.Tip="关闭编辑窗口">
+                <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
+              </Button>
               <Button Grid.Column="1"
-                      Content="关闭"
-                      Classes="admin-button admin-compact"
+                      Classes="admin-icon-button"
                       Command="{Binding CloseCreateDialogCommand}"
-                      IsVisible="{Binding IsCreateDialogOpen}"/>
+                      IsVisible="{Binding IsCreateDialogOpen}"
+                      ToolTip.Tip="关闭新增窗口">
+                <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
+              </Button>
             </Grid>
 
             <TextBox Grid.Row="1" Text="{Binding UserName}" Watermark="用户名" IsEnabled="{Binding IsIdentityEditable}"/>
@@ -196,16 +269,30 @@
             <StackPanel Grid.Row="6" Spacing="10">
               <TextBlock Text="{Binding StatusMessage}" Foreground="#D1D5DB" TextWrapping="Wrap"/>
               <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Classes="admin-button"
-                        Content="取消"
+                <Button Classes="admin-icon-button"
                         Command="{Binding CloseEditorDialogCommand}"
-                        IsVisible="{Binding IsEditorDialogOpen}"/>
-                <Button Classes="admin-button"
-                        Content="取消"
+                        IsVisible="{Binding IsEditorDialogOpen}"
+                        ToolTip.Tip="取消编辑">
+                  <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Button Classes="admin-icon-button"
                         Command="{Binding CloseCreateDialogCommand}"
-                        IsVisible="{Binding IsCreateDialogOpen}"/>
-                <Button Classes="admin-button admin-primary" Content="{Binding PrimaryActionText}" Command="{Binding SaveCommand}" IsVisible="{Binding ShowSaveUserButton}"/>
-                <Button Classes="admin-button admin-primary" Content="确认重置密码" Command="{Binding ResetPasswordCommand}" IsVisible="{Binding ShowResetPasswordButton}"/>
+                        IsVisible="{Binding IsCreateDialogOpen}"
+                        ToolTip.Tip="取消新增">
+                  <PathIcon Data="{Binding CancelIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Button Classes="admin-icon-button admin-primary"
+                        Command="{Binding SaveCommand}"
+                        IsVisible="{Binding ShowSaveUserButton}"
+                        ToolTip.Tip="{Binding PrimaryActionText}">
+                  <PathIcon Data="{Binding SaveIconData}" Classes="admin-button-icon"/>
+                </Button>
+                <Button Classes="admin-icon-button admin-primary"
+                        Command="{Binding ResetPasswordCommand}"
+                        IsVisible="{Binding ShowResetPasswordButton}"
+                        ToolTip.Tip="确认重置密码">
+                  <PathIcon Data="{Binding ResetPasswordIconData}" Classes="admin-button-icon"/>
+                </Button>
               </StackPanel>
             </StackPanel>
           </Grid>

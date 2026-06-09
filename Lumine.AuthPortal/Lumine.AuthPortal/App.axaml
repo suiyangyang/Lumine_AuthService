@@ -51,6 +51,9 @@
         <DataTemplate DataType="vmPages:SecuritySettingsPageViewModel">
             <views:SecuritySettingsPageView />
         </DataTemplate>
+        <DataTemplate DataType="vmPages:SystemSettingsPageViewModel">
+            <views:SystemSettingsPageView />
+        </DataTemplate>
         <DataTemplate DataType="vm:PlaceholderPageViewModel">
             <views:PlaceholderPageView />
         </DataTemplate>
@@ -179,29 +182,365 @@
             <Setter Property="BorderBrush" Value="#374151" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
+        <Style Selector="Button.admin-button /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="Button.admin-button /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#1F2937" />
+            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="Button.admin-button /template/ Border#border">
+            <Setter Property="Background" Value="#1F2937" />
+            <Setter Property="BorderBrush" Value="#374151" />
+        </Style>
+        <Style Selector="Button.admin-button:pointerover">
+            <Setter Property="Background" Value="#273449" />
+            <Setter Property="BorderBrush" Value="#64748B" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="Button.admin-button:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="Button.admin-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#273449" />
+            <Setter Property="BorderBrush" Value="#64748B" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="Button.admin-button:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="#273449" />
+            <Setter Property="BorderBrush" Value="#64748B" />
+        </Style>
+        <Style Selector="Button.admin-button:pressed">
+            <Setter Property="Background" Value="#334155" />
+            <Setter Property="BorderBrush" Value="#94A3B8" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button:pressed /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#334155" />
+            <Setter Property="BorderBrush" Value="#94A3B8" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button:pressed /template/ Border#border">
+            <Setter Property="Background" Value="#334155" />
+            <Setter Property="BorderBrush" Value="#94A3B8" />
+        </Style>
+        <Style Selector="Button.admin-button:disabled">
+            <Setter Property="Background" Value="#0F172A" />
+            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="Foreground" Value="#64748B" />
+            <Setter Property="Opacity" Value="0.9" />
+        </Style>
+        <Style Selector="Button.admin-button:disabled /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#64748B" />
+        </Style>
+        <Style Selector="Button.admin-button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#0F172A" />
+            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="Foreground" Value="#64748B" />
+        </Style>
+        <Style Selector="Button.admin-button:disabled /template/ Border#border">
+            <Setter Property="Background" Value="#0F172A" />
+            <Setter Property="BorderBrush" Value="#1F2937" />
+        </Style>
         <Style Selector="Button.admin-button.admin-compact">
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="MinWidth" Value="72" />
+        </Style>
+        <Style Selector="Button.admin-icon-button">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinWidth" Value="40" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Background" Value="#1F2937" />
+            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#E5E7EB" />
+        </Style>
+        <Style Selector="Button.admin-icon-button:pointerover">
+            <Setter Property="Background" Value="#273449" />
+            <Setter Property="BorderBrush" Value="#64748B" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="Button.admin-icon-button:pressed">
+            <Setter Property="Background" Value="#334155" />
+            <Setter Property="BorderBrush" Value="#94A3B8" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-icon-button:disabled">
+            <Setter Property="Background" Value="#0F172A" />
+            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="Foreground" Value="#64748B" />
+        </Style>
+        <Style Selector="Button.admin-icon-button.admin-primary">
+            <Setter Property="Background" Value="#2563EB" />
+            <Setter Property="BorderBrush" Value="#60A5FA" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-icon-button.admin-primary:pointerover">
+            <Setter Property="Background" Value="#1D4ED8" />
+            <Setter Property="BorderBrush" Value="#93C5FD" />
+        </Style>
+        <Style Selector="Button.admin-icon-button.admin-danger">
+            <Setter Property="Background" Value="#111827" />
+            <Setter Property="BorderBrush" Value="#7F1D1D" />
+            <Setter Property="Foreground" Value="#FCA5A5" />
+        </Style>
+        <Style Selector="Button.admin-icon-button.admin-danger:pointerover">
+            <Setter Property="Background" Value="#2B1220" />
+            <Setter Property="BorderBrush" Value="#B91C1C" />
+            <Setter Property="Foreground" Value="#FECACA" />
+        </Style>
+        <Style Selector="Button.admin-icon-button.admin-danger-solid">
+            <Setter Property="Background" Value="#DC2626" />
+            <Setter Property="BorderBrush" Value="#F87171" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-icon-button.admin-danger-solid:pointerover">
+            <Setter Property="Background" Value="#B91C1C" />
+            <Setter Property="BorderBrush" Value="#FCA5A5" />
+        </Style>
+        <Style Selector="Button.admin-row-icon-button">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinWidth" Value="32" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Background" Value="#1F2937" />
+            <Setter Property="Foreground" Value="#E5E7EB" />
+            <Setter Property="BorderBrush" Value="#374151" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.admin-row-icon-button:pointerover">
+            <Setter Property="Background" Value="#273449" />
+            <Setter Property="BorderBrush" Value="#60A5FA" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="Button.admin-row-icon-button.admin-danger">
+            <Setter Property="Background" Value="#7F1D1D" />
+            <Setter Property="BorderBrush" Value="#B91C1C" />
+            <Setter Property="Foreground" Value="#FEE2E2" />
+        </Style>
+        <Style Selector="Button.admin-row-icon-button.admin-danger:pointerover">
+            <Setter Property="Background" Value="#991B1B" />
+            <Setter Property="BorderBrush" Value="#F87171" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="PathIcon.admin-button-icon">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+        </Style>
+        <Style Selector="PathIcon.admin-row-button-icon">
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Height" Value="14" />
         </Style>
         <Style Selector="Button.admin-button.admin-primary">
             <Setter Property="Background" Value="#2563EB" />
             <Setter Property="BorderBrush" Value="#60A5FA" />
             <Setter Property="Foreground" Value="#FFFFFF" />
         </Style>
+        <Style Selector="Button.admin-button.admin-primary /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#2563EB" />
+            <Setter Property="BorderBrush" Value="#60A5FA" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary /template/ Border#border">
+            <Setter Property="Background" Value="#2563EB" />
+            <Setter Property="BorderBrush" Value="#60A5FA" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary:pointerover">
+            <Setter Property="Background" Value="#1D4ED8" />
+            <Setter Property="BorderBrush" Value="#93C5FD" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#1D4ED8" />
+            <Setter Property="BorderBrush" Value="#93C5FD" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="#1D4ED8" />
+            <Setter Property="BorderBrush" Value="#93C5FD" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary:pressed">
+            <Setter Property="Background" Value="#1E40AF" />
+            <Setter Property="BorderBrush" Value="#BFDBFE" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary:pressed /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#1E40AF" />
+            <Setter Property="BorderBrush" Value="#BFDBFE" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-primary:pressed /template/ Border#border">
+            <Setter Property="Background" Value="#1E40AF" />
+            <Setter Property="BorderBrush" Value="#BFDBFE" />
+        </Style>
         <Style Selector="Button.admin-button.admin-success">
             <Setter Property="Background" Value="#059669" />
             <Setter Property="BorderBrush" Value="#34D399" />
             <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#059669" />
+            <Setter Property="BorderBrush" Value="#34D399" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success /template/ Border#border">
+            <Setter Property="Background" Value="#059669" />
+            <Setter Property="BorderBrush" Value="#34D399" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success:pointerover">
+            <Setter Property="Background" Value="#047857" />
+            <Setter Property="BorderBrush" Value="#6EE7B7" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#047857" />
+            <Setter Property="BorderBrush" Value="#6EE7B7" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="#047857" />
+            <Setter Property="BorderBrush" Value="#6EE7B7" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success:pressed">
+            <Setter Property="Background" Value="#065F46" />
+            <Setter Property="BorderBrush" Value="#A7F3D0" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success:pressed /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#065F46" />
+            <Setter Property="BorderBrush" Value="#A7F3D0" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-success:pressed /template/ Border#border">
+            <Setter Property="Background" Value="#065F46" />
+            <Setter Property="BorderBrush" Value="#A7F3D0" />
         </Style>
         <Style Selector="Button.admin-button.admin-danger">
             <Setter Property="Background" Value="#111827" />
             <Setter Property="BorderBrush" Value="#7F1D1D" />
             <Setter Property="Foreground" Value="#FCA5A5" />
         </Style>
+        <Style Selector="Button.admin-button.admin-danger /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FCA5A5" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#111827" />
+            <Setter Property="BorderBrush" Value="#7F1D1D" />
+            <Setter Property="Foreground" Value="#FCA5A5" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger /template/ Border#border">
+            <Setter Property="Background" Value="#111827" />
+            <Setter Property="BorderBrush" Value="#7F1D1D" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger:pointerover">
+            <Setter Property="Background" Value="#2B1220" />
+            <Setter Property="BorderBrush" Value="#B91C1C" />
+            <Setter Property="Foreground" Value="#FECACA" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FECACA" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#2B1220" />
+            <Setter Property="BorderBrush" Value="#B91C1C" />
+            <Setter Property="Foreground" Value="#FECACA" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="#2B1220" />
+            <Setter Property="BorderBrush" Value="#B91C1C" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger:pressed">
+            <Setter Property="Background" Value="#3B1422" />
+            <Setter Property="BorderBrush" Value="#DC2626" />
+            <Setter Property="Foreground" Value="#FEE2E2" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger:pressed /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FEE2E2" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#3B1422" />
+            <Setter Property="BorderBrush" Value="#DC2626" />
+            <Setter Property="Foreground" Value="#FEE2E2" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger:pressed /template/ Border#border">
+            <Setter Property="Background" Value="#3B1422" />
+            <Setter Property="BorderBrush" Value="#DC2626" />
+        </Style>
         <Style Selector="Button.admin-button.admin-danger-solid">
             <Setter Property="Background" Value="#DC2626" />
             <Setter Property="BorderBrush" Value="#F87171" />
             <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#DC2626" />
+            <Setter Property="BorderBrush" Value="#F87171" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid /template/ Border#border">
+            <Setter Property="Background" Value="#DC2626" />
+            <Setter Property="BorderBrush" Value="#F87171" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid:pointerover">
+            <Setter Property="Background" Value="#B91C1C" />
+            <Setter Property="BorderBrush" Value="#FCA5A5" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#B91C1C" />
+            <Setter Property="BorderBrush" Value="#FCA5A5" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="#B91C1C" />
+            <Setter Property="BorderBrush" Value="#FCA5A5" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid:pressed">
+            <Setter Property="Background" Value="#991B1B" />
+            <Setter Property="BorderBrush" Value="#FECACA" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid:pressed /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#991B1B" />
+            <Setter Property="BorderBrush" Value="#FECACA" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-button.admin-danger-solid:pressed /template/ Border#border">
+            <Setter Property="Background" Value="#991B1B" />
+            <Setter Property="BorderBrush" Value="#FECACA" />
         </Style>
         <Style Selector="Button.admin-row-action">
             <Setter Property="CornerRadius" Value="6" />
@@ -212,10 +551,30 @@
             <Setter Property="BorderBrush" Value="#374151" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
+        <Style Selector="Button.admin-row-action:pointerover">
+            <Setter Property="Background" Value="#273449" />
+            <Setter Property="BorderBrush" Value="#60A5FA" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="Button.admin-row-action:pressed">
+            <Setter Property="Background" Value="#334155" />
+            <Setter Property="BorderBrush" Value="#93C5FD" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
         <Style Selector="Button.admin-row-action.admin-danger">
             <Setter Property="Background" Value="#7F1D1D" />
             <Setter Property="BorderBrush" Value="#B91C1C" />
             <Setter Property="Foreground" Value="#FEE2E2" />
+        </Style>
+        <Style Selector="Button.admin-row-action.admin-danger:pointerover">
+            <Setter Property="Background" Value="#991B1B" />
+            <Setter Property="BorderBrush" Value="#F87171" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-row-action.admin-danger:pressed">
+            <Setter Property="Background" Value="#7F1D1D" />
+            <Setter Property="BorderBrush" Value="#FCA5A5" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
         </Style>
         <Style Selector="Button.admin-copy-button">
             <Setter Property="Width" Value="32" />
@@ -230,6 +589,17 @@
         <Style Selector="Button.admin-copy-button:pointerover">
             <Setter Property="Background" Value="#172033" />
             <Setter Property="BorderBrush" Value="#60A5FA" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-copy-button:pressed">
+            <Setter Property="Background" Value="#1D2A44" />
+            <Setter Property="BorderBrush" Value="#93C5FD" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Button.admin-copy-button:disabled">
+            <Setter Property="Background" Value="#0F172A" />
+            <Setter Property="BorderBrush" Value="#1F2937" />
+            <Setter Property="Foreground" Value="#64748B" />
         </Style>
         <Style Selector="TextBox.admin-form-input">
             <Setter Property="Background" Value="#0F172A" />
@@ -237,6 +607,16 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
             <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="TextBox.admin-form-input:pointerover">
+            <Setter Property="Background" Value="#111D31" />
+            <Setter Property="BorderBrush" Value="#475569" />
+            <Setter Property="Foreground" Value="#F9FAFB" />
+        </Style>
+        <Style Selector="TextBox.admin-form-input:focus">
+            <Setter Property="Background" Value="#14233A" />
+            <Setter Property="BorderBrush" Value="#60A5FA" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
         </Style>
         <Style Selector="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource ChineseFont}" />

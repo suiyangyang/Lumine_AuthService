@@ -12,6 +12,9 @@ public partial class LoginPageViewModel : ViewModelBase
     private readonly PortalApiClient _apiClient;
     private readonly PortalSession _session;
     private readonly Action _onLoginSucceeded;
+    private const string DefaultScope = "openid profile email roles permissions";
+    private const string DefaultClientId = "lumine-demo-client";
+    private const string DefaultNonce = "portal-login-nonce";
 
     [ObservableProperty]
     private string _userName = "admin";
@@ -20,19 +23,24 @@ public partial class LoginPageViewModel : ViewModelBase
     private string _password = string.Empty;
 
     [ObservableProperty]
-    private string _scope = "openid profile email roles permissions";
+    private string _scope = DefaultScope;
 
     [ObservableProperty]
-    private string _clientId = "lumine-demo-client";
+    private string _clientId = DefaultClientId;
 
     [ObservableProperty]
-    private string _nonce = "portal-login-nonce";
+    private string _nonce = DefaultNonce;
+
+    [ObservableProperty]
+    private bool _showOidcParameters;
 
     [ObservableProperty]
     private bool _isBusy;
 
     [ObservableProperty]
     private string _statusMessage = "请输入账号密码后登录。";
+
+    public string OidcToggleText => ShowOidcParameters ? "隐藏 OIDC 调试参数" : "显示 OIDC 调试参数";
 
     public LoginPageViewModel(PortalApiClient apiClient, PortalSession session, Action onLoginSucceeded)
     {
@@ -47,7 +55,11 @@ public partial class LoginPageViewModel : ViewModelBase
         IsBusy = true;
         StatusMessage = "正在调用登录接口...";
 
-        var result = await _apiClient.LoginAsync(new LoginRequestDto(UserName, Password, Scope, ClientId, Nonce));
+        var scope = ShowOidcParameters ? Scope : null;
+        var clientId = ShowOidcParameters ? ClientId : null;
+        var nonce = ShowOidcParameters ? Nonce : null;
+
+        var result = await _apiClient.LoginAsync(new LoginRequestDto(UserName, Password, scope, clientId, nonce));
         if (result.IsSuccess && result.Data != null)
         {
             _session.ApplyLogin(result.Data);
@@ -60,6 +72,38 @@ public partial class LoginPageViewModel : ViewModelBase
         }
 
         IsBusy = false;
+    }
+
+    [RelayCommand]
+    private void ToggleOidcParameters()
+    {
+        ShowOidcParameters = !ShowOidcParameters;
+
+        if (ShowOidcParameters)
+        {
+            if (string.IsNullOrWhiteSpace(Scope))
+            {
+                Scope = DefaultScope;
+            }
+
+            if (string.IsNullOrWhiteSpace(ClientId))
+            {
+                ClientId = DefaultClientId;
+            }
+
+            if (string.IsNullOrWhiteSpace(Nonce))
+            {
+                Nonce = DefaultNonce;
+            }
+        }
+    }
+
+    partial void OnShowOidcParametersChanged(bool value)
+    {
+        OnPropertyChanged(nameof(OidcToggleText));
+        StatusMessage = value
+            ? "已开启 OIDC 调试参数，可用于第三方授权联调。"
+            : "请输入账号密码后登录。";
     }
 }
 

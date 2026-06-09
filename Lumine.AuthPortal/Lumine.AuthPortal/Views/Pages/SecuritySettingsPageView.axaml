@@ -49,12 +49,8 @@
               <TextBox Text="{Binding ConfirmNewPassword}" PasswordChar="●" Watermark="请再次输入新密码"/>
             </StackPanel>
             <Button Content="立即修改密码"
+                    Classes="admin-button admin-primary"
                     Command="{Binding ChangePasswordCommand}"
-                    Background="#2563EB"
-                    Foreground="#F9FAFB"
-                    BorderBrush="#60A5FA"
-                    BorderThickness="1"
-                    CornerRadius="8"
                     Padding="14,8"/>
 
             <TextBlock Text="安全建议" FontSize="18" FontWeight="Bold" Foreground="#F9FAFB" Margin="0,8,0,0"/>
