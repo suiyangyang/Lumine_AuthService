@@ -29,7 +29,17 @@ if (Test-Path $envFile) {
 }
 
 $mysqlPassword = $env:LUMINE_AUTH_MYSQL_PASSWORD
+$mysqlUser = $env:LUMINE_AUTH_MYSQL_USER
+$mysqlDatabase = $env:LUMINE_AUTH_MYSQL_DATABASE
 $adminPassword = $env:LUMINE_AUTH_ADMIN_PASSWORD
+
+if ([string]::IsNullOrWhiteSpace($mysqlDatabase)) {
+    throw 'Set LUMINE_AUTH_MYSQL_DATABASE in .env before running this script.'
+}
+
+if ([string]::IsNullOrWhiteSpace($mysqlUser)) {
+    throw 'Set LUMINE_AUTH_MYSQL_USER in .env before running this script.'
+}
 
 if ([string]::IsNullOrWhiteSpace($mysqlPassword)) {
     throw 'Set LUMINE_AUTH_MYSQL_PASSWORD in .env before running this script.'
@@ -43,7 +53,7 @@ if ([string]::IsNullOrWhiteSpace($adminPassword)) {
     throw 'Set LUMINE_AUTH_ADMIN_PASSWORD in .env before running this script.'
 }
 
-$connectionString = "server=localhost;port=3307;database=Lumine.AuthDb;user=lumine;password=$mysqlPassword;"
+$connectionString = "server=localhost;port=3307;database=$mysqlDatabase;user=$mysqlUser;password=$mysqlPassword;"
 
 function Get-FileTextOrEmpty {
     param(
@@ -64,7 +74,7 @@ function Test-MySqlReady {
         [string]$ContainerName
     )
 
-    & docker exec -e MYSQL_PWD=$mysqlPassword $ContainerName mysql -h 127.0.0.1 -P 3306 -ulumine -N -s -e "SELECT 1;" 1>$null 2>$null
+    & docker exec -e MYSQL_PWD=$mysqlPassword $ContainerName mysql -h 127.0.0.1 -P 3306 "-u$mysqlUser" -N -s -e "SELECT 1;" 1>$null 2>$null
     return ($LASTEXITCODE -eq 0)
 }
 
@@ -155,7 +165,7 @@ finally {
 }
 
 Write-Host '==> Migrations and seed completed. Verifying result...'
-docker exec -e MYSQL_PWD=$mysqlPassword $containerName mysql -h 127.0.0.1 -P 3306 -ulumine -D Lumine.AuthDb -e "SHOW TABLES; SELECT COUNT(*) AS UserCount FROM Users; SELECT COUNT(*) AS RoleCount FROM Roles; SELECT COUNT(*) AS PermissionCount FROM Permissions; SELECT COUNT(*) AS ClientCount FROM OidcClients;" | Out-Host
+docker exec -e MYSQL_PWD=$mysqlPassword $containerName mysql -h 127.0.0.1 -P 3306 "-u$mysqlUser" -D $mysqlDatabase -e "SHOW TABLES; SELECT COUNT(*) AS UserCount FROM Users; SELECT COUNT(*) AS RoleCount FROM Roles; SELECT COUNT(*) AS PermissionCount FROM Permissions; SELECT COUNT(*) AS ClientCount FROM OidcClients;" | Out-Host
 
 Write-Host ''
 Write-Host 'Local database initialization completed.'

@@ -6,8 +6,8 @@ services:
     container_name: lumine-auth-mysql-dev
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: Lumine.AuthDb
-      MYSQL_USER: lumine
+      MYSQL_DATABASE: ${LUMINE_AUTH_MYSQL_DATABASE:?Set LUMINE_AUTH_MYSQL_DATABASE in .env}
+      MYSQL_USER: ${LUMINE_AUTH_MYSQL_USER:?Set LUMINE_AUTH_MYSQL_USER in .env}
       MYSQL_PASSWORD: ${LUMINE_AUTH_MYSQL_PASSWORD:?Set LUMINE_AUTH_MYSQL_PASSWORD in .env}
       MYSQL_ROOT_PASSWORD: ${LUMINE_AUTH_MYSQL_ROOT_PASSWORD:?Set LUMINE_AUTH_MYSQL_ROOT_PASSWORD in .env}
     ports:
@@ -20,7 +20,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - mysqladmin ping -h 127.0.0.1 -ulumine -p$${MYSQL_PASSWORD} --silent
+        - mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent
       interval: 5s
       timeout: 3s
       retries: 30

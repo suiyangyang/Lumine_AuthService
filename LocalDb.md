@@ -5,16 +5,16 @@
 ## 默认配置
 
 - 容器名：`lumine-auth-mysql-dev`
-- 数据库：`Lumine.AuthDb`
+- 数据库：从 `.env` 的 `LUMINE_AUTH_MYSQL_DATABASE` 读取
 - 主机端口：`3307`
-- 应用账号：`lumine`
+- 应用账号：从 `.env` 的 `LUMINE_AUTH_MYSQL_USER` 读取
 - 应用密码：从 `.env` 的 `LUMINE_AUTH_MYSQL_PASSWORD` 读取
 - Root 密码：从 `.env` 的 `LUMINE_AUTH_MYSQL_ROOT_PASSWORD` 读取
 
 对应开发环境连接串：
 
 ```text
-server=localhost;port=3307;database=Lumine.AuthDb;user=lumine;password=<LUMINE_AUTH_MYSQL_PASSWORD>;
+server=localhost;port=3307;database=<LUMINE_AUTH_MYSQL_DATABASE>;user=<LUMINE_AUTH_MYSQL_USER>;password=<LUMINE_AUTH_MYSQL_PASSWORD>;
 ```
 
 首次运行前，复制 `.env.example` 为 `.env` 并填入本地密码：

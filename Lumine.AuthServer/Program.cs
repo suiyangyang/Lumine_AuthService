@@ -17,6 +17,10 @@ using Microsoft.OpenApi.Models;
 using MySqlConnector;
 using System.Text.Json;
 
+LoadLocalDotEnv();
+ApplyLocalMySqlConfiguration();
+ApplyLocalSeedConfiguration();
+
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var contentRoot = builder.Environment.ContentRootPath ?? string.Empty;
@@ -39,7 +43,7 @@ var oidcSigningCredentialsService = new OidcSigningCredentialsService(oidcOption
     lumine-authserver:
     image: your-image-name
     environment:
-      - ConnectionStrings__DefaultConnection=server=mysql;port=3306;database=LumineIdentityDb;user=root;password=Lumine_#@!;
+      - ConnectionStrings__DefaultConnection=<set-from-secret-store>
         # 其他配置项...
  */
 var connectionString = ResolveMySqlConnectionString(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -263,6 +267,108 @@ if (staticFileProvider is not null && HasBrowserEntryAssets(browserAssets.Primar
 }
 
 app.Run();
+
+static void LoadLocalDotEnv()
+{
+    var envFile = FindFileInCurrentOrParentDirectories(".env");
+    if (string.IsNullOrWhiteSpace(envFile))
+    {
+        return;
+    }
+
+    foreach (var rawLine in File.ReadAllLines(envFile))
+    {
+        var line = rawLine.Trim();
+        if (line.Length == 0 || line.StartsWith('#'))
+        {
+            continue;
+        }
+
+        var separatorIndex = line.IndexOf('=');
+        if (separatorIndex <= 0)
+        {
+            continue;
+        }
+
+        var name = line[..separatorIndex].Trim();
+        var value = line[(separatorIndex + 1)..].Trim().Trim('"');
+        if (name.Length == 0 || Environment.GetEnvironmentVariable(name) is not null)
+        {
+            continue;
+        }
+
+        Environment.SetEnvironmentVariable(name, value);
+    }
+}
+
+static void ApplyLocalMySqlConfiguration()
+{
+    if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")))
+    {
+        return;
+    }
+
+    var database = Environment.GetEnvironmentVariable("LUMINE_AUTH_MYSQL_DATABASE");
+    var user = Environment.GetEnvironmentVariable("LUMINE_AUTH_MYSQL_USER");
+    var password = Environment.GetEnvironmentVariable("LUMINE_AUTH_MYSQL_PASSWORD");
+    if (string.IsNullOrWhiteSpace(database) || string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(password))
+    {
+        return;
+    }
+
+    var host = Environment.GetEnvironmentVariable("LUMINE_AUTH_MYSQL_HOST");
+    var port = Environment.GetEnvironmentVariable("LUMINE_AUTH_MYSQL_PORT");
+    var connectionStringBuilder = new MySqlConnectionStringBuilder
+    {
+        Server = string.IsNullOrWhiteSpace(host) ? "localhost" : host,
+        Port = uint.TryParse(port, out var parsedPort) ? parsedPort : 3307,
+        Database = database,
+        UserID = user,
+        Password = password
+    };
+
+    Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", connectionStringBuilder.ConnectionString);
+}
+
+static void ApplyLocalSeedConfiguration()
+{
+    if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SeedData__AdminPassword")))
+    {
+        return;
+    }
+
+    var adminPassword = Environment.GetEnvironmentVariable("LUMINE_AUTH_ADMIN_PASSWORD");
+    if (!string.IsNullOrWhiteSpace(adminPassword))
+    {
+        Environment.SetEnvironmentVariable("SeedData__AdminPassword", adminPassword);
+    }
+}
+
+static string? FindFileInCurrentOrParentDirectories(string fileName)
+{
+    var startDirectories = new[]
+    {
+        Directory.GetCurrentDirectory(),
+        AppContext.BaseDirectory
+    };
+
+    foreach (var startDirectory in startDirectories)
+    {
+        var directory = new DirectoryInfo(startDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, fileName);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+    }
+
+    return null;
+}
 
 static string ResolveMySqlConnectionString(string? rawConnectionString)
 {
