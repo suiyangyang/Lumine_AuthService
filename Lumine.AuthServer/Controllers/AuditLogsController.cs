@@ -30,66 +30,40 @@ namespace Lumine.AuthServer.Controllers
             pageIndex = pageIndex <= 0 ? 1 : pageIndex;
             pageSize = pageSize <= 0 ? 20 : Math.Min(pageSize, 100);
 
-            var authorizationCodes = await _dbContext.AuthorizationCodes
+            var persistedQuery = _dbContext.AuditLogEntries
                 .AsNoTracking()
-                .Include(item => item.User)
-                .Include(item => item.Client)
-                .OrderByDescending(item => item.CreatedAtUtc)
-                .Take(200)
-                .ToListAsync(cancellationToken);
-
-            var refreshTokens = await _dbContext.RefreshTokens
-                .AsNoTracking()
-                .Include(item => item.User)
-                .Include(item => item.Client)
-                .OrderByDescending(item => item.CreatedAtUtc)
-                .Take(200)
-                .ToListAsync(cancellationToken);
-
-            var entries = authorizationCodes
                 .Select(item => new AuditLogEntryDto
                 {
-                    Id = $"auth-code:{item.Id}",
-                    Category = "授权码",
-                    Action = item.IsConsumed ? "签发并消费" : "签发",
-                    Actor = item.User?.UserName ?? "未知用户",
-                    Target = item.Client?.ClientName ?? item.Client?.ClientId ?? "未知客户端",
-                    Outcome = item.IsExpired(DateTime.UtcNow) ? "已过期" : "成功",
-                    Details = $"Scopes: {string.Join(' ', item.ScopeList)}",
-                    OccurredAtUtc = item.CreatedAtUtc
-                })
-                .Concat(refreshTokens.Select(item => new AuditLogEntryDto
-                {
-                    Id = $"refresh-token:{item.Id}",
-                    Category = "Refresh Token",
-                    Action = item.RevokedAtUtc.HasValue ? "撤销" : "签发",
-                    Actor = item.User?.UserName ?? "未知用户",
-                    Target = item.Client?.ClientName ?? item.Client?.ClientId ?? "未知客户端",
-                    Outcome = item.RevokedAtUtc.HasValue ? "已撤销" : item.ExpiresAtUtc <= DateTime.UtcNow ? "已过期" : "有效",
-                    Details = $"Scopes: {string.Join(' ', item.ScopeList)}",
-                    OccurredAtUtc = item.RevokedAtUtc ?? item.CreatedAtUtc
-                }))
-                .OrderByDescending(item => item.OccurredAtUtc)
-                .ToList();
+                    Id = $"audit:{item.Id}",
+                    Category = item.Category,
+                    Action = item.Action,
+                    Actor = item.Actor,
+                    Target = item.Target,
+                    Outcome = item.Outcome,
+                    Details = string.IsNullOrWhiteSpace(item.IpAddress)
+                        ? item.Details
+                        : $"{item.Details} · IP: {item.IpAddress}",
+                    OccurredAtUtc = item.OccurredAtUtc
+                });
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 var normalizedKeyword = keyword.Trim();
-                entries = entries.Where(item =>
-                        item.Category.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase)
-                        || item.Action.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase)
-                        || item.Actor.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase)
-                        || item.Target.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase)
-                        || item.Outcome.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase)
-                        || item.Details.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                persistedQuery = persistedQuery.Where(item =>
+                    item.Category.Contains(normalizedKeyword)
+                    || item.Action.Contains(normalizedKeyword)
+                    || item.Actor.Contains(normalizedKeyword)
+                    || item.Target.Contains(normalizedKeyword)
+                    || item.Outcome.Contains(normalizedKeyword)
+                    || item.Details.Contains(normalizedKeyword));
             }
 
-            var totalCount = entries.Count;
-            var pagedItems = entries
+            var totalCount = await persistedQuery.CountAsync(cancellationToken);
+            var pagedItems = await persistedQuery
+                .OrderByDescending(item => item.OccurredAtUtc)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
-                .ToArray();
+                .ToArrayAsync(cancellationToken);
 
             return Ok(new PagedResultDto<AuditLogEntryDto>
             {

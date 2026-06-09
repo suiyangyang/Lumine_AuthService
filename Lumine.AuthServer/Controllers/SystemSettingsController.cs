@@ -30,12 +30,10 @@ namespace Lumine.AuthServer.Controllers
         [HttpGet("summary")]
         public async Task<ActionResult<SystemSettingsSummaryDto>> GetSummary(CancellationToken cancellationToken = default)
         {
-            var userCountTask = _dbContext.Users.AsNoTracking().CountAsync(cancellationToken);
-            var roleCountTask = _dbContext.Roles.AsNoTracking().CountAsync(cancellationToken);
-            var permissionCountTask = _dbContext.Permissions.AsNoTracking().CountAsync(cancellationToken);
-            var clientCountTask = _dbContext.OidcClients.AsNoTracking().CountAsync(cancellationToken);
-
-            await Task.WhenAll(userCountTask, roleCountTask, permissionCountTask, clientCountTask);
+            var userCount = await _dbContext.Users.AsNoTracking().CountAsync(cancellationToken);
+            var roleCount = await _dbContext.Roles.AsNoTracking().CountAsync(cancellationToken);
+            var permissionCount = await _dbContext.Permissions.AsNoTracking().CountAsync(cancellationToken);
+            var clientCount = await _dbContext.OidcClients.AsNoTracking().CountAsync(cancellationToken);
 
             var issuer = _oidcSigningCredentialsService.Issuer.TrimEnd('/');
             return Ok(new SystemSettingsSummaryDto
@@ -45,10 +43,10 @@ namespace Lumine.AuthServer.Controllers
                 TokenEndpoint = $"{issuer}/connect/token",
                 RefreshTokenGrantAdvertised = true,
                 SeedEnabled = _seedOptions.Enabled,
-                UserCount = await userCountTask,
-                RoleCount = await roleCountTask,
-                PermissionCount = await permissionCountTask,
-                ClientCount = await clientCountTask,
+                UserCount = userCount,
+                RoleCount = roleCount,
+                PermissionCount = permissionCount,
+                ClientCount = clientCount,
                 DefaultClientId = _seedOptions.Clients.FirstOrDefault()?.ClientId ?? string.Empty,
                 ServerTimeUtc = DateTime.UtcNow
             });

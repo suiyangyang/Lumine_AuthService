@@ -12,17 +12,20 @@ namespace Lumine.AuthServer.Infrastructure.Services
         private readonly IPasswordService _passwordService;
         private readonly IOidcService _oidcService;
         private readonly IOidcSigningCredentialsService _signingCredentialsService;
+        private readonly IAuditLogService _auditLogService;
 
         public AuthenticationAppService(
             IUserRepository userRepository,
             IPasswordService passwordService,
             IOidcService oidcService,
-            IOidcSigningCredentialsService signingCredentialsService)
+            IOidcSigningCredentialsService signingCredentialsService,
+            IAuditLogService auditLogService)
         {
             _userRepository = userRepository;
             _passwordService = passwordService;
             _oidcService = oidcService;
             _signingCredentialsService = signingCredentialsService;
+            _auditLogService = auditLogService;
         }
 
         public async Task<AuthenticationResult> LoginAsync(LoginInput input, CancellationToken cancellationToken = default)
@@ -44,11 +47,29 @@ namespace Lumine.AuthServer.Infrastructure.Services
             var user = await _userRepository.GetByUserNameAsync(normalizedUserName);
             if (user == null || !user.IsActive)
             {
+                await _auditLogService.WriteAsync(
+                    "认证",
+                    "登录",
+                    normalizedUserName,
+                    input.ClientId?.Trim() ?? "后台登录",
+                    "失败",
+                    "用户名不存在或账号已停用。",
+                    occurredAtUtc: DateTime.UtcNow,
+                    cancellationToken: cancellationToken);
                 throw new UnauthorizedAccessException("用户名或密码错误。");
             }
 
             if (!_passwordService.VerifyPassword(user, input.Password, out var needsRehash))
             {
+                await _auditLogService.WriteAsync(
+                    "认证",
+                    "登录",
+                    user.UserName,
+                    input.ClientId?.Trim() ?? "后台登录",
+                    "失败",
+                    "密码校验失败。",
+                    occurredAtUtc: DateTime.UtcNow,
+                    cancellationToken: cancellationToken);
                 throw new UnauthorizedAccessException("用户名或密码错误。");
             }
 
@@ -57,9 +78,19 @@ namespace Lumine.AuthServer.Infrastructure.Services
                 user.SetPasswordHash(_passwordService.HashPassword(user, input.Password));
             }
 
+            var audience = string.IsNullOrWhiteSpace(input.ClientId) ? "lumine.authserver" : input.ClientId.Trim();
             user.MarkLoginSucceeded();
             _userRepository.Update(user);
             await _userRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _auditLogService.WriteAsync(
+                "认证",
+                "登录",
+                user.UserName,
+                audience,
+                "成功",
+                $"Scopes: {(scopes.Count == 0 ? "无" : string.Join(' ', scopes))}",
+                occurredAtUtc: DateTime.UtcNow,
+                cancellationToken: cancellationToken);
 
             var roles = await _userRepository.GetUserRolesWithPermissionsAsync(user.Id);
             var permissions = roles.SelectMany(role => role.RolePermissions)
@@ -68,7 +99,6 @@ namespace Lumine.AuthServer.Infrastructure.Services
                 .ToArray();
             var authTime = DateTimeOffset.UtcNow;
             var issuer = _signingCredentialsService.Issuer;
-            var audience = string.IsNullOrWhiteSpace(input.ClientId) ? "lumine.authserver" : input.ClientId.Trim();
             var accessToken = _oidcService.CreateAccessToken(user, roles, scopes, issuer, _signingCredentialsService.SigningCredentials, audience, AccessTokenLifetime);
             var idToken = _oidcService.CreateIdToken(user, roles, scopes, issuer, _signingCredentialsService.SigningCredentials, audience, input.Nonce, authTime, AccessTokenLifetime);
 
@@ -80,6 +110,24 @@ namespace Lumine.AuthServer.Infrastructure.Services
                 user,
                 roles,
                 permissions);
+        }
+
+        public Task LogoutAsync(LogoutInput input, CancellationToken cancellationToken = default)
+        {
+            var normalizedUserName = string.IsNullOrWhiteSpace(input.UserName)
+                ? "未知用户"
+                : input.UserName.Trim();
+
+            return _auditLogService.WriteAsync(
+                "认证",
+                "登出",
+                normalizedUserName,
+                string.IsNullOrWhiteSpace(input.ClientId) ? "后台登录" : input.ClientId.Trim(),
+                "成功",
+                "用户主动退出当前会话。",
+                input.IpAddress,
+                DateTime.UtcNow,
+                cancellationToken);
         }
 
         public async Task<RegistrationResult> RegisterAsync(RegisterInput input, CancellationToken cancellationToken = default)

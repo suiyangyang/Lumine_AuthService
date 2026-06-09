@@ -20,6 +20,7 @@ namespace Lumine.AuthServer.Infrastructure
         public DbSet<OidcClientRedirectUri> OidcClientRedirectUris => Set<OidcClientRedirectUri>();
         public DbSet<AuthorizationCode> AuthorizationCodes => Set<AuthorizationCode>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<AuditLogEntry> AuditLogEntries => Set<AuditLogEntry>();
         public DbSet<DbVersion> DbVersions => Set<DbVersion>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -181,6 +182,22 @@ namespace Lumine.AuthServer.Infrastructure
                     .WithMany()
                     .HasForeignKey(item => item.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<AuditLogEntry>(b =>
+            {
+                b.ToTable("AuditLogEntries");
+                b.HasKey(item => item.Id);
+                b.Property(item => item.Category).IsRequired().HasMaxLength(64);
+                b.Property(item => item.Action).IsRequired().HasMaxLength(64);
+                b.Property(item => item.Actor).IsRequired().HasMaxLength(128);
+                b.Property(item => item.Target).IsRequired().HasMaxLength(256);
+                b.Property(item => item.Outcome).IsRequired().HasMaxLength(64);
+                b.Property(item => item.Details).HasMaxLength(2048);
+                b.Property(item => item.IpAddress).HasMaxLength(64);
+                b.Property(item => item.OccurredAtUtc).IsRequired();
+                b.HasIndex(item => item.OccurredAtUtc);
+                b.HasIndex(item => new { item.Category, item.Action });
             });
 
             modelBuilder.Entity<DbVersion>(b =>

@@ -2,6 +2,7 @@ using Lumine.AuthServer.Application.Services;
 using Lumine.AuthServer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Lumine.AuthServer.Controllers
 {
@@ -94,6 +95,24 @@ namespace Lumine.AuthServer.Controllers
             {
                 return Conflict(new { error = "conflict", message = ex.Message[10..] });
             }
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+        {
+            var userName = User.FindFirstValue(ClaimTypes.Name)
+                ?? User.FindFirst("preferred_username")?.Value
+                ?? User.Identity?.Name
+                ?? "未知用户";
+            var clientId = User.FindFirst("aud")?.Value ?? "后台登录";
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            await _authenticationAppService.LogoutAsync(
+                new LogoutInput(userName, clientId, ipAddress),
+                cancellationToken);
+
+            return Ok(new { message = "已记录登出日志。" });
         }
     }
 

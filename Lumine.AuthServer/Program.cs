@@ -69,6 +69,7 @@ services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 services.AddScoped<IPasswordHasher<Lumine.AuthServer.Domain.Entities.User>, PasswordHasher<Lumine.AuthServer.Domain.Entities.User>>();
 services.AddScoped<IPasswordService, PasswordService>();
 services.AddScoped<IOidcService, OidcService>();
+services.AddScoped<IAuditLogService, AuditLogService>();
 services.AddScoped<IAuthenticationAppService, AuthenticationAppService>();
 services.AddSingleton<IOidcSigningCredentialsService>(oidcSigningCredentialsService);
 services.Configure<OidcOptions>(builder.Configuration.GetSection(OidcOptions.SectionName));

@@ -1,6 +1,7 @@
 using Lumine.AuthServer.Api.Auth;
 using Lumine.AuthServer.Application.DTOs;
 using Lumine.AuthServer.Infrastructure;
+using Lumine.AuthServer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace Lumine.AuthServer.Controllers
     public class TokensController : ControllerBase
     {
         private readonly AuthDbContext _dbContext;
+        private readonly IAuditLogService _auditLogService;
 
-        public TokensController(AuthDbContext dbContext)
+        public TokensController(AuthDbContext dbContext, IAuditLogService auditLogService)
         {
             _dbContext = dbContext;
+            _auditLogService = auditLogService;
         }
 
         [HttpGet]
@@ -77,6 +80,16 @@ namespace Lumine.AuthServer.Controllers
 
             token.Revoke(DateTime.UtcNow);
             await _dbContext.SaveChangesAsync(cancellationToken);
+            await _auditLogService.WriteAsync(
+                "Token",
+                "撤销",
+                User.Identity?.Name ?? "当前用户",
+                token.Client?.ClientName ?? token.Client?.ClientId ?? "未知客户端",
+                "成功",
+                $"Token: {MapToken(token).TokenPreview} · 用户: {token.User?.UserName ?? "未知用户"}",
+                HttpContext.Connection.RemoteIpAddress?.ToString(),
+                DateTime.UtcNow,
+                cancellationToken);
             return Ok(MapToken(token));
         }
 

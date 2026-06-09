@@ -27,6 +27,7 @@ namespace Lumine.AuthServer.Controllers
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IOidcService _oidcService;
         private readonly IOidcSigningCredentialsService _signingCredentialsService;
+        private readonly IAuditLogService _auditLogService;
 
         public OidcController(
             IUserRepository userRepository,
@@ -34,7 +35,8 @@ namespace Lumine.AuthServer.Controllers
             IAuthorizationCodeRepository authorizationCodeRepository,
             IRefreshTokenRepository refreshTokenRepository,
             IOidcService oidcService,
-            IOidcSigningCredentialsService signingCredentialsService)
+            IOidcSigningCredentialsService signingCredentialsService,
+            IAuditLogService auditLogService)
         {
             _userRepository = userRepository;
             _clientRepository = clientRepository;
@@ -42,6 +44,7 @@ namespace Lumine.AuthServer.Controllers
             _refreshTokenRepository = refreshTokenRepository;
             _oidcService = oidcService;
             _signingCredentialsService = signingCredentialsService;
+            _auditLogService = auditLogService;
         }
 
         [AllowAnonymous]
@@ -124,6 +127,16 @@ namespace Lumine.AuthServer.Controllers
 
             if (string.Equals(request.Consent, "deny", StringComparison.OrdinalIgnoreCase))
             {
+                await _auditLogService.WriteAsync(
+                    "授权",
+                    "拒绝授权",
+                    user.UserName,
+                    client.ClientName,
+                    "成功",
+                    $"Scopes: {(scopes.Count == 0 ? "无" : string.Join(' ', scopes))}",
+                    HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    DateTime.UtcNow,
+                    cancellationToken);
                 return CreateRedirectError(client, request.RedirectUri, request.State, "access_denied", "用户拒绝了本次授权。", includeErrorDescription: false);
             }
 
@@ -156,6 +169,16 @@ namespace Lumine.AuthServer.Controllers
 
             await _authorizationCodeRepository.AddAsync(authorizationCode, cancellationToken);
             await _authorizationCodeRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _auditLogService.WriteAsync(
+                "授权",
+                "签发授权码",
+                user.UserName,
+                client.ClientName,
+                "成功",
+                $"Scopes: {(scopes.Count == 0 ? "无" : string.Join(' ', scopes))}",
+                HttpContext.Connection.RemoteIpAddress?.ToString(),
+                authorizationCode.CreatedAtUtc,
+                cancellationToken);
 
             var callbackUrl = QueryHelpers.AddQueryString(request.RedirectUri.Trim(), "code", codeValue);
             if (!string.IsNullOrWhiteSpace(request.State))
@@ -254,6 +277,16 @@ namespace Lumine.AuthServer.Controllers
             authorizationCode.Consume(DateTime.UtcNow);
             _authorizationCodeRepository.Update(authorizationCode);
             await _authorizationCodeRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+            await _auditLogService.WriteAsync(
+                "Token",
+                "换取访问令牌",
+                user.UserName,
+                client.ClientName,
+                "成功",
+                $"Scopes: {(scopes.Count == 0 ? "无" : string.Join(' ', scopes))}",
+                HttpContext.Connection.RemoteIpAddress?.ToString(),
+                DateTime.UtcNow,
+                cancellationToken);
 
             return Ok(new
             {
