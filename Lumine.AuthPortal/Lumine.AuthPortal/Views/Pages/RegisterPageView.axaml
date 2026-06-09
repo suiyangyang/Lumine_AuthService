@@ -3,16 +3,208 @@
              xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
              x:Class="Lumine.AuthPortal.Views.Pages.RegisterPageView"
              x:DataType="vm:RegisterPageViewModel">
-  <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="24" MaxWidth="620">
-    <StackPanel Spacing="14">
-      <TextBlock Text="注册" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-      <TextBox Text="{Binding UserName}" Watermark="用户名"/>
-      <TextBox Text="{Binding Email}" Watermark="邮箱"/>
-      <TextBox Text="{Binding Password}" PasswordChar="*" Watermark="密码"/>
-      <TextBox Text="{Binding NickName}" Watermark="昵称"/>
-      <TextBox Text="{Binding PhoneNumber}" Watermark="手机号"/>
-      <Button Content="提交注册" Command="{Binding RegisterCommand}"/>
-      <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-    </StackPanel>
-  </Border>
+  <UserControl.Styles>
+    <Style Selector="TextBlock.form-label">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Border.register-shell">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="36,34"/>
+    </Style>
+    <Style Selector="Border.register-panel">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="18"/>
+    </Style>
+    <Style Selector="TextBox.register-input">
+      <Setter Property="MinHeight" Value="44"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="12,10"/>
+      <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="SelectionBrush" Value="#3B82F6"/>
+    </Style>
+    <Style Selector="TextBox.register-input /template/ Border#border">
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
+    </Style>
+    <Style Selector="TextBox.register-input:pointerover">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
+    </Style>
+    <Style Selector="TextBox.register-input:pointerover /template/ Border#border">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}"/>
+    </Style>
+    <Style Selector="TextBox.register-input:focus">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="TextBox.register-input:focus /template/ Border#border">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+    </Style>
+    <Style Selector="Button.register-primary-action">
+      <Setter Property="Background" Value="#2563EB"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="16,11"/>
+    </Style>
+    <Style Selector="Button.register-primary-action /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
+    </Style>
+    <Style Selector="Button.register-primary-action /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#2563EB"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
+    </Style>
+    <Style Selector="Button.register-primary-action /template/ Border#border">
+      <Setter Property="Background" Value="#2563EB"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+    </Style>
+    <Style Selector="Button.register-primary-action:pointerover">
+      <Setter Property="Background" Value="#1D4ED8"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
+    </Style>
+    <Style Selector="Button.register-primary-action:pointerover /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
+    </Style>
+    <Style Selector="Button.register-primary-action:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#1D4ED8"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}"/>
+    </Style>
+    <Style Selector="Button.register-primary-action:pointerover /template/ Border#border">
+      <Setter Property="Background" Value="#1D4ED8"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}"/>
+    </Style>
+    <Style Selector="Border.register-switch-shell">
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="4"/>
+    </Style>
+    <Style Selector="Button.register-switch-button">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="0,10"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.register-switch-button:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.register-switch-button.active">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="*,Auto,*" ColumnDefinitions="*,Auto,*" Background="{DynamicResource AppBackgroundBrush}">
+    <Border Grid.Row="1"
+            Grid.Column="1"
+            MinWidth="360"
+            MaxWidth="560">
+      <Border Classes="register-shell">
+        <Grid RowDefinitions="Auto,*,Auto">
+          <StackPanel Spacing="8">
+            <TextBlock Text="创建账号"
+                       FontSize="26"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <TextBlock Text="填写后台账号基础信息，提交后即可回到登录入口。"
+                       Foreground="{DynamicResource TextMutedBrush}"
+                       TextWrapping="Wrap"/>
+          </StackPanel>
+
+          <Border Grid.Row="1"
+                  Classes="register-panel"
+                  VerticalAlignment="Center">
+            <StackPanel Spacing="12">
+              <Border Classes="register-switch-shell">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
+                  <Button Classes="register-switch-button"
+                          Grid.Column="0"
+                          Content="登录"
+                          Command="{Binding OpenLoginCommand}"/>
+                  <Button Classes="register-switch-button active"
+                          Grid.Column="1"
+                          Content="注册"/>
+                </Grid>
+              </Border>
+
+              <TextBlock Text="账号信息"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         FontWeight="SemiBold"/>
+
+              <Grid ColumnDefinitions="*,*"
+                    ColumnSpacing="12"
+                    RowDefinitions="Auto,Auto,Auto"
+                    RowSpacing="12">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="用户名" Classes="form-label"/>
+                  <TextBox Text="{Binding UserName}" Classes="register-input" Watermark="请输入用户名"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="6">
+                  <TextBlock Text="邮箱" Classes="form-label"/>
+                  <TextBox Text="{Binding Email}" Classes="register-input" Watermark="name@example.com"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Spacing="6">
+                  <TextBlock Text="密码" Classes="form-label"/>
+                  <TextBox Text="{Binding Password}" Classes="register-input" PasswordChar="●" Watermark="请输入密码"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1" Spacing="6">
+                  <TextBlock Text="昵称" Classes="form-label"/>
+                  <TextBox Text="{Binding NickName}" Classes="register-input" Watermark="选填"/>
+                </StackPanel>
+                <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Spacing="6">
+                  <TextBlock Text="手机号" Classes="form-label"/>
+                  <TextBox Text="{Binding PhoneNumber}" Classes="register-input" Watermark="选填"/>
+                </StackPanel>
+              </Grid>
+
+              <Button Classes="register-primary-action"
+                      Content="提交注册"
+                      Command="{Binding RegisterCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Center"
+                      FontWeight="SemiBold"/>
+            </StackPanel>
+          </Border>
+
+          <Border Grid.Row="2"
+                  Background="{DynamicResource SurfaceInsetBrush}"
+                  BorderBrush="{DynamicResource BorderSubtleBrush}"
+                  BorderThickness="1"
+                  CornerRadius="8"
+                  Padding="12"
+                  MinHeight="46">
+            <TextBlock Text="{Binding StatusMessage}"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       TextWrapping="Wrap"
+                       VerticalAlignment="Center"/>
+          </Border>
+        </Grid>
+      </Border>
+    </Border>
+  </Grid>
 </UserControl>

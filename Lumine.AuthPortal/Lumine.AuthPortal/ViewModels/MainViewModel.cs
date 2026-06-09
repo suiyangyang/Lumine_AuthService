@@ -102,8 +102,8 @@ public partial class MainViewModel : ViewModelBase
         _pageFactory = new Dictionary<string, Func<ViewModelBase>>(StringComparer.OrdinalIgnoreCase)
         {
             ["dashboard"] = () => new DashboardPageViewModel(_apiClient, _session),
-            ["login"] = () => new LoginPageViewModel(_apiClient, _session, () => Navigate("dashboard")),
-            ["register"] = () => new RegisterPageViewModel(_apiClient),
+            ["login"] = () => new LoginPageViewModel(_apiClient, _session, () => Navigate("dashboard"), () => Navigate("register")),
+            ["register"] = () => new RegisterPageViewModel(_apiClient, () => Navigate("login")),
             ["user-groups"] = () => new PlaceholderPageViewModel("用户组管理", "预留后台入口，后续可接入用户组列表、成员维护与角色映射。"),
             ["consent"] = () => new ConsentPageViewModel(),
             ["users"] = () => new UsersManagementPageViewModel(_apiClient, _session),
@@ -118,10 +118,14 @@ public partial class MainViewModel : ViewModelBase
         };
 
         RefreshNavigationVisibility();
-
-        CurrentPage = _pageFactory["dashboard"]();
-        CurrentPageTitle = "仪表盘";
-        UpdateSelectedNavigation("dashboard");
+        if (IsAuthenticated)
+        {
+            Navigate("dashboard");
+        }
+        else
+        {
+            Navigate("login");
+        }
     }
 
     public IReadOnlyList<NavigationItemViewModel> NavigationItems { get; }
@@ -134,6 +138,10 @@ public partial class MainViewModel : ViewModelBase
     public bool IsAuthenticated => _session.IsAuthenticated;
 
     public bool IsAnonymous => !IsAuthenticated;
+
+    public bool IsLoginPageSelected => string.Equals(CurrentPageKey, "login", StringComparison.OrdinalIgnoreCase);
+
+    public bool IsRegisterPageSelected => string.Equals(CurrentPageKey, "register", StringComparison.OrdinalIgnoreCase);
 
     public PortalSession Session => _session;
 
@@ -183,13 +191,16 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    private ViewModelBase _currentPage;
+    private ViewModelBase _currentPage = new PlaceholderPageViewModel("初始化中", "正在准备页面...");
 
     [ObservableProperty]
-    private string _currentPageTitle;
+    private string _currentPageTitle = string.Empty;
 
     [ObservableProperty]
     private bool _isAccountMenuOpen;
+
+    [ObservableProperty]
+    private string _currentPageKey = string.Empty;
 
     [RelayCommand]
     private void Navigate(string key)
@@ -208,6 +219,7 @@ public partial class MainViewModel : ViewModelBase
 
         CurrentPage = _pageFactory[key]();
         CurrentPageTitle = navigationItem.Title;
+        CurrentPageKey = key;
         IsAccountMenuOpen = false;
         UpdateSelectedNavigation(key);
     }
@@ -247,6 +259,7 @@ public partial class MainViewModel : ViewModelBase
         IsAccountMenuOpen = false;
         CurrentPage = new ProfileCenterPageViewModel(_apiClient, _session);
         CurrentPageTitle = "个人中心";
+        CurrentPageKey = "profile-center";
         UpdateSelectedNavigation(string.Empty);
     }
 
@@ -256,6 +269,7 @@ public partial class MainViewModel : ViewModelBase
         IsAccountMenuOpen = false;
         CurrentPage = new SecuritySettingsPageViewModel(_apiClient, _session);
         CurrentPageTitle = "安全设置";
+        CurrentPageKey = "security-settings";
         UpdateSelectedNavigation(string.Empty);
     }
 
@@ -288,10 +302,16 @@ public partial class MainViewModel : ViewModelBase
         {
             item.IsVisible = item.Key switch
             {
-                "login" or "register" => IsAnonymous,
-                _ => IsAuthenticated || item.Key == "dashboard"
+                "login" or "register" => false,
+                _ => IsAuthenticated
             };
         }
+    }
+
+    partial void OnCurrentPageKeyChanged(string value)
+    {
+        OnPropertyChanged(nameof(IsLoginPageSelected));
+        OnPropertyChanged(nameof(IsRegisterPageSelected));
     }
 }
 

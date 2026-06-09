@@ -3,7 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Lumine.AuthPortal.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:controls="using:Lumine.AuthPortal.Views.Controls"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="820"
              x:Name="Root"
              x:Class="Lumine.AuthPortal.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -95,7 +96,7 @@
       <Setter Property="BorderBrush" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="0"/>
-      <Setter Property="Padding" Value="0,0,0,0"/>
+      <Setter Property="Padding" Value="0"/>
       <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
       <Setter Property="MinHeight" Value="24"/>
     </Style>
@@ -237,226 +238,277 @@
       <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
+    <Style Selector="Border.brand-title-shell">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="20"/>
+      <Setter Property="Padding" Value="18,14"/>
+    </Style>
   </UserControl.Styles>
-  <Grid ColumnDefinitions="260,*" RowDefinitions="Auto,*" Background="{DynamicResource AppBackgroundBrush}">
-    <Border Grid.RowSpan="2" Background="{DynamicResource SidebarBackgroundBrush}" Padding="20,20,16,20">
-      <StackPanel Spacing="16">
-        <StackPanel Spacing="6">
-          <TextBlock Text="Lumine AuthPortal" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-          <TextBlock Text="Avalonia Web 管理骨架" Foreground="{DynamicResource TextMutedBrush}"/>
+
+  <Grid Background="{DynamicResource AppBackgroundBrush}">
+    <Grid IsVisible="{Binding IsAnonymous}">
+      <Grid RowDefinitions="Auto,*" Margin="32">
+        <Border Classes="brand-title-shell"
+                HorizontalAlignment="Center">
+          <StackPanel Orientation="Horizontal"
+                      Spacing="16"
+                      VerticalAlignment="Center">
+            <controls:LumineBrandMark Width="54" Height="54"/>
+            <TextBlock Text="Lumine AuthPortal"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center"/>
+          </StackPanel>
+        </Border>
+
+        <ContentControl Grid.Row="1"
+                        Content="{Binding CurrentPage}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"/>
+      </Grid>
+    </Grid>
+
+    <Grid IsVisible="{Binding IsAuthenticated}"
+          ColumnDefinitions="260,*"
+          RowDefinitions="Auto,*">
+      <Border Grid.RowSpan="2"
+              Background="{DynamicResource SidebarBackgroundBrush}"
+              Padding="20,20,16,20">
+        <StackPanel Spacing="16">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <controls:LumineBrandMark Width="44" Height="44"/>
+            <StackPanel Spacing="2" VerticalAlignment="Center">
+              <TextBlock Text="Lumine AuthPortal"
+                         FontSize="20"
+                         FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}"/>
+              <TextBlock Text="统一身份认证后台"
+                         Foreground="{DynamicResource TextMutedBrush}"/>
+            </StackPanel>
+          </StackPanel>
+
+          <ItemsControl ItemsSource="{Binding VisibleNavigationSections}"
+                        HorizontalAlignment="Stretch">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:NavigationSectionViewModel">
+                <Border Classes="nav-section-container">
+                  <StackPanel Spacing="6">
+                    <Button Classes="nav-section-toggle"
+                            Command="{Binding ToggleSectionCommand, ElementName=Root}"
+                            CommandParameter="{Binding}">
+                      <Grid ColumnDefinitions="18,*,16" ColumnSpacing="8" HorizontalAlignment="Stretch">
+                        <PathIcon Grid.Column="0"
+                                  Data="{Binding IconData}"
+                                  Classes="nav-section-icon"
+                                  Width="14"
+                                  Height="14"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Title}"
+                                   Classes="nav-section-title"
+                                   VerticalAlignment="Center"/>
+                        <PathIcon Grid.Column="2"
+                                  Data="{Binding ExpandIconData}"
+                                  Classes="nav-expand-icon"
+                                  Width="13"
+                                  Height="13"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Right"/>
+                      </Grid>
+                    </Button>
+
+                    <Border Classes="nav-section-children"
+                            ClipToBounds="True"
+                            MaxHeight="{Binding ChildrenMaxHeight}"
+                            Opacity="{Binding ChildrenOpacity}">
+                      <Border.Transitions>
+                        <Transitions>
+                          <DoubleTransition Property="MaxHeight" Duration="0:0:0.18"/>
+                          <DoubleTransition Property="Opacity" Duration="0:0:0.14"/>
+                        </Transitions>
+                      </Border.Transitions>
+                      <ItemsControl ItemsSource="{Binding Items}"
+                                    HorizontalAlignment="Stretch">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="vm:NavigationItemViewModel">
+                            <Button Command="{Binding NavigateCommand, ElementName=Root}"
+                                    CommandParameter="{Binding Key}"
+                                    Classes="nav-item"
+                                    Classes.selected="{Binding IsSelected}"
+                                    IsVisible="{Binding IsVisible}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch">
+                              <Grid ColumnDefinitions="24,*" HorizontalAlignment="Stretch">
+                                <PathIcon Grid.Column="0"
+                                          Data="{Binding IconData}"
+                                          Classes="nav-item-icon"
+                                          Width="17"
+                                          Height="17"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Title}"
+                                           Classes="nav-item-label"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"/>
+                              </Grid>
+                            </Button>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                    </Border>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
         </StackPanel>
+      </Border>
 
-        <ItemsControl ItemsSource="{Binding VisibleNavigationSections}" HorizontalAlignment="Stretch">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:NavigationSectionViewModel">
-              <Border Classes="nav-section-container">
-                <StackPanel Spacing="6">
-                  <Button Classes="nav-section-toggle"
-                          Command="{Binding ToggleSectionCommand, ElementName=Root}"
-                          CommandParameter="{Binding}">
-                    <Grid ColumnDefinitions="18,*,16" ColumnSpacing="8" HorizontalAlignment="Stretch">
-                      <PathIcon Grid.Column="0"
-                                Data="{Binding IconData}"
-                                Classes="nav-section-icon"
-                                Width="14"
-                                Height="14"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"/>
-                      <TextBlock Grid.Column="1"
-                                 Text="{Binding Title}"
-                                 Classes="nav-section-title"
-                                 VerticalAlignment="Center"/>
-                      <PathIcon Grid.Column="2"
-                                Data="{Binding ExpandIconData}"
-                                Classes="nav-expand-icon"
-                                Width="13"
-                                Height="13"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Right"/>
-                    </Grid>
-                  </Button>
+      <Border Grid.Column="1"
+              Background="{DynamicResource TopbarBackgroundBrush}"
+              BorderBrush="{DynamicResource BorderSubtleBrush}"
+              BorderThickness="0,0,0,1"
+              Padding="24,16">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Text="{Binding CurrentPageTitle}"
+                     FontSize="24"
+                     FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     VerticalAlignment="Center"/>
 
-                  <Border Classes="nav-section-children"
-                          ClipToBounds="True"
-                          MaxHeight="{Binding ChildrenMaxHeight}"
-                          Opacity="{Binding ChildrenOpacity}">
-                    <Border.Transitions>
-                      <Transitions>
-                        <DoubleTransition Property="MaxHeight" Duration="0:0:0.18"/>
-                        <DoubleTransition Property="Opacity" Duration="0:0:0.14"/>
-                      </Transitions>
-                    </Border.Transitions>
-                    <ItemsControl ItemsSource="{Binding Items}" HorizontalAlignment="Stretch">
+          <StackPanel Grid.Column="1"
+                      Orientation="Horizontal"
+                      Spacing="10"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Center">
+            <Button x:Name="AccountMenuButton"
+                    Classes="account-trigger"
+                    Command="{Binding ToggleAccountMenuCommand}"
+                    VerticalAlignment="Center">
+              <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                <Border Classes="account-avatar" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding AccountInitial}"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             TextAlignment="Center"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             FontWeight="Bold"/>
+                </Border>
+                <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding AccountDisplayName}"
+                             FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"/>
+                  <TextBlock Text="{Binding AccountRolesSummary}"
+                             Classes="account-label"
+                             MaxWidth="240"
+                             TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+                <PathIcon Grid.Column="2"
+                          Data="{Binding AccountMenuChevronIconData}"
+                          Width="14"
+                          Height="14"
+                          Foreground="{DynamicResource TextMutedBrush}"
+                          VerticalAlignment="Center"/>
+              </Grid>
+            </Button>
+
+            <Button Classes="account-trigger"
+                    Command="{Binding ToggleThemeCommand}"
+                    VerticalAlignment="Center"
+                    ToolTip.Tip="{Binding CurrentThemeLabel}">
+              <PathIcon Data="{Binding ThemeToggleIconData}"
+                        Width="16"
+                        Height="16"
+                        Foreground="{DynamicResource TextPrimaryBrush}"/>
+            </Button>
+
+            <Popup IsOpen="{Binding IsAccountMenuOpen}"
+                   Placement="BottomEdgeAlignedRight"
+                   PlacementTarget="{Binding #AccountMenuButton}"
+                   HorizontalOffset="0"
+                   VerticalOffset="10">
+              <Border Classes="account-menu"
+                      Width="280">
+                <StackPanel Spacing="12">
+                  <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Border Classes="account-avatar">
+                      <TextBlock Text="{Binding AccountInitial}"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 TextAlignment="Center"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 FontWeight="Bold"/>
+                    </Border>
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{Binding AccountDisplayName}" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                      <TextBlock Text="{Binding AccountStatusText}" Classes="account-label"/>
+                    </StackPanel>
+                  </StackPanel>
+
+                  <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="10" Padding="10">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="邮箱" Classes="account-label"/>
+                      <TextBlock Text="{Binding AccountEmail}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                      <TextBlock Text="{Binding AccountRolesSummary}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                  </Border>
+
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="角色标签" Classes="account-label"/>
+                    <ItemsControl ItemsSource="{Binding AccountRoles}">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                          <WrapPanel ItemHeight="28"/>
+                        </ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
                       <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="vm:NavigationItemViewModel">
-                          <Button Command="{Binding NavigateCommand, ElementName=Root}"
-                                  CommandParameter="{Binding Key}"
-                                  Classes="nav-item"
-                                  Classes.selected="{Binding IsSelected}"
-                                  IsVisible="{Binding IsVisible}"
-                                  HorizontalAlignment="Stretch"
-                                  HorizontalContentAlignment="Stretch">
-                            <Grid ColumnDefinitions="24,*" HorizontalAlignment="Stretch">
-                              <PathIcon Grid.Column="0"
-                                        Data="{Binding IconData}"
-                                        Classes="nav-item-icon"
-                                        Width="17"
-                                        Height="17"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center"/>
-                              <TextBlock Grid.Column="1"
-                                         Text="{Binding Title}"
-                                         Classes="nav-item-label"
-                                         VerticalAlignment="Center"
-                                         TextTrimming="CharacterEllipsis"/>
-                            </Grid>
-                          </Button>
+                        <DataTemplate>
+                          <Border Classes="account-chip" Margin="0,0,8,8">
+                            <TextBlock Text="{Binding .}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"/>
+                          </Border>
                         </DataTemplate>
                       </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                  </Border>
+                  </StackPanel>
+
+                  <StackPanel Spacing="4">
+                    <Button Classes="account-menu-item"
+                            Command="{Binding OpenProfileCenterCommand}"
+                            Content="个人中心"/>
+                    <Button Classes="account-menu-item"
+                            Command="{Binding OpenSecuritySettingsCommand}"
+                            Content="安全设置"/>
+                  </StackPanel>
+
+                  <Button Classes="admin-button admin-danger-solid"
+                          Content="退出登录"
+                          Command="{Binding LogoutCommand}"
+                          MinHeight="34"/>
                 </StackPanel>
               </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </StackPanel>
-    </Border>
-
-    <Border Grid.Row="1" Grid.Column="1" Padding="24" Background="{DynamicResource AppBackgroundBrush}">
-      <ContentControl Content="{Binding CurrentPage}"/>
-    </Border>
-
-    <Button Grid.ColumnSpan="2"
-            Grid.RowSpan="2"
-            Background="Transparent"
-            BorderThickness="0"
-            IsVisible="{Binding IsAccountMenuOpen}"
-            Command="{Binding CloseAccountMenuCommand}"/>
-
-    <Border Grid.Column="1" Background="{DynamicResource TopbarBackgroundBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0,1" Padding="24,16">
-      <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
-        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-          <TextBlock Text="{Binding CurrentPageTitle}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-          <TextBlock Text="{Binding HasAdminAccess, StringFormat=后台菜单可见：{0}}" VerticalAlignment="Center" Foreground="{DynamicResource TextMutedBrush}"/>
-        </StackPanel>
-
-        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" VerticalAlignment="Center">
-          <Button x:Name="AccountMenuButton"
-                  Classes="account-trigger"
-                  Command="{Binding ToggleAccountMenuCommand}"
-                  VerticalAlignment="Center"
-                  IsVisible="{Binding IsAuthenticated}">
-            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-              <Border Classes="account-avatar" VerticalAlignment="Center">
-                <TextBlock Text="{Binding AccountInitial}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           TextAlignment="Center"
-                           Foreground="{DynamicResource TextPrimaryBrush}"
-                           FontWeight="Bold"/>
-              </Border>
-              <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center">
-                <TextBlock Text="{Binding AccountDisplayName}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                <TextBlock Text="{Binding AccountRolesSummary}" Classes="account-label" MaxWidth="240" TextTrimming="CharacterEllipsis"/>
-              </StackPanel>
-              <PathIcon Grid.Column="2"
-                        Data="{Binding AccountMenuChevronIconData}"
-                        Width="14"
-                        Height="14"
-                        Foreground="{DynamicResource TextMutedBrush}"
-                        VerticalAlignment="Center"/>
-            </Grid>
-          </Button>
-          <Button Classes="account-trigger"
-                  Command="{Binding ToggleThemeCommand}"
-                  VerticalAlignment="Center"
-                  ToolTip.Tip="{Binding CurrentThemeLabel}">
-            <PathIcon Data="{Binding ThemeToggleIconData}"
-                      Width="16"
-                      Height="16"
-                      Foreground="{DynamicResource TextPrimaryBrush}"/>
-          </Button>
-
-          <Popup IsOpen="{Binding IsAccountMenuOpen}"
-                 Placement="BottomEdgeAlignedRight"
-                 PlacementTarget="{Binding #AccountMenuButton}"
-                 HorizontalOffset="0"
-                 VerticalOffset="10">
-            <Border Classes="account-menu"
-                    Width="280">
-              <StackPanel Spacing="12">
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                  <Border Classes="account-avatar">
-                    <TextBlock Text="{Binding AccountInitial}"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               TextAlignment="Center"
-                               Foreground="{DynamicResource TextPrimaryBrush}"
-                               FontWeight="Bold"/>
-                  </Border>
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{Binding AccountDisplayName}" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                    <TextBlock Text="{Binding AccountStatusText}" Classes="account-label"/>
-                  </StackPanel>
-                </StackPanel>
-
-                <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="10" Padding="10">
-                  <StackPanel Spacing="6">
-                    <TextBlock Text="邮箱" Classes="account-label"/>
-                    <TextBlock Text="{Binding AccountEmail}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-                    <TextBlock Text="{Binding AccountRolesSummary}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-                  </StackPanel>
-                </Border>
-
-                <StackPanel Spacing="6">
-                  <TextBlock Text="角色标签" Classes="account-label"/>
-                  <ItemsControl ItemsSource="{Binding AccountRoles}">
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate>
-                        <WrapPanel ItemHeight="28"/>
-                      </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate>
-                        <Border Classes="account-chip" Margin="0,0,8,8">
-                          <TextBlock Text="{Binding .}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"/>
-                        </Border>
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                </StackPanel>
-
-                <StackPanel Spacing="4">
-                  <Button Classes="account-menu-item"
-                          Command="{Binding OpenProfileCenterCommand}"
-                          Content="个人中心"/>
-                  <Button Classes="account-menu-item"
-                          Command="{Binding OpenSecuritySettingsCommand}"
-                          Content="安全设置"/>
-                </StackPanel>
-
-                <Button Classes="admin-button admin-danger-solid"
-                        Content="退出登录"
-                        Command="{Binding LogoutCommand}"
-                        MinHeight="34" />
-              </StackPanel>
-            </Border>
-          </Popup>
-
-          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" IsVisible="{Binding IsAnonymous}">
-            <Button Classes="admin-button admin-primary admin-compact"
-                    Content="去登录"
-                    Command="{Binding NavigateCommand}"
-                    CommandParameter="login"/>
-            <Button Classes="admin-button admin-compact"
-                    Content="去注册"
-                    Command="{Binding NavigateCommand}"
-                    CommandParameter="register"/>
+            </Popup>
           </StackPanel>
-        </StackPanel>
-      </Grid>
-    </Border>
+        </Grid>
+      </Border>
 
+      <Border Grid.Row="1"
+              Grid.Column="1"
+              Padding="24"
+              Background="{DynamicResource AppBackgroundBrush}">
+        <ContentControl Content="{Binding CurrentPage}"/>
+      </Border>
+
+      <Button Grid.ColumnSpan="2"
+              Grid.RowSpan="2"
+              Background="Transparent"
+              BorderThickness="0"
+              IsVisible="{Binding IsAccountMenuOpen}"
+              Command="{Binding CloseAccountMenuCommand}"/>
+    </Grid>
   </Grid>
 </UserControl>

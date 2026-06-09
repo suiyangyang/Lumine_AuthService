@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lumine.AuthPortal.Models;
@@ -12,6 +13,7 @@ public partial class LoginPageViewModel : ViewModelBase
     private readonly PortalApiClient _apiClient;
     private readonly PortalSession _session;
     private readonly Action _onLoginSucceeded;
+    private readonly Action _openRegister;
     private const string DefaultScope = "openid profile email roles permissions";
     private const string DefaultClientId = "lumine-demo-client";
     private const string DefaultNonce = "portal-login-nonce";
@@ -21,6 +23,9 @@ public partial class LoginPageViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _password = string.Empty;
+
+    [ObservableProperty]
+    private bool _showPassword;
 
     [ObservableProperty]
     private string _scope = DefaultScope;
@@ -42,11 +47,18 @@ public partial class LoginPageViewModel : ViewModelBase
 
     public string OidcToggleText => ShowOidcParameters ? "隐藏 OIDC 调试参数" : "显示 OIDC 调试参数";
 
-    public LoginPageViewModel(PortalApiClient apiClient, PortalSession session, Action onLoginSucceeded)
+    public char PasswordMaskChar => ShowPassword ? '\0' : '●';
+
+    public StreamGeometry PasswordVisibilityIconData => NavigationIconData.Get(ShowPassword ? "close" : "eye");
+
+    public string PasswordVisibilityToolTip => ShowPassword ? "隐藏密码" : "显示密码";
+
+    public LoginPageViewModel(PortalApiClient apiClient, PortalSession session, Action onLoginSucceeded, Action openRegister)
     {
         _apiClient = apiClient;
         _session = session;
         _onLoginSucceeded = onLoginSucceeded;
+        _openRegister = openRegister;
     }
 
     [RelayCommand]
@@ -105,11 +117,31 @@ public partial class LoginPageViewModel : ViewModelBase
             ? "已开启 OIDC 调试参数，可用于第三方授权联调。"
             : "请输入账号密码后登录。";
     }
+
+    [RelayCommand]
+    private void TogglePasswordVisibility()
+    {
+        ShowPassword = !ShowPassword;
+    }
+
+    [RelayCommand]
+    private void OpenRegister()
+    {
+        _openRegister();
+    }
+
+    partial void OnShowPasswordChanged(bool value)
+    {
+        OnPropertyChanged(nameof(PasswordMaskChar));
+        OnPropertyChanged(nameof(PasswordVisibilityIconData));
+        OnPropertyChanged(nameof(PasswordVisibilityToolTip));
+    }
 }
 
 public partial class RegisterPageViewModel : ViewModelBase
 {
     private readonly PortalApiClient _apiClient;
+    private readonly Action _openLogin;
 
     [ObservableProperty]
     private string _userName = string.Empty;
@@ -132,9 +164,10 @@ public partial class RegisterPageViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isBusy;
 
-    public RegisterPageViewModel(PortalApiClient apiClient)
+    public RegisterPageViewModel(PortalApiClient apiClient, Action openLogin)
     {
         _apiClient = apiClient;
+        _openLogin = openLogin;
     }
 
     [RelayCommand]
@@ -149,6 +182,12 @@ public partial class RegisterPageViewModel : ViewModelBase
             : result.ErrorMessage ?? "注册失败。";
 
         IsBusy = false;
+    }
+
+    [RelayCommand]
+    private void OpenLogin()
+    {
+        _openLogin();
     }
 }
 

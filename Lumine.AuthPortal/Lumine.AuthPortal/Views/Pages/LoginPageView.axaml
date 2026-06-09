@@ -241,6 +241,31 @@
       <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
+    <Style Selector="Border.login-switch-shell">
+      <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="4"/>
+    </Style>
+    <Style Selector="Button.login-switch-button">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="0,10"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.login-switch-button:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.login-switch-button.active">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
   </UserControl.Styles>
 
   <Grid RowDefinitions="*,Auto,*" ColumnDefinitions="*,Auto,*" Background="{DynamicResource AppBackgroundBrush}">
@@ -265,6 +290,18 @@
                         Spacing="16">
               <Border Classes="login-panel">
                 <StackPanel Spacing="12">
+                  <Border Classes="login-switch-shell">
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
+                      <Button Classes="login-switch-button active"
+                              Grid.Column="0"
+                              Content="登录"/>
+                      <Button Classes="login-switch-button"
+                              Grid.Column="1"
+                              Content="注册"
+                              Command="{Binding OpenRegisterCommand}"/>
+                    </Grid>
+                  </Border>
+
                   <TextBlock Text="账号认证" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
 
                   <StackPanel Spacing="7">

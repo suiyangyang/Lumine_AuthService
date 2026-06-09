@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Lumine.AuthPortal.Views.Controls.LumineBrandMark">
+  <Viewbox Stretch="Uniform">
+    <Grid Width="84" Height="84">
+      <Border Width="84"
+              Height="84"
+              CornerRadius="24"
+              Background="#F8FBFF"/>
+
+      <Border Width="84"
+              Height="84"
+              CornerRadius="24"
+              BorderBrush="#D6E6FA"
+              BorderThickness="1"/>
+
+      <Path Data="M18 58L18 18L30 18L30 47L54 47L54 58Z"
+            Fill="#1D4ED8"/>
+
+      <Path Data="M30 18L54 18L36 38L30 32Z"
+            Fill="#14B8A6"/>
+
+      <Path Data="M54 18L66 30L48 48L36 38Z"
+            Fill="#60A5FA"/>
+
+      <Path Data="M56 54L62 42L68 54L80 60L68 66L62 78L56 66L44 60Z"
+            Fill="#F59E0B"/>
+    </Grid>
+  </Viewbox>
+</UserControl>
