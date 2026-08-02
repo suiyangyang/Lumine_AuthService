@@ -28,6 +28,14 @@ dotnet build .\Lumine.AuthServer\Lumine.AuthServer.csproj
 dotnet build .\Lumine.AuthPortal\Lumine.AuthPortal.Browser\Lumine.AuthPortal.Browser.csproj
 ```
 
+生成 Avalonia Browser 与 AuthServer 的合站发布目录：
+
+```powershell
+.\scripts\publish-site.ps1 -Configuration Release
+```
+
+脚本只 publish 一次 Browser 和一次 Server，并将 Browser 最终站点根目录复制到 `artifacts/publish/server/wwwroot`。
+
 ## 本地数据库
 
 首次运行前复制环境变量模板：

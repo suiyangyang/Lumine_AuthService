@@ -1,7 +1,7 @@
 # Lumine AuthService 部署说明
 
 > 状态：Current
-> 更新时间：2026-06-09
+> 更新时间：2026-08-02
 > 适用范围：`Lumine.AuthServer` 与 `Lumine.AuthPortal.Browser` 的本地、Docker 与发布部署
 
 本文档描述当前仓库已经落地的部署方式，而不是历史施工过程。
@@ -9,7 +9,8 @@
 当前部署形态如下：
 
 - `Lumine.AuthServer` 是唯一后端进程，负责 API、OIDC 端点和静态资源托管。
-- `Lumine.AuthPortal.Browser` 在构建或发布时产出 Browser 静态资源，并被整理到服务端 `wwwroot`。
+- `Lumine.AuthPortal.Browser` 负责生成唯一的最终 Browser publish 站点根目录。
+- `Lumine.AuthServer` 只发布后端文件；合站发布阶段将 Browser 最终站点根目录覆盖到服务端 `wwwroot`。
 - 浏览器访问后端地址时，可同时拿到管理后台前端和认证接口。
 - 本地开发默认地址为 `http://localhost:5115`。
 - Docker 调试默认通过 `ASPNETCORE_HTTP_PORTS=8080` 暴露服务。
@@ -20,8 +21,8 @@
 | --- | --- | --- |
 | `Lumine.AuthServer` | 托管 API、OIDC、Swagger、前端静态资源 | `Lumine.AuthServer/Program.cs` |
 | `Lumine.AuthPortal.Browser` | 生成 Browser 前端资源 | `Lumine.AuthPortal/Lumine.AuthPortal.Browser/Lumine.AuthPortal.Browser.csproj` |
-| `Lumine.AuthServer.csproj` | 构建后整理 Browser 资源到服务端输出目录 | `Lumine.AuthServer/Lumine.AuthServer.csproj` |
-| `Lumine.AuthServer/Dockerfile` | 构建服务镜像并复制 Browser 资源 | `Lumine.AuthServer/Dockerfile` |
+| `scripts/publish-site.ps1` | 本地生成一次 Browser publish、一次 Server publish，并合并到最终 `wwwroot` | `scripts/publish-site.ps1` |
+| `Lumine.AuthServer/Dockerfile` | Docker 中生成一次 Browser publish、一次 Server publish，并复制到运行时 `wwwroot` | `Lumine.AuthServer/Dockerfile` |
 
 ## 本地运行
 
@@ -48,7 +49,7 @@ dotnet run --project .\Lumine.AuthPortal\Lumine.AuthPortal.Browser\Lumine.AuthPo
 
 ## 构建与发布
 
-构建后端时，`Lumine.AuthServer.csproj` 会在 `Build` 和 `Publish` 后把 Browser 的 `wwwroot`、`_framework`、`_content` 资源复制到服务端输出目录。
+Browser publish 是前端静态站点的唯一来源。Server publish 使用 `SkipBrowserBuild=true`，不会再次构建或拼装 Browser 资源。
 
 常用命令：
 
@@ -57,29 +58,32 @@ dotnet build .\Lumine_AuthService.sln
 ```
 
 ```powershell
-dotnet publish .\Lumine.AuthServer\Lumine.AuthServer.csproj -c Release
+./scripts/publish-site.ps1 -Configuration Release
 ```
 
-发布结果中的 `wwwroot` 应包含：
+合站发布结果位于 `artifacts/publish/server`，其中 `wwwroot` 应包含：
 
 - `index.html`
 - `_framework/`
 - `_content/`
 
+本地脚本的两个独立中间目录为 `artifacts/publish/browser` 和 `artifacts/publish/server`；最终运行目录只使用 `server`，不会把普通 `bin`、`obj` 或旧 Browser 输出混入其中。
+
 如果这些资源缺失，优先检查：
 
-- `Lumine.AuthPortal.Browser` 是否已成功构建
-- `Lumine.AuthServer.csproj` 中的 Browser 复制目标是否仍存在
+- `Lumine.AuthPortal.Browser` 是否已成功 publish
+- `scripts/publish-site.ps1` 是否识别到了包含 `index.html` 和 `_framework/dotnet.js` 的真实站点根目录
 - `Program.cs` 中的静态文件根路径是否被改动
 
 ## Docker 部署
 
 当前 Dockerfile 采用单容器部署：
 
-1. 在 `sdk:10.0` 镜像中构建后端和 Browser 前端
-2. 将 Browser 资源复制到 `/app/browser-publish`
-3. 发布 `Lumine.AuthServer`
-4. 在最终 `aspnet:10.0` 镜像中仅运行 `Lumine.AuthServer.dll`
+1. 在 `sdk:10.0` 镜像中安装 `wasm-tools`
+2. 只 publish 一次 `Lumine.AuthPortal.Browser`，并保存真实站点根目录到 `/app/browser-publish`
+3. 只 publish 一次 `Lumine.AuthServer`，并传入 `/p:SkipBrowserBuild=true`
+4. 在最终 `aspnet:10.0` 镜像中先复制 Server publish，再清空 `wwwroot` 并复制 Browser 站点
+5. 运行 `Lumine.AuthServer.dll`
 
 构建镜像示例：
 
@@ -100,6 +104,7 @@ docker run --rm --env-file .env -p 8080:8080 lumine-authserver:local
 - 服务监听 `8080`
 - 通过项目文件的 `DockerfileRunEnvironmentFiles` 读取仓库根目录 `.env`
 - 前端与 API 同源，不需要额外网关即可完成登录和 OIDC 联调
+- runtime 镜像中的 `wwwroot` 只来自同一次 Browser publish
 
 ## 部署前检查
 
@@ -110,6 +115,7 @@ docker run --rm --env-file .env -p 8080:8080 lumine-authserver:local
 3. `Oidc:Issuer` 与实际访问地址一致。
 4. 默认客户端 `lumine-demo-client` 的回调地址与联调环境一致。
 5. 发布输出或容器内的 `wwwroot/_framework` 可正常访问。
+6. `wwwroot/_framework` 中存在 `dotnet.js`、至少一个 `.wasm`、SkiaSharp WASM 和 ICU 数据文件。
 
 ## 相关文档
 

@@ -27,6 +27,7 @@
 ## 第三方服务接入
 
 - [第三方服务接入说明](integrations/第三方服务接入说明.md)
+- [第三方最小服务示例](../samples/Lumine.ThirdPartySample/README.md)
 
 ## OAuth2.1 / OIDC
 

@@ -1,7 +1,7 @@
 # Lumine AuthService OIDC 当前实现说明
 
 > 状态：Current
-> 更新时间：2026-06-10
+> 更新时间：2026-08-02
 > 适用范围：`Lumine.AuthServer` 的 OIDC 端点与 `Lumine.AuthPortal` 的联调能力
 
 本文档描述当前仓库已经实现的认证与 OIDC 能力，不再记录历史改造计划。
@@ -12,6 +12,7 @@
 - 当前授权流以 `authorization code + PKCE` 为主，适配默认公共客户端 `lumine-demo-client`。
 - `POST /api/auth/login` 仍保留，供后台登录和简化联调用途。
 - `POST /api/auth/logout` 已提供，供后台退出登录并记录审计日志。
+- 登录成功后会建立 `lumine-auth-session` Cookie，授权端点可复用 AuthPortal 的登录态。
 - `Lumine.AuthPortal` 已包含登录、注册、授权确认、客户端管理、OIDC Discovery 与授权码联调页面。
 - 服务会签发 `access_token`、`id_token` 和 `refresh_token`，但 `token` 端点当前只接受 `authorization_code`，尚未开放 `refresh_token` 续期。
 
@@ -58,6 +59,8 @@
 - `code_challenge_method` 支持 `S256` 与 `plain`
 
 授权请求首次命中时，会返回一个“可继续确认授权”的响应；带 `consent=approve` 再次调用后才会签发授权码。
+
+授权端点会先尝试 Bearer Token，再尝试 `lumine-auth-session` Cookie。这样员工先在 AuthPortal 登录后，第三方系统即可继续完成授权码回调；第三方客户端仍必须校验 `state`、`nonce` 并使用 PKCE。
 
 ### 3. Token 交换
 
@@ -142,7 +145,7 @@ Portal 启动后可通过后端公开的 `/config` 读取当前 API 地址、Iss
 
 - `refresh_token` 换新 token
 - 客户端认证方式扩展
-- 更完整的授权确认 UI 流程
+- 更完整的授权确认 UI 流程；当前端点通过 `consent=approve` / `consent=deny` 完成确认结果提交
 - 更细的 scope 与 consent 持久化治理
 
 另外，Discovery 文档当前声明了 `refresh_token` grant 类型；但 `token` 端点实际仅支持 `authorization_code`。阅读和对外说明时以实际控制器行为为准。

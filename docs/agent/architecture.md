@@ -31,6 +31,7 @@ Lumine_AuthService/
 - 登录、注册、用户信息和后台管理 API。
 - 用户、角色、权限三级权限模型。
 - OIDC 客户端、授权码、刷新令牌和 token 相关服务。
+- AuthPortal 登录 Cookie 会话，以及第三方系统所需的当前用户权限读取和实时权限检查接口。
 - EF Core migration、数据库初始化和种子数据。
 - Swagger 权限说明和统一的 401/403 响应处理。
 - 构建或发布时把 `Lumine.AuthPortal.Browser` 的前端资源整理到服务端 `wwwroot`。
@@ -73,6 +74,11 @@ OIDC 相关代码主要在：
 - `Domain/Entities/OidcClient.cs`
 - `Domain/Entities/AuthorizationCode.cs`
 - `Domain/Entities/RefreshToken.cs`
+
+第三方权限复用入口：
+
+- `GET /api/auth/me` 与 `GET /api/auth/me/permissions`：从数据库读取当前用户的实时角色、权限。
+- `POST /api/auth/check-permission`：按当前 Bearer Token 实时检查单个权限。
 
 维护注意：
 
