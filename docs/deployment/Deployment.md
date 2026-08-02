@@ -83,8 +83,10 @@ dotnet publish .\Lumine.AuthServer\Lumine.AuthServer.csproj -c Release
 
 构建镜像示例：
 
+Dockerfile 的构建上下文必须是包含 `Lumine_AuthService` 与 `Lumine_BuildingBlocks` 的工作区根目录；Visual Studio 的 `Container (Dockerfile)` 启动配置已使用相同上下文。
+
 ```powershell
-docker build -f .\Lumine.AuthServer\Dockerfile -t lumine-authserver:local .
+docker build -f .\Lumine_AuthService\Lumine.AuthServer\Dockerfile -t lumine-authserver:local .
 ```
 
 运行镜像示例：

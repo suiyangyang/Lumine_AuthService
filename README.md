@@ -40,4 +40,5 @@ Lumine_AuthService/
 - [OAuth2.1 / OIDC 当前实现说明](docs/auth/OAuth2.1-OIDC-Avalonia改造说明.md)
 - [前端菜单权限清单](docs/permissions/前端菜单权限清单.md)
 - [权限系统当前状态](docs/permissions/权限系统检查报告.md)
+- [AuthPortal 后台页面改进计划](docs/working/AuthPortal后台页面改进计划.md)
 - [历史文档归档](docs/archive/README.md)

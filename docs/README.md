@@ -37,6 +37,10 @@
 - [前端菜单权限清单](permissions/前端菜单权限清单.md)
 - [权限系统当前状态](permissions/权限系统检查报告.md)
 
+## 当前工作计划
+
+- [AuthPortal 后台页面改进计划](working/AuthPortal后台页面改进计划.md)
+
 ## 历史归档
 
 - [历史文档归档说明](archive/README.md)
