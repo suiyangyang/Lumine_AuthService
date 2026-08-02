@@ -371,9 +371,13 @@ public sealed class PortalApiClient
             var message = await TryReadErrorMessageAsync(response, cancellationToken);
             return ApiResult<T>.Failure(message, (int)response.StatusCode);
         }
-        catch (Exception ex)
+        catch (OperationCanceledException)
         {
-            return ApiResult<T>.Failure($"请求失败：{ex.Message}");
+            return ApiResult<T>.Failure("请求已取消，请稍后重试。");
+        }
+        catch
+        {
+            return ApiResult<T>.Failure("服务暂时不可用，请检查连接后重试。");
         }
     }
 
@@ -389,25 +393,37 @@ public sealed class PortalApiClient
 
     private async Task<string> TryReadErrorMessageAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
+        var statusMessage = GetStatusMessage(response.StatusCode);
         try
         {
             var document = await response.Content.ReadFromJsonAsync<JsonElement>(_jsonOptions, cancellationToken);
             if (document.TryGetProperty("message", out var message))
             {
-                return message.GetString() ?? $"请求失败，状态码 {(int)response.StatusCode}";
+                return string.IsNullOrWhiteSpace(message.GetString()) ? statusMessage : message.GetString()!;
             }
 
             if (document.TryGetProperty("error", out var error))
             {
-                return error.GetString() ?? $"请求失败，状态码 {(int)response.StatusCode}";
+                return string.IsNullOrWhiteSpace(error.GetString()) ? statusMessage : error.GetString()!;
             }
         }
         catch
         {
         }
 
-        return $"请求失败，状态码 {(int)response.StatusCode}";
+        return statusMessage;
     }
+
+    private static string GetStatusMessage(System.Net.HttpStatusCode statusCode) => statusCode switch
+    {
+        System.Net.HttpStatusCode.Unauthorized => PortalManagementDefaults.SessionExpiredMessage,
+        System.Net.HttpStatusCode.Forbidden => "当前账号没有执行该操作的权限。",
+        System.Net.HttpStatusCode.NotFound => "请求的资源不存在或已被移除。",
+        System.Net.HttpStatusCode.Conflict => "请求与当前数据状态冲突，请刷新后重试。",
+        System.Net.HttpStatusCode.TooManyRequests => "请求过于频繁，请稍后再试。",
+        >= System.Net.HttpStatusCode.InternalServerError => "服务端暂时不可用，请稍后重试。",
+        _ => $"请求未完成（HTTP {(int)statusCode}）。"
+    };
 
     private static string EnsureTrailingSlash(string value)
     {
