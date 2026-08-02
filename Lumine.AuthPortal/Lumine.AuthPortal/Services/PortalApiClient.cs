@@ -242,6 +242,21 @@ public sealed class PortalApiClient
         return SendAsync<IReadOnlyList<PortalMenuItemDto>>(HttpMethod.Get, "/api/menus", bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
+    public Task<ApiResult<PortalMenuItemDto>> UpdateMenuAsync(string accessToken, string key, SavePortalMenuRequestDto request, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<PortalMenuItemDto>(HttpMethod.Put, $"/api/menus/{Uri.EscapeDataString(key)}", request, accessToken, cancellationToken);
+    }
+
+    public Task<ApiResult<IReadOnlyList<PortalMenuItemDto>>> ReorderMenusAsync(string accessToken, IReadOnlyList<string> keys, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<IReadOnlyList<PortalMenuItemDto>>(HttpMethod.Put, "/api/menus/order", new ReorderPortalMenusRequestDto(keys), accessToken, cancellationToken);
+    }
+
+    public Task<ApiResult<IReadOnlyList<PortalMenuItemDto>>> ResetMenusAsync(string accessToken, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<IReadOnlyList<PortalMenuItemDto>>(HttpMethod.Post, "/api/menus/reset", new { }, accessToken, cancellationToken);
+    }
+
     public Task<ApiResult<PagedResultDto<AuditLogEntryDto>>> GetAuditLogsAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, string? category = null, string? action = null, string? outcome = null, DateTime? fromUtc = null, DateTime? toUtc = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/auditlogs", new Dictionary<string, string?>

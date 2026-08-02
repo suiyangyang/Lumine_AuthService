@@ -75,17 +75,35 @@ public partial class NavigationItemViewModel : ObservableObject
 
     public string Key { get; }
 
-    public string Title { get; }
+    [ObservableProperty]
+    private string _title;
 
     public string IconKey { get; }
 
     public StreamGeometry IconData { get; }
 
-    public IReadOnlyList<string> Permissions { get; }
+    [ObservableProperty]
+    private IReadOnlyList<string> _permissions;
+
+    [ObservableProperty]
+    private bool _isEnabled = true;
+
+    [ObservableProperty]
+    private bool _isImplemented = true;
 
     public bool RequiresPermission => Permissions.Count > 0;
 
     public string PermissionHint => string.Join(" / ", Permissions);
+
+    public void ApplyConfiguration(string title, bool isEnabled, bool isImplemented, IReadOnlyList<string> permissions)
+    {
+        Title = title;
+        IsEnabled = isEnabled;
+        IsImplemented = isImplemented;
+        Permissions = permissions;
+        OnPropertyChanged(nameof(RequiresPermission));
+        OnPropertyChanged(nameof(PermissionHint));
+    }
 
     [ObservableProperty]
     private bool _isVisible = true;
@@ -117,6 +135,7 @@ public static class NavigationIconData
         ["auth"] = Parse("M12 2C9.2 2 7 4.2 7 7V10H6C4.9 10 4 10.9 4 12V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V12C20 10.9 19.1 10 18 10H17V7C17 4.2 14.8 2 12 2ZM9 10V7C9 5.3 10.3 4 12 4S15 5.3 15 7V10H9Z"),
         ["system"] = Parse("M4 6H20V8H4V6ZM4 11H20V13H4V11ZM4 16H20V18H4V16Z"),
         ["chevron-down"] = Parse("M7.4 8.6L12 13.2L16.6 8.6L18 10L12 16L6 10L7.4 8.6Z"),
+        ["chevron-up"] = Parse("M7.4 15.4L12 10.8L16.6 15.4L18 14L12 8L6 14L7.4 15.4Z"),
         ["chevron-right"] = Parse("M9.4 6L15.4 12L9.4 18L8 16.6L12.6 12L8 7.4L9.4 6Z"),
         ["refresh"] = Parse("M17.7 6.3C16.1 4.7 14.1 4 12 4C7.6 4 4 7.6 4 12H1L5 16L9 12H6C6 8.7 8.7 6 12 6C13.6 6 15.1 6.6 16.2 7.8L17.7 6.3ZM20 12C20 15.3 17.3 18 14 18C12.4 18 10.9 17.4 9.8 16.2L8.3 17.7C9.9 19.3 11.9 20 14 20C18.4 20 22 16.4 22 12H20ZM18 8V12H22"),
         ["add"] = Parse("M19 11H13V5H11V11H5V13H11V19H13V13H19V11Z"),

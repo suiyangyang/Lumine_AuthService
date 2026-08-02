@@ -30,6 +30,7 @@ Lumine_AuthService/
 
 - 登录、注册、用户信息和后台管理 API。
 - 用户、角色、权限三级权限模型。
+- `PortalMenus` 持久化后台导航标题、分组、顺序、启停与权限绑定；Key、路由、图标和实现状态由 `PortalMenuCatalog` 注册。
 - OIDC 客户端、授权码、刷新令牌和 token 相关服务。
 - AuthPortal 登录 Cookie 会话，以及第三方系统所需的当前用户权限读取和实时权限检查接口。
 - EF Core migration、数据库初始化和种子数据。
@@ -57,6 +58,7 @@ User -> UserRole -> Role -> RolePermission -> Permission
 
 - 新增受保护接口时，优先使用已有权限编码风格，例如 `users.view`、`users.manage`。
 - 新增权限后，同步检查 `AuthSeedOptions`、接口权限标注、Swagger 显示、前端菜单权限和文档。
+- 新增后台页面时同步更新 `PortalMenuCatalog`、`MainViewModel` 页面工厂和图标注册；启动种子会补齐缺失菜单，但不会覆盖管理员已经保存的可维护字段。
 - 用户文档位置：
   - `docs/api/管理后台基础接口说明.md`
   - `docs/permissions/前端菜单权限清单.md`
@@ -93,6 +95,7 @@ OIDC 相关代码主要在：
 
 - API DTO 或响应结构变化时，同步更新 `Lumine.AuthPortal/Lumine.AuthPortal/Models` 和 `PortalApiClient`。
 - 菜单、页面、按钮可见性应跟权限编码保持一致。
+- 左侧导航的标题、分组、顺序、启停和权限绑定来自 `GET /api/menus`；不要再新增一套独立的静态显示配置。Key、路由、图标和页面实现状态仍以代码注册为准。
 - Browser 默认后端地址和运行方式参考 `Lumine.AuthPortal/README.md`。
 
 ## ReportMind 集成边界

@@ -22,6 +22,8 @@ namespace Lumine.AuthServer.Infrastructure.Services
 
         public async Task SeedAsync(CancellationToken cancellationToken = default)
         {
+            await EnsurePortalMenusAsync(cancellationToken);
+
             if (!_options.Enabled)
             {
                 return;
@@ -38,6 +40,40 @@ namespace Lumine.AuthServer.Infrastructure.Services
             var configuredRoles = await EnsureConfiguredRolesAsync(permissions, cancellationToken);
             await EnsureConfiguredUsersAsync(configuredRoles, cancellationToken);
             await EnsureClientsAsync(cancellationToken);
+        }
+
+        private async Task EnsurePortalMenusAsync(CancellationToken cancellationToken)
+        {
+            var existingMenus = await _dbContext.PortalMenus.ToListAsync(cancellationToken);
+            var now = DateTime.UtcNow;
+
+            foreach (var definition in PortalMenuCatalog.All)
+            {
+                var menu = existingMenus.FirstOrDefault(item =>
+                    string.Equals(item.Key, definition.Key, StringComparison.OrdinalIgnoreCase));
+
+                if (menu == null)
+                {
+                    _dbContext.PortalMenus.Add(new PortalMenu(
+                        Guid.NewGuid(),
+                        definition.Key,
+                        definition.Title,
+                        definition.Section,
+                        definition.Route,
+                        definition.IconKey,
+                        definition.Order,
+                        true,
+                        definition.IsImplemented,
+                        definition.RequiredPermissions,
+                        definition.Description,
+                        now));
+                    continue;
+                }
+
+                menu.SynchronizeRegistration(definition.Route, definition.IconKey, definition.IsImplemented);
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
         private async Task<List<Permission>> EnsurePermissionsAsync(CancellationToken cancellationToken)

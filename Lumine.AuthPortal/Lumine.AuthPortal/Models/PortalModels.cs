@@ -193,24 +193,47 @@ public sealed record RefreshTokenRecordDto(
 }
 
 public sealed record PortalMenuItemDto(
+    Guid Id,
     int Order,
     string Key,
     string Title,
     string Section,
     string Route,
+    string IconKey,
+    bool IsEnabled,
     bool IsImplemented,
     IReadOnlyList<string> RequiredPermissions,
     bool HasAccess,
-    string Description)
+    string Description,
+    DateTime UpdatedAtUtc)
 {
     public string RequiredPermissionsDisplay => RequiredPermissions.Count == 0
         ? "当前菜单对所有已登录用户可见。"
         : string.Join(" / ", RequiredPermissions);
 
+    public string EnabledStatusText => IsEnabled ? "已启用" : "已停用";
+
+    public bool IsDisabled => !IsEnabled;
+
     public string ImplementationStatusText => IsImplemented ? "已实现" : "待补全";
 
+    public bool IsNotImplemented => !IsImplemented;
+
     public string AccessStatusText => HasAccess ? "当前账号可见" : "当前账号无权限";
+
+    public bool IsAvailable => IsEnabled && IsImplemented;
+
+    public string UpdatedAtDisplay => UpdatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
 }
+
+public sealed record SavePortalMenuRequestDto(
+    string Title,
+    string Section,
+    bool IsEnabled,
+    IReadOnlyList<string> RequiredPermissions,
+    string Description);
+
+public sealed record ReorderPortalMenusRequestDto(IReadOnlyList<string> Keys);
 
 public sealed record AuditLogEntryDto(
     string Id,

@@ -4,6 +4,7 @@ using Avalonia.Media;
 using Lumine.AuthPortal.Services;
 using Lumine.AuthPortal.ViewModels.Pages;
 using System.Globalization;
+using System.Collections.ObjectModel;
 
 namespace Lumine.AuthPortal.ViewModels;
 
@@ -124,7 +125,7 @@ public partial class MainViewModel : ViewModelBase
             ["clients"] = () => new ClientsManagementPageViewModel(_apiClient, _session),
             ["tokens"] = () => new TokensManagementPageViewModel(_apiClient, _session),
             ["oidc"] = () => new OidcPlaygroundPageViewModel(_apiClient, _session),
-            ["menus"] = () => new MenusManagementPageViewModel(_apiClient, _session),
+            ["menus"] = () => new MenusManagementPageViewModel(_apiClient, _session, SyncNavigationFromServerAsync),
             ["settings"] = () => new SystemSettingsPageViewModel(_apiClient, _session, _themeService),
             ["audit"] = () => new AuditLogsPageViewModel(_apiClient, _session)
         };
@@ -142,7 +143,7 @@ public partial class MainViewModel : ViewModelBase
 
     public IReadOnlyList<NavigationItemViewModel> NavigationItems { get; }
 
-    public IReadOnlyList<NavigationSectionViewModel> NavigationSections { get; }
+    public ObservableCollection<NavigationSectionViewModel> NavigationSections { get; }
 
     public IEnumerable<NavigationSectionViewModel> VisibleNavigationSections => NavigationSections
         .Where(section => section.Items.Any(item => item.IsVisible));
@@ -321,6 +322,9 @@ public partial class MainViewModel : ViewModelBase
             {
                 "login" or "register" => false,
                 _ => IsAuthenticated
+                    && item.IsEnabled
+                    && item.IsImplemented
+                    && (!item.RequiresPermission || item.Permissions.Any(_session.HasPermission))
             };
         }
     }
@@ -333,13 +337,54 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        foreach (var menu in result.Data)
+        foreach (var navigationItem in NavigationItems.Where(item => item.Key is not "login" and not "register"))
+        {
+            navigationItem.IsVisible = false;
+        }
+
+        var configuredMenus = result.Data
+            .Where(menu => _navigationLookup.ContainsKey(menu.Key))
+            .OrderBy(menu => menu.Order)
+            .ToArray();
+
+        foreach (var menu in configuredMenus)
         {
             if (_navigationLookup.TryGetValue(menu.Key, out var navigationItem))
             {
-                navigationItem.IsVisible = menu.IsImplemented && menu.HasAccess;
+                navigationItem.ApplyConfiguration(menu.Title, menu.IsEnabled, menu.IsImplemented, menu.RequiredPermissions);
+                navigationItem.IsVisible = menu.IsEnabled && menu.IsImplemented && menu.HasAccess;
             }
         }
+
+        NavigationSections.Clear();
+        foreach (var group in configuredMenus
+                     .GroupBy(menu => menu.Section)
+                     .OrderBy(group => group.Min(menu => menu.Order)))
+        {
+            var items = group
+                .OrderBy(menu => menu.Order)
+                .Select(menu => _navigationLookup[menu.Key])
+                .ToArray();
+            NavigationSections.Add(new NavigationSectionViewModel(
+                group.Key,
+                ResolveSectionIconKey(group.Key),
+                items));
+        }
+
+        OnPropertyChanged(nameof(VisibleNavigationSections));
+        OnPropertyChanged(nameof(HasAdminAccess));
+    }
+
+    private static string ResolveSectionIconKey(string section)
+    {
+        return section switch
+        {
+            "系统概览" => "overview",
+            "身份管理" => "identity",
+            "认证授权" => "auth",
+            "系统管理" => "system",
+            _ => "menus"
+        };
     }
 
     private LoginPageViewModel CreateLoginPage(string? initialUserName = null, string? initialStatusMessage = null, bool initialSuccessMessage = false)

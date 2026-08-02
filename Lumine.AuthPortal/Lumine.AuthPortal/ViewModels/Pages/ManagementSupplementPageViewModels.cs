@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -531,8 +532,15 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
 
 public partial class MenusManagementPageViewModel : ManagementPageViewModelBase
 {
-    public MenusManagementPageViewModel(PortalApiClient apiClient, PortalSession session) : base(apiClient, session)
+    private readonly Func<Task>? _onMenusChanged;
+    private bool _isApplyingPermissionSelection;
+
+    public MenusManagementPageViewModel(
+        PortalApiClient apiClient,
+        PortalSession session,
+        Func<Task>? onMenusChanged = null) : base(apiClient, session)
     {
+        _onMenusChanged = onMenusChanged;
         if (session.IsAuthenticated)
         {
             _ = LoadAsync();
@@ -542,6 +550,15 @@ public partial class MenusManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private IReadOnlyList<PortalMenuItemDto> _items = Array.Empty<PortalMenuItemDto>();
     [ObservableProperty] private PortalMenuItemDto? _selectedItem;
     [ObservableProperty] private string _searchKeyword = string.Empty;
+    [ObservableProperty] private string _sectionFilter = "全部分组";
+    [ObservableProperty] private string _statusFilter = "全部状态";
+    [ObservableProperty] private string _title = string.Empty;
+    [ObservableProperty] private string _section = "系统管理";
+    [ObservableProperty] private string _description = string.Empty;
+    [ObservableProperty] private bool _isEnabled = true;
+    [ObservableProperty] private IReadOnlyList<MenuPermissionOptionViewModel> _permissionOptions = Array.Empty<MenuPermissionOptionViewModel>();
+    [ObservableProperty] private int _selectedPermissionCount;
+    [ObservableProperty] private bool _isResetConfirmationVisible;
 
     public bool HasMenus => Items.Count > 0;
 
@@ -549,35 +566,74 @@ public partial class MenusManagementPageViewModel : ManagementPageViewModelBase
 
     public bool ShowEmptyState => VisibleItems.Count == 0;
 
+    public bool HasSelectedItem => SelectedItem != null;
+
+    public bool ShowEditorEmptyState => !HasSelectedItem;
+
+    public bool CanManageMenus => Session.HasPermission("permissions.manage");
+
+    public bool CanEditSelected => CanManageMenus && HasSelectedItem;
+
+    public bool CanMoveUp => CanManageMenus && GetSelectedIndex() > 0;
+
+    public bool CanMoveDown => CanManageMenus && GetSelectedIndex() is var index && index >= 0 && index < Items.Count - 1;
+
     public string EmptyStateMessage => HasMenus ? "没有匹配的菜单" : "暂无菜单数据";
 
+    public IReadOnlyList<string> SectionOptions { get; } = ["系统概览", "身份管理", "认证授权", "系统管理"];
+
+    public IReadOnlyList<string> SectionFilterOptions { get; } = ["全部分组", "系统概览", "身份管理", "认证授权", "系统管理"];
+
+    public IReadOnlyList<string> StatusFilterOptions { get; } = ["全部状态", "已启用", "已停用"];
+
     public IReadOnlyList<PortalMenuItemDto> VisibleItems => Items
-        .Where(item => string.IsNullOrWhiteSpace(SearchKeyword)
-            || item.Title.Contains(SearchKeyword.Trim(), StringComparison.OrdinalIgnoreCase)
-            || item.Key.Contains(SearchKeyword.Trim(), StringComparison.OrdinalIgnoreCase)
-            || item.Route.Contains(SearchKeyword.Trim(), StringComparison.OrdinalIgnoreCase)
-            || item.RequiredPermissions.Any(permission => permission.Contains(SearchKeyword.Trim(), StringComparison.OrdinalIgnoreCase)))
+        .Where(item => SectionFilter == "全部分组" || item.Section == SectionFilter)
+        .Where(item => StatusFilter switch
+        {
+            "已启用" => item.IsEnabled,
+            "已停用" => !item.IsEnabled,
+            _ => true
+        })
+        .Where(item => MatchesSearch(item, SearchKeyword))
         .ToArray();
 
-    public string PermissionSummaryText => SelectedItem == null
-        ? "请选择菜单查看权限信息。"
-        : SelectedItem.RequiredPermissions.Count == 0
-            ? "当前菜单对所有已登录用户可见。"
-            : string.Join(" / ", SelectedItem.RequiredPermissions);
+    public string SelectedPermissionSummary => SelectedPermissionCount == 0
+        ? "未绑定权限，所有已登录用户均可见。"
+        : $"已绑定 {SelectedPermissionCount} 项权限，满足任意一项即可显示。";
 
     public string SelectedMenuRouteText => SelectedItem?.Route ?? "--";
 
-    public string SelectedMenuSectionText => SelectedItem?.Section ?? "--";
+    public string SelectedMenuKeyText => SelectedItem?.Key ?? "--";
+
+    public string SelectedMenuIconText => SelectedItem?.IconKey ?? "--";
 
     public string SelectedMenuStatusText => SelectedItem?.ImplementationStatusText ?? "未选择菜单";
 
-    public string SelectedMenuAccessText => SelectedItem?.AccessStatusText ?? "未选择菜单";
+    public string SelectedMenuUpdatedAtText => SelectedItem?.UpdatedAtDisplay ?? "--";
 
     public string MenuOverviewText => string.IsNullOrWhiteSpace(SearchKeyword)
+        && SectionFilter == "全部分组"
+        && StatusFilter == "全部状态"
         ? $"共 {Items.Count} 个菜单项"
         : $"显示 {VisibleItems.Count} / 共 {Items.Count} 个菜单项";
 
+    public string EnabledMenuCountText => Items.Count(item => item.IsEnabled).ToString(CultureInfo.InvariantCulture);
+
+    public string ProtectedMenuCountText => Items.Count(item => item.RequiredPermissions.Count > 0).ToString(CultureInfo.InvariantCulture);
+
+    public string DisabledMenuCountText => Items.Count(item => !item.IsEnabled).ToString(CultureInfo.InvariantCulture);
+
     public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
+
+    public StreamGeometry SaveIconData => NavigationIconData.Get("save");
+
+    public StreamGeometry MoveUpIconData => NavigationIconData.Get("chevron-up");
+
+    public StreamGeometry MoveDownIconData => NavigationIconData.Get("chevron-down");
+
+    public StreamGeometry ResetIconData => NavigationIconData.Get("reset");
+
+    public StreamGeometry CancelIconData => NavigationIconData.Get("close");
 
     partial void OnItemsChanged(IReadOnlyList<PortalMenuItemDto> value)
     {
@@ -588,24 +644,51 @@ public partial class MenusManagementPageViewModel : ManagementPageViewModelBase
         OnPropertyChanged(nameof(EmptyStateMessage));
         OnPropertyChanged(nameof(VisibleItems));
         OnPropertyChanged(nameof(MenuOverviewText));
+        OnPropertyChanged(nameof(EnabledMenuCountText));
+        OnPropertyChanged(nameof(ProtectedMenuCountText));
+        OnPropertyChanged(nameof(DisabledMenuCountText));
+        OnPropertyChanged(nameof(CanMoveUp));
+        OnPropertyChanged(nameof(CanMoveDown));
     }
 
     partial void OnSearchKeywordChanged(string value)
     {
-        OnPropertyChanged(nameof(VisibleItems));
-        OnPropertyChanged(nameof(MenuOverviewText));
-        OnPropertyChanged(nameof(ShowEmptyState));
-        OnPropertyChanged(nameof(EmptyStateMessage));
-        SelectedItem = VisibleItems.FirstOrDefault();
+        RefreshFilteredItems();
     }
+
+    partial void OnSectionFilterChanged(string value) => RefreshFilteredItems();
+
+    partial void OnStatusFilterChanged(string value) => RefreshFilteredItems();
 
     partial void OnSelectedItemChanged(PortalMenuItemDto? value)
     {
-        OnPropertyChanged(nameof(PermissionSummaryText));
+        if (value == null)
+        {
+            Title = string.Empty;
+            Section = "系统管理";
+            Description = string.Empty;
+            IsEnabled = true;
+            ApplyPermissionSelection([]);
+        }
+        else
+        {
+            Title = value.Title;
+            Section = value.Section;
+            Description = value.Description;
+            IsEnabled = value.IsEnabled;
+            ApplyPermissionSelection(value.RequiredPermissions);
+        }
+
+        OnPropertyChanged(nameof(HasSelectedItem));
+        OnPropertyChanged(nameof(ShowEditorEmptyState));
+        OnPropertyChanged(nameof(CanEditSelected));
         OnPropertyChanged(nameof(SelectedMenuRouteText));
-        OnPropertyChanged(nameof(SelectedMenuSectionText));
+        OnPropertyChanged(nameof(SelectedMenuKeyText));
+        OnPropertyChanged(nameof(SelectedMenuIconText));
         OnPropertyChanged(nameof(SelectedMenuStatusText));
-        OnPropertyChanged(nameof(SelectedMenuAccessText));
+        OnPropertyChanged(nameof(SelectedMenuUpdatedAtText));
+        OnPropertyChanged(nameof(CanMoveUp));
+        OnPropertyChanged(nameof(CanMoveDown));
     }
 
     [RelayCommand]
@@ -613,11 +696,308 @@ public partial class MenusManagementPageViewModel : ManagementPageViewModelBase
     {
         await RunAuthenticatedBusyActionAsync(async () =>
         {
-            var result = await ApiClient.GetMenusAsync(Session.AccessToken);
-            Items = result.Data ?? Array.Empty<PortalMenuItemDto>();
-            SelectedItem = VisibleItems.FirstOrDefault();
-            SetRequestStatus(result.IsSuccess, $"已加载 {Items.Count} 个菜单配置。", "加载菜单配置失败。", result.ErrorMessage);
+            var selectedKey = SelectedItem?.Key;
+            var menusTask = ApiClient.GetMenusAsync(Session.AccessToken);
+            var permissionsTask = ApiClient.GetPermissionsAsync(Session.AccessToken, 1, 200);
+            await Task.WhenAll(menusTask, permissionsTask);
+
+            var menusResult = await menusTask;
+            var permissionsResult = await permissionsTask;
+            Items = menusResult.Data?.OrderBy(item => item.Order).ToArray() ?? Array.Empty<PortalMenuItemDto>();
+            PermissionOptions = (permissionsResult.Data?.Items ?? Array.Empty<PermissionDto>())
+                .OrderBy(item => item.PermissionName, StringComparer.OrdinalIgnoreCase)
+                .Select(item => new MenuPermissionOptionViewModel(item.PermissionName, item.DisplayName, OnPermissionSelectionChanged))
+                .ToArray();
+
+            SelectedItem = null;
+            SelectedItem = Items.FirstOrDefault(item => string.Equals(item.Key, selectedKey, StringComparison.OrdinalIgnoreCase))
+                ?? VisibleItems.FirstOrDefault();
+
+            StatusMessage = menusResult.IsSuccess && permissionsResult.IsSuccess
+                ? $"已加载 {Items.Count} 个菜单配置和 {PermissionOptions.Count} 项可绑定权限。"
+                : menusResult.ErrorMessage ?? permissionsResult.ErrorMessage ?? "加载菜单管理数据失败。";
         });
+    }
+
+    [RelayCommand]
+    private async Task SaveAsync()
+    {
+        if (!CanManageMenus)
+        {
+            StatusMessage = "当前账号没有菜单管理权限。";
+            return;
+        }
+
+        if (SelectedItem == null)
+        {
+            StatusMessage = "请先选择需要编辑的菜单。";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Title) || string.IsNullOrWhiteSpace(Section))
+        {
+            StatusMessage = "菜单名称和所属分组不能为空。";
+            return;
+        }
+
+        var selectedKey = SelectedItem.Key;
+        await RunAuthenticatedBusyActionAsync(async () =>
+        {
+            var result = await ApiClient.UpdateMenuAsync(
+                Session.AccessToken,
+                selectedKey,
+                new SavePortalMenuRequestDto(
+                    Title.Trim(),
+                    Section,
+                    IsEnabled,
+                    GetSelectedPermissions(),
+                    Description.Trim()));
+
+            SetRequestStatus(result.IsSuccess, "菜单配置已保存并应用到左侧导航。", "保存菜单配置失败。", result.ErrorMessage);
+            if (!result.IsSuccess)
+            {
+                return;
+            }
+
+            await ReloadAndNotifyAsync(selectedKey);
+        });
+    }
+
+    [RelayCommand]
+    private Task MoveUpAsync() => MoveSelectedAsync(-1);
+
+    [RelayCommand]
+    private Task MoveDownAsync() => MoveSelectedAsync(1);
+
+    [RelayCommand]
+    private void BeginReset()
+    {
+        if (!CanManageMenus)
+        {
+            StatusMessage = "当前账号没有菜单管理权限。";
+            return;
+        }
+
+        IsResetConfirmationVisible = true;
+        StatusMessage = "重置会恢复全部内置菜单的标题、分组、顺序、启用状态和权限绑定。";
+    }
+
+    [RelayCommand]
+    private void CancelReset()
+    {
+        IsResetConfirmationVisible = false;
+        StatusMessage = "已取消重置菜单。";
+    }
+
+    [RelayCommand]
+    private async Task ConfirmResetAsync()
+    {
+        if (!CanManageMenus)
+        {
+            return;
+        }
+
+        await RunAuthenticatedBusyActionAsync(async () =>
+        {
+            var result = await ApiClient.ResetMenusAsync(Session.AccessToken);
+            SetRequestStatus(result.IsSuccess, "菜单已恢复为内置默认配置。", "重置菜单失败。", result.ErrorMessage);
+            if (!result.IsSuccess)
+            {
+                return;
+            }
+
+            IsResetConfirmationVisible = false;
+            Items = result.Data?.OrderBy(item => item.Order).ToArray() ?? Array.Empty<PortalMenuItemDto>();
+            SelectedItem = Items.FirstOrDefault();
+            if (_onMenusChanged != null)
+            {
+                await _onMenusChanged();
+            }
+        });
+    }
+
+    private async Task MoveSelectedAsync(int offset)
+    {
+        if (!CanManageMenus || SelectedItem == null || IsBusy)
+        {
+            return;
+        }
+
+        var currentIndex = GetSelectedIndex();
+        var targetIndex = currentIndex + offset;
+        if (currentIndex < 0 || targetIndex < 0 || targetIndex >= Items.Count)
+        {
+            return;
+        }
+
+        var selectedKey = SelectedItem.Key;
+        var reordered = Items.ToList();
+        (reordered[currentIndex], reordered[targetIndex]) = (reordered[targetIndex], reordered[currentIndex]);
+
+        await RunAuthenticatedBusyActionAsync(async () =>
+        {
+            var result = await ApiClient.ReorderMenusAsync(
+                Session.AccessToken,
+                reordered.Select(item => item.Key).ToArray());
+            SetRequestStatus(result.IsSuccess, "菜单顺序已更新。", "调整菜单顺序失败。", result.ErrorMessage);
+            if (!result.IsSuccess)
+            {
+                return;
+            }
+
+            Items = result.Data?.OrderBy(item => item.Order).ToArray() ?? Array.Empty<PortalMenuItemDto>();
+            SelectedItem = Items.FirstOrDefault(item => string.Equals(item.Key, selectedKey, StringComparison.OrdinalIgnoreCase));
+            if (_onMenusChanged != null)
+            {
+                await _onMenusChanged();
+            }
+        });
+    }
+
+    private async Task ReloadAndNotifyAsync(string selectedKey)
+    {
+        var result = await ApiClient.GetMenusAsync(Session.AccessToken);
+        if (result.IsSuccess && result.Data != null)
+        {
+            Items = result.Data.OrderBy(item => item.Order).ToArray();
+            SelectedItem = Items.FirstOrDefault(item => string.Equals(item.Key, selectedKey, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (_onMenusChanged != null)
+        {
+            await _onMenusChanged();
+        }
+    }
+
+    private void RefreshFilteredItems()
+    {
+        OnPropertyChanged(nameof(VisibleItems));
+        OnPropertyChanged(nameof(HasVisibleItems));
+        OnPropertyChanged(nameof(ShowEmptyState));
+        OnPropertyChanged(nameof(EmptyStateMessage));
+        OnPropertyChanged(nameof(MenuOverviewText));
+        if (SelectedItem != null && !VisibleItems.Contains(SelectedItem))
+        {
+            SelectedItem = VisibleItems.FirstOrDefault();
+        }
+    }
+
+    private static bool MatchesSearch(PortalMenuItemDto item, string keyword)
+    {
+        if (string.IsNullOrWhiteSpace(keyword))
+        {
+            return true;
+        }
+
+        var normalizedKeyword = keyword.Trim();
+        return item.Title.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase)
+            || item.Key.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase)
+            || item.Route.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase)
+            || item.RequiredPermissions.Any(permission => permission.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void ApplyPermissionSelection(IEnumerable<string> permissionNames)
+    {
+        var selectedNames = permissionNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        _isApplyingPermissionSelection = true;
+        try
+        {
+            foreach (var option in PermissionOptions)
+            {
+                option.SetSelectedSilently(selectedNames.Contains(option.PermissionName));
+            }
+        }
+        finally
+        {
+            _isApplyingPermissionSelection = false;
+        }
+
+        UpdatePermissionSummary();
+    }
+
+    private void OnPermissionSelectionChanged()
+    {
+        if (!_isApplyingPermissionSelection)
+        {
+            UpdatePermissionSummary();
+        }
+    }
+
+    private void UpdatePermissionSummary()
+    {
+        SelectedPermissionCount = PermissionOptions.Count(item => item.IsSelected);
+        OnPropertyChanged(nameof(SelectedPermissionSummary));
+    }
+
+    private IReadOnlyList<string> GetSelectedPermissions()
+    {
+        return PermissionOptions
+            .Where(item => item.IsSelected)
+            .Select(item => item.PermissionName)
+            .ToArray();
+    }
+
+    private int GetSelectedIndex()
+    {
+        if (SelectedItem == null)
+        {
+            return -1;
+        }
+
+        for (var index = 0; index < Items.Count; index++)
+        {
+            if (string.Equals(Items[index].Key, SelectedItem.Key, StringComparison.OrdinalIgnoreCase))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+}
+
+public partial class MenuPermissionOptionViewModel : ObservableObject
+{
+    private readonly Action _selectionChanged;
+    private bool _suppressSelectionChanged;
+
+    public MenuPermissionOptionViewModel(string permissionName, string displayName, Action selectionChanged)
+    {
+        PermissionName = permissionName;
+        DisplayName = displayName;
+        _selectionChanged = selectionChanged;
+    }
+
+    public string PermissionName { get; }
+
+    public string DisplayName { get; }
+
+    [ObservableProperty] private bool _isSelected;
+
+    partial void OnIsSelectedChanged(bool value)
+    {
+        if (!_suppressSelectionChanged)
+        {
+            _selectionChanged();
+        }
+    }
+
+    public void SetSelectedSilently(bool value)
+    {
+        if (IsSelected == value)
+        {
+            return;
+        }
+
+        _suppressSelectionChanged = true;
+        try
+        {
+            IsSelected = value;
+        }
+        finally
+        {
+            _suppressSelectionChanged = false;
+        }
     }
 }
 

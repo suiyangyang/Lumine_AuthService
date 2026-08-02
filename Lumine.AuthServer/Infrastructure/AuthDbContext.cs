@@ -21,6 +21,7 @@ namespace Lumine.AuthServer.Infrastructure
         public DbSet<AuthorizationCode> AuthorizationCodes => Set<AuthorizationCode>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<AuditLogEntry> AuditLogEntries => Set<AuditLogEntry>();
+        public DbSet<PortalMenu> PortalMenus => Set<PortalMenu>();
         public DbSet<DbVersion> DbVersions => Set<DbVersion>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -198,6 +199,23 @@ namespace Lumine.AuthServer.Infrastructure
                 b.Property(item => item.OccurredAtUtc).IsRequired();
                 b.HasIndex(item => item.OccurredAtUtc);
                 b.HasIndex(item => new { item.Category, item.Action });
+            });
+
+            modelBuilder.Entity<PortalMenu>(b =>
+            {
+                b.ToTable("PortalMenus");
+                b.HasKey(item => item.Id);
+                b.Property(item => item.Key).IsRequired().HasMaxLength(64);
+                b.Property(item => item.Title).IsRequired().HasMaxLength(128);
+                b.Property(item => item.Section).IsRequired().HasMaxLength(64);
+                b.Property(item => item.Route).IsRequired().HasMaxLength(256);
+                b.Property(item => item.IconKey).IsRequired().HasMaxLength(64);
+                b.Property(item => item.RequiredPermissionsValue).HasColumnName("RequiredPermissions").HasMaxLength(2048);
+                b.Property(item => item.Description).HasMaxLength(512);
+                b.Property(item => item.UpdatedAtUtc).IsRequired();
+                b.HasIndex(item => item.Key).IsUnique();
+                b.HasIndex(item => item.Route).IsUnique();
+                b.HasIndex(item => item.DisplayOrder);
             });
 
             modelBuilder.Entity<DbVersion>(b =>

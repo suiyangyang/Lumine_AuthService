@@ -39,15 +39,33 @@ namespace Lumine.AuthServer.Application.DTOs
 
     public class PortalMenuItemDto
     {
+        public Guid Id { get; set; }
         public int Order { get; set; }
         public string Key { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Section { get; set; } = string.Empty;
         public string Route { get; set; } = string.Empty;
+        public string IconKey { get; set; } = string.Empty;
+        public bool IsEnabled { get; set; }
         public bool IsImplemented { get; set; }
         public IReadOnlyList<string> RequiredPermissions { get; set; } = Array.Empty<string>();
         public bool HasAccess { get; set; }
         public string Description { get; set; } = string.Empty;
+        public DateTime UpdatedAtUtc { get; set; }
+    }
+
+    public class SavePortalMenuRequestDto
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Section { get; set; } = string.Empty;
+        public bool IsEnabled { get; set; }
+        public IReadOnlyList<string> RequiredPermissions { get; set; } = Array.Empty<string>();
+        public string Description { get; set; } = string.Empty;
+    }
+
+    public class ReorderPortalMenusRequestDto
+    {
+        public IReadOnlyList<string> Keys { get; set; } = Array.Empty<string>();
     }
 
     public class AuditLogEntryDto
