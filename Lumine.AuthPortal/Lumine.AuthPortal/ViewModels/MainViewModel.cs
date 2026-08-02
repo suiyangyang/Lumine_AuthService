@@ -36,6 +36,10 @@ public partial class MainViewModel : ViewModelBase
             if (args.PropertyName == nameof(PortalSession.IsAuthenticated))
             {
                 HandleAuthenticationStateChanged();
+                if (IsAuthenticated)
+                {
+                    _ = SyncNavigationFromServerAsync();
+                }
             }
 
             if (args.PropertyName is nameof(PortalSession.AccessToken)
@@ -318,6 +322,23 @@ public partial class MainViewModel : ViewModelBase
                 "login" or "register" => false,
                 _ => IsAuthenticated
             };
+        }
+    }
+
+    private async Task SyncNavigationFromServerAsync()
+    {
+        var result = await _apiClient.GetMenusAsync(_session.AccessToken);
+        if (!result.IsSuccess || result.Data == null)
+        {
+            return;
+        }
+
+        foreach (var menu in result.Data)
+        {
+            if (_navigationLookup.TryGetValue(menu.Key, out var navigationItem))
+            {
+                navigationItem.IsVisible = menu.IsImplemented && menu.HasAccess;
+            }
         }
     }
 

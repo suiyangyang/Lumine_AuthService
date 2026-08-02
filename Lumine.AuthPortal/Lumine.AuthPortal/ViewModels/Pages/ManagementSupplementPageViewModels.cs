@@ -541,10 +541,23 @@ public partial class MenusManagementPageViewModel : ManagementPageViewModelBase
 
     [ObservableProperty] private IReadOnlyList<PortalMenuItemDto> _items = Array.Empty<PortalMenuItemDto>();
     [ObservableProperty] private PortalMenuItemDto? _selectedItem;
+    [ObservableProperty] private string _searchKeyword = string.Empty;
 
     public bool HasMenus => Items.Count > 0;
 
-    public bool ShowEmptyState => !HasMenus;
+    public bool HasVisibleItems => VisibleItems.Count > 0;
+
+    public bool ShowEmptyState => VisibleItems.Count == 0;
+
+    public string EmptyStateMessage => HasMenus ? "没有匹配的菜单" : "暂无菜单数据";
+
+    public IReadOnlyList<PortalMenuItemDto> VisibleItems => Items
+        .Where(item => string.IsNullOrWhiteSpace(SearchKeyword)
+            || item.Title.Contains(SearchKeyword.Trim(), StringComparison.OrdinalIgnoreCase)
+            || item.Key.Contains(SearchKeyword.Trim(), StringComparison.OrdinalIgnoreCase)
+            || item.Route.Contains(SearchKeyword.Trim(), StringComparison.OrdinalIgnoreCase)
+            || item.RequiredPermissions.Any(permission => permission.Contains(SearchKeyword.Trim(), StringComparison.OrdinalIgnoreCase)))
+        .ToArray();
 
     public string PermissionSummaryText => SelectedItem == null
         ? "请选择菜单查看权限信息。"
@@ -560,15 +573,30 @@ public partial class MenusManagementPageViewModel : ManagementPageViewModelBase
 
     public string SelectedMenuAccessText => SelectedItem?.AccessStatusText ?? "未选择菜单";
 
-    public string MenuOverviewText => $"共 {Items.Count} 个菜单项";
+    public string MenuOverviewText => string.IsNullOrWhiteSpace(SearchKeyword)
+        ? $"共 {Items.Count} 个菜单项"
+        : $"显示 {VisibleItems.Count} / 共 {Items.Count} 个菜单项";
 
     public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
 
     partial void OnItemsChanged(IReadOnlyList<PortalMenuItemDto> value)
     {
         OnPropertyChanged(nameof(HasMenus));
+        OnPropertyChanged(nameof(HasVisibleItems));
         OnPropertyChanged(nameof(ShowEmptyState));
+        OnPropertyChanged(nameof(HasVisibleItems));
+        OnPropertyChanged(nameof(EmptyStateMessage));
+        OnPropertyChanged(nameof(VisibleItems));
         OnPropertyChanged(nameof(MenuOverviewText));
+    }
+
+    partial void OnSearchKeywordChanged(string value)
+    {
+        OnPropertyChanged(nameof(VisibleItems));
+        OnPropertyChanged(nameof(MenuOverviewText));
+        OnPropertyChanged(nameof(ShowEmptyState));
+        OnPropertyChanged(nameof(EmptyStateMessage));
+        SelectedItem = VisibleItems.FirstOrDefault();
     }
 
     partial void OnSelectedItemChanged(PortalMenuItemDto? value)
@@ -587,7 +615,7 @@ public partial class MenusManagementPageViewModel : ManagementPageViewModelBase
         {
             var result = await ApiClient.GetMenusAsync(Session.AccessToken);
             Items = result.Data ?? Array.Empty<PortalMenuItemDto>();
-            SelectedItem = Items.FirstOrDefault();
+            SelectedItem = VisibleItems.FirstOrDefault();
             SetRequestStatus(result.IsSuccess, $"已加载 {Items.Count} 个菜单配置。", "加载菜单配置失败。", result.ErrorMessage);
         });
     }

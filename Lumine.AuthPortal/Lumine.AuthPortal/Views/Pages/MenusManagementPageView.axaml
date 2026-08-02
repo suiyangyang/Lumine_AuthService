@@ -5,7 +5,7 @@
              x:Class="Lumine.AuthPortal.Views.Pages.MenusManagementPageView"
              x:DataType="vm:MenusManagementPageViewModel">
   <Border Classes="admin-panel" Padding="18">
-        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="14">
+        <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
             <StackPanel Spacing="4">
               <TextBlock Text="菜单管理" Classes="admin-card-title"/>
@@ -18,8 +18,9 @@
               <PathIcon Data="{Binding RefreshIconData}" Classes="admin-button-icon"/>
             </Button>
           </Grid>
+          <TextBox Grid.Row="1" Text="{Binding SearchKeyword}" Watermark="搜索菜单名称、Key、路由或权限"/>
 
-          <Border Grid.Row="1" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
+          <Border Grid.Row="2" Background="{DynamicResource SurfaceInsetBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="12">
             <Grid ColumnDefinitions="1.15*,0.9*" ColumnSpacing="16">
               <Grid RowDefinitions="Auto,*" RowSpacing="12">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
@@ -30,11 +31,11 @@
                 </Grid>
 
                 <Grid Grid.Row="1">
-                  <ListBox ItemsSource="{Binding Items}"
+                   <ListBox ItemsSource="{Binding VisibleItems}"
                            SelectedItem="{Binding SelectedItem}"
                            Background="Transparent"
                            BorderThickness="0"
-                           IsVisible="{Binding HasMenus}">
+                           IsVisible="{Binding HasVisibleItems}">
                     <ListBox.ItemTemplate>
                       <DataTemplate x:DataType="model:PortalMenuItemDto">
                         <Border Classes="admin-row-card" Margin="0,0,0,10" Padding="14">
@@ -80,7 +81,7 @@
 
                   <Border Classes="info-card" IsVisible="{Binding ShowEmptyState}" VerticalAlignment="Center">
                     <StackPanel Spacing="8" HorizontalAlignment="Center">
-                      <TextBlock Text="暂无菜单数据" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
+                      <TextBlock Text="{Binding EmptyStateMessage}" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
                       <TextBlock Text="刷新后可重新拉取当前前端菜单配置。" Classes="admin-hint" HorizontalAlignment="Center"/>
                     </StackPanel>
                   </Border>
@@ -129,7 +130,7 @@
             </Grid>
           </Border>
 
-          <Border Grid.Row="2" Classes="admin-status-banner" Padding="10,8">
+          <Border Grid.Row="3" Classes="admin-status-banner" Padding="10,8">
             <StackPanel Spacing="4">
               <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
               <TextBlock Text="{Binding SelectedItem.Title, StringFormat=当前选择：{0}, TargetNullValue=当前选择：未选择菜单}" Classes="admin-hint"/>
