@@ -22,12 +22,12 @@
 		<ProjectReference Include="..\Lumine.AuthPortal\Lumine.AuthPortal.csproj" />
 	</ItemGroup>
 
-	<Target Name="CopyPackageStaticAssetsToOutput" AfterTargets="Build">
+	<Target Name="CopyPackageStaticAssetsToOutput" AfterTargets="Build" DependsOnTargets="GetCurrentProjectBuildStaticWebAssetItems">
 		<ItemGroup>
 			<AvaloniaPackageStaticAssets Include="$(NuGetPackageRoot)avalonia.browser\*\staticwebassets\*.*"
 								 Condition="Exists('$(NuGetPackageRoot)avalonia.browser')" />
-			<HotReloadPackageStaticAssets Include="$(NuGetPackageRoot)microsoft.dotnet.hotreload.webassembly.browser\*\staticwebassets\*.*"
-								  Condition="Exists('$(NuGetPackageRoot)microsoft.dotnet.hotreload.webassembly.browser')" />
+			<HotReloadPackageStaticAssets Include="@(_CachedBuildStaticWebAssetItems)"
+								  Condition="'%(_CachedBuildStaticWebAssetItems.AssetTraitName)' == 'JSModule' and '%(_CachedBuildStaticWebAssetItems.AssetTraitValue)' == 'JSLibraryModule' and '%(_CachedBuildStaticWebAssetItems.AssetRole)' == 'Primary'" />
 		</ItemGroup>
 
 		<Copy SourceFiles="@(AvaloniaPackageStaticAssets)"
@@ -36,7 +36,7 @@
 			  Condition="'@(AvaloniaPackageStaticAssets)' != ''" />
 
 		<Copy SourceFiles="@(HotReloadPackageStaticAssets)"
-			  DestinationFolder="$(OutputPath)wwwroot\_content\Microsoft.DotNet.HotReload.WebAssembly.Browser"
+			  DestinationFiles="@(HotReloadPackageStaticAssets->'$(OutputPath)wwwroot\_framework\Microsoft.DotNet.HotReload.WebAssembly.Browser.%(Fingerprint).lib.module.js')"
 			  SkipUnchangedFiles="true"
 			  Condition="'@(HotReloadPackageStaticAssets)' != ''" />
 	</Target>

@@ -4,7 +4,7 @@ namespace Lumine.AuthPortal;
 
 public static class AppEnvironment
 {
-    public const string DefaultServerBaseUrl = "http://localhost:5115";
+    public const string DefaultServerBaseUrl = "http://localhost:13255";
     public const string DefaultOidcClientId = "lumine-demo-client";
     public const string DefaultOidcRedirectUri = "http://localhost:5173/signin-oidc";
     public const string DefaultOidcScope = "openid profile email roles permissions";

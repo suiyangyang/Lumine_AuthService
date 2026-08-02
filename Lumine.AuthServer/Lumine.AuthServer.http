@@ -1,4 +1,4 @@
-@Lumine.AuthServer_HostAddress = http://localhost:5115
+@Lumine.AuthServer_HostAddress = http://localhost:13255
 @token = replace-with-jwt-token
 @userId = replace-with-user-id
 @roleId = replace-with-role-id

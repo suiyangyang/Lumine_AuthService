@@ -3,7 +3,7 @@
     "Lumine.AuthPortal.Browser": {
         "commandName": "Project",
         "launchBrowser": true,
-        "launchUrl": "http://localhost:5235/?apiBase=http://localhost:5115",
+        "launchUrl": "http://localhost:5235/?apiBase=http://localhost:13255",
         "environmentVariables": {
           "ASPNETCORE_ENVIRONMENT": "Development"
         },
