@@ -352,6 +352,10 @@
             <Setter Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
+        <Style Selector="Button.admin-icon-button:focus">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
         <Style Selector="Button.admin-icon-button:disabled">
             <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
@@ -400,6 +404,10 @@
             <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="Button.admin-row-icon-button:focus">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
         </Style>
         <Style Selector="Button.admin-row-icon-button.admin-danger">
             <Setter Property="Background" Value="{DynamicResource DangerSoftBackgroundBrush}" />
