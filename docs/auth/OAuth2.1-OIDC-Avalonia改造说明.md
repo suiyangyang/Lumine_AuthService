@@ -114,7 +114,7 @@
 
 默认 OIDC 配置位于 `Lumine.AuthServer/appsettings.json`：
 
-- `Oidc:Issuer`：默认 `http://localhost:5115`
+- `Oidc:Issuer`：默认 `http://localhost:13255`
 - `SeedData:Clients[0].ClientId`：默认 `lumine-demo-client`
 - `SeedData:Clients[0].RedirectUris`：默认 `http://localhost:5173/signin-oidc`
 

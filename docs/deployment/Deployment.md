@@ -12,7 +12,7 @@
 - `Lumine.AuthPortal.Browser` 负责生成唯一的最终 Browser publish 站点根目录。
 - `Lumine.AuthServer` 只发布后端文件；合站发布阶段将 Browser 最终站点根目录覆盖到服务端 `wwwroot`。
 - 浏览器访问后端地址时，可同时拿到管理后台前端和认证接口。
-- 本地开发默认地址为 `http://localhost:5115`。
+- 本地开发默认地址为 `http://localhost:13255`。
 - Docker 调试默认通过 `ASPNETCORE_HTTP_PORTS=8080` 暴露服务。
 
 ## 当前部署结构
@@ -36,16 +36,18 @@ dotnet run --project .\Lumine.AuthServer\Lumine.AuthServer.csproj
 
 默认开发入口：
 
-- 服务根地址：`http://localhost:5115`
-- Swagger：`http://localhost:5115/swagger`
-- OIDC Discovery：`http://localhost:5115/.well-known/openid-configuration`
-- Portal 前端：`http://localhost:5115/`
+- 服务根地址：`http://localhost:13255`
+- Swagger：`http://localhost:13255/swagger`
+- OIDC Discovery：`http://localhost:13255/.well-known/openid-configuration`
+- Portal 前端：`http://localhost:13255/`
 
 如果只想单独运行 Browser 前端调试页面：
 
 ```powershell
 dotnet run --project .\Lumine.AuthPortal\Lumine.AuthPortal.Browser\Lumine.AuthPortal.Browser.csproj
 ```
+
+开发环境下，AuthServer 会优先使用 Browser 项目当前配置的构建输出，再回退到 Server 自身的 `wwwroot`。这样可以避免 Server 输出目录中的旧 WASM 指纹与最新 Browser runtime 混用。
 
 ## 构建与发布
 
@@ -64,8 +66,8 @@ dotnet build .\Lumine_AuthService.sln
 合站发布结果位于 `artifacts/publish/server`，其中 `wwwroot` 应包含：
 
 - `index.html`
-- `_framework/`
-- `_content/`
+- `_framework/`，包括 Browser runtime 与 WASM 资源；Debug 开发构建还应包含带指纹的 HotReload library initializer 模块
+- 其他 Browser 运行时静态资源
 
 本地脚本的两个独立中间目录为 `artifacts/publish/browser` 和 `artifacts/publish/server`；最终运行目录只使用 `server`，不会把普通 `bin`、`obj` 或旧 Browser 输出混入其中。
 
@@ -124,3 +126,14 @@ docker run --rm --env-file .env -p 8080:8080 lumine-authserver:local
 - 第三方接入：`docs/integrations/第三方服务接入说明.md`
 - 历史施工记录：`docs/archive/deployment/AvaloniaBrowserAspNetCore一体化部署施工记录.md`
 - 历史排障记录：`docs/archive/deployment/AvaloniaBrowserContainerDebugTroubleshooting-2026-06.md`
+
+## NAS Docker 当前部署
+
+- NAS 地址：`192.168.1.100`。
+- MySQL 容器：`lumine-auth-mysql`，镜像 `mysql:9.4`，宿主机端口 `3307`，数据目录 `/volume2/docker/LumineAuth/mysql`。
+- AuthServer 容器：`lumine-authserver`，宿主机端口 `13255`，对外 issuer 为 `http://192.168.1.100:13255`。
+- ReportMind 容器：`reportmind-server`，宿主机端口保持 `10545`，通过 Docker 网络 `lumine-nas` 访问 AuthServer。
+- 镜像缓存目录：`/home/suiyy/DockerImages`；镜像包不放入其他 NAS 目录。
+- Auth 与 ReportMind 使用独立 Compose 文件和同一 Docker 网络，AuthServer 通过 `auth-mysql:3306` 连接 MySQL。
+
+部署配置中的密码只保存在 NAS 的运行时环境文件中，不写入仓库文档。

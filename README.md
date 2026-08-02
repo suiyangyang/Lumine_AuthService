@@ -37,6 +37,7 @@ Lumine_AuthService/
 - [LocalDB 本地环境](docs/deployment/LocalDb.md)
 - [管理后台基础接口说明](docs/api/管理后台基础接口说明.md)
 - [第三方服务接入说明](docs/integrations/第三方服务接入说明.md)
+- [ReportMind 接入与 Docker 部署](docs/integrations/ReportMind接入与Docker部署.md)
 - [第三方最小服务示例](samples/Lumine.ThirdPartySample/README.md)
 - [OAuth2.1 / OIDC 当前实现说明](docs/auth/OAuth2.1-OIDC-Avalonia改造说明.md)
 - [前端菜单权限清单](docs/permissions/前端菜单权限清单.md)

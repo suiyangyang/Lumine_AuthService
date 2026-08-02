@@ -10,6 +10,8 @@
 - 应用账号：从 `.env` 的 `LUMINE_AUTH_MYSQL_USER` 读取
 - 应用密码：从 `.env` 的 `LUMINE_AUTH_MYSQL_PASSWORD` 读取
 - Root 密码：从 `.env` 的 `LUMINE_AUTH_MYSQL_ROOT_PASSWORD` 读取
+- ReportMind 验证用户密码：从 `.env` 的 `LUMINE_AUTH_REPORTMIND_USER_PASSWORD` 读取
+- ReportMind 迁移用户密码：从 `.env` 的 `LUMINE_AUTH_REPORTMIND_DEFAULT_USER_PASSWORD` 读取
 
 对应开发环境连接串：
 
@@ -61,8 +63,11 @@ docker compose -f .\docker-compose.localdb.yml down -v
 
 - 管理员账号：`admin`
 - 管理员密码：从 `.env` 的 `LUMINE_AUTH_ADMIN_PASSWORD` 读取
-- 默认角色数：`1`
-- 默认权限数：`8`
+- 如果需要将已存在的 `admin` 密码同步为 `.env` 当前值，执行 `.\scripts\init-local-db.ps1 -ForceUpdateAdminPassword`
+- ReportMind 验证用户：`reportmind-test`
+- ReportMind 迁移用户：`陈元`、`隋洋洋`、`郑景帅`、`赵锟`
+- ReportMind 验证角色：`ReportMindUser`
+- 默认权限数：`10`
 - 默认 OIDC Client：`lumine-demo-client`
 
 ## 说明

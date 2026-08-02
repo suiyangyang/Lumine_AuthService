@@ -95,6 +95,10 @@ OIDC 相关代码主要在：
 - 菜单、页面、按钮可见性应跟权限编码保持一致。
 - Browser 默认后端地址和运行方式参考 `Lumine.AuthPortal/README.md`。
 
+## ReportMind 集成边界
+
+`ReportMind` 是独立仓库和独立容器，登录由 `Lumine.AuthServer` 的 `POST /api/auth/login` 完成；ReportMind Server 不保存员工密码或用户列表，使用 Lumine JWKS 验证 JWT，并通过 `reportmind.test`、`reportmind.reports.upload` 权限保护测试和上传接口。种子用户、角色和权限由 `SeedData:Users`、`SeedData:Roles` 配置；完整 Docker 与联调说明见 `docs/integrations/ReportMind接入与Docker部署.md`。
+
 ## 文档边界
 
 - 用户/部署/接口文档放在 `docs/` 的业务分类目录。
