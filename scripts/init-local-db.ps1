@@ -1,5 +1,6 @@
 param(
     [switch]$SkipBootstrap,
+    [switch]$ForceUpdateAdminPassword,
     [int]$TimeoutSeconds = 240
 )
 
@@ -32,6 +33,7 @@ $mysqlPassword = $env:LUMINE_AUTH_MYSQL_PASSWORD
 $mysqlUser = $env:LUMINE_AUTH_MYSQL_USER
 $mysqlDatabase = $env:LUMINE_AUTH_MYSQL_DATABASE
 $adminPassword = $env:LUMINE_AUTH_ADMIN_PASSWORD
+$reportMindPassword = $env:LUMINE_AUTH_REPORTMIND_USER_PASSWORD
 
 if ([string]::IsNullOrWhiteSpace($mysqlDatabase)) {
     throw 'Set LUMINE_AUTH_MYSQL_DATABASE in .env before running this script.'
@@ -51,6 +53,10 @@ if ([string]::IsNullOrWhiteSpace($env:LUMINE_AUTH_MYSQL_ROOT_PASSWORD)) {
 
 if ([string]::IsNullOrWhiteSpace($adminPassword)) {
     throw 'Set LUMINE_AUTH_ADMIN_PASSWORD in .env before running this script.'
+}
+
+if ([string]::IsNullOrWhiteSpace($reportMindPassword)) {
+    throw 'Set LUMINE_AUTH_REPORTMIND_USER_PASSWORD in .env before running this script.'
 }
 
 $connectionString = "server=localhost;port=3307;database=$mysqlDatabase;user=$mysqlUser;password=$mysqlPassword;"
@@ -124,11 +130,13 @@ if (Test-Path $stderrLog) { Remove-Item $stderrLog -Force }
 
 Write-Host '==> Starting AuthServer for migrations and seed data...'
 $process = Start-Process -FilePath 'dotnet' `
-    -ArgumentList @('run', '--project', $serverProject) `
+    -ArgumentList @('run', '--project', $serverProject, '--no-launch-profile') `
     -WorkingDirectory $solutionRoot `
     -Environment @{
         'ConnectionStrings__DefaultConnection' = $connectionString
         'SeedData__AdminPassword' = $adminPassword
+        'SeedData__ForceUpdateAdminPassword' = $ForceUpdateAdminPassword.IsPresent.ToString().ToLowerInvariant()
+        'ASPNETCORE_URLS' = 'http://127.0.0.1:0'
     } `
     -RedirectStandardOutput $stdoutLog `
     -RedirectStandardError $stderrLog `
@@ -169,5 +177,5 @@ docker exec -e MYSQL_PWD=$mysqlPassword $containerName mysql -h 127.0.0.1 -P 330
 
 Write-Host ''
 Write-Host 'Local database initialization completed.'
-Write-Host "Connection string: $connectionString"
+Write-Host "Connection: server=localhost;port=3307;database=$mysqlDatabase;user=$mysqlUser;password=<from LUMINE_AUTH_MYSQL_PASSWORD>"
 Write-Host 'Default admin: admin / value from LUMINE_AUTH_ADMIN_PASSWORD'

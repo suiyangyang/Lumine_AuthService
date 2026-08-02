@@ -357,16 +357,24 @@ static void ApplyLocalMySqlConfiguration()
 
 static void ApplyLocalSeedConfiguration()
 {
-    if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SeedData__AdminPassword")))
+    if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SeedData__AdminPassword")))
     {
-        return;
+        var adminPassword = Environment.GetEnvironmentVariable("LUMINE_AUTH_ADMIN_PASSWORD");
+        if (!string.IsNullOrWhiteSpace(adminPassword))
+        {
+            Environment.SetEnvironmentVariable("SeedData__AdminPassword", adminPassword);
+        }
     }
 
-    var adminPassword = Environment.GetEnvironmentVariable("LUMINE_AUTH_ADMIN_PASSWORD");
-    if (!string.IsNullOrWhiteSpace(adminPassword))
+    if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SeedData__Users__0__Password")))
     {
-        Environment.SetEnvironmentVariable("SeedData__AdminPassword", adminPassword);
+        var reportMindPassword = Environment.GetEnvironmentVariable("LUMINE_AUTH_REPORTMIND_USER_PASSWORD");
+        if (!string.IsNullOrWhiteSpace(reportMindPassword))
+        {
+            Environment.SetEnvironmentVariable("SeedData__Users__0__Password", reportMindPassword);
+        }
     }
+
 }
 
 static string? FindFileInCurrentOrParentDirectories(string fileName)
@@ -454,10 +462,11 @@ static string ResolveDefaultWwwroot(string contentRoot, string deployedWwwroot)
 
 static BrowserAssets ResolveBrowserAssets(string contentRoot, string defaultWwwroot)
 {
-    if (HasBrowserRuntimeAssets(defaultWwwroot))
-    {
-        return new BrowserAssets(defaultWwwroot, new[] { defaultWwwroot });
-    }
+    var configurations = AppContext.BaseDirectory.Contains(
+        $"{Path.DirectorySeparatorChar}Release{Path.DirectorySeparatorChar}",
+        StringComparison.OrdinalIgnoreCase)
+        ? new[] { "Release", "Debug" }
+        : new[] { "Debug", "Release" };
 
     var possibleBrowserRoots = new[]
     {
@@ -469,11 +478,9 @@ static BrowserAssets ResolveBrowserAssets(string contentRoot, string defaultWwwr
     foreach (var browserRoot in possibleBrowserRoots.Distinct(StringComparer.OrdinalIgnoreCase))
     {
         var sourceWwwroot = Path.Combine(browserRoot, "wwwroot");
-        var buildRoots = new[]
-        {
-            Path.Combine(browserRoot, "bin", "Debug", "net10.0-browser", "wwwroot"),
-            Path.Combine(browserRoot, "bin", "Release", "net10.0-browser", "wwwroot")
-        };
+        var buildRoots = configurations
+            .Select(configuration => Path.Combine(browserRoot, "bin", configuration, "net10.0-browser", "wwwroot"))
+            .ToArray();
 
         var runtimeRoot = buildRoots.FirstOrDefault(HasBrowserRuntimeRuntimeAssets);
         if (!string.IsNullOrWhiteSpace(runtimeRoot) && Directory.Exists(sourceWwwroot))
@@ -481,15 +488,14 @@ static BrowserAssets ResolveBrowserAssets(string contentRoot, string defaultWwwr
             return new BrowserAssets(sourceWwwroot, new[] { sourceWwwroot, runtimeRoot });
         }
 
-        var publishRoots = new[]
-        {
-            Path.Combine(browserRoot, "bin", "Debug", "net10.0-browser", "publish"),
-            Path.Combine(browserRoot, "bin", "Release", "net10.0-browser", "publish"),
-            Path.Combine(browserRoot, "bin", "Debug", "net10.0-browser", "publish", "wwwroot"),
-            Path.Combine(browserRoot, "bin", "Release", "net10.0-browser", "publish", "wwwroot"),
-            Path.Combine(browserRoot, "bin", "Debug", "net10.0-browser", "browser-wasm", "publish", "wwwroot"),
-            Path.Combine(browserRoot, "bin", "Release", "net10.0-browser", "browser-wasm", "publish", "wwwroot")
-        };
+        var publishRoots = configurations
+            .SelectMany(configuration => new[]
+            {
+                Path.Combine(browserRoot, "bin", configuration, "net10.0-browser", "publish"),
+                Path.Combine(browserRoot, "bin", configuration, "net10.0-browser", "publish", "wwwroot"),
+                Path.Combine(browserRoot, "bin", configuration, "net10.0-browser", "browser-wasm", "publish", "wwwroot")
+            })
+            .ToArray();
 
         var publishRoot = publishRoots.FirstOrDefault(HasBrowserRuntimeAssets);
         if (!string.IsNullOrWhiteSpace(publishRoot) && Directory.Exists(sourceWwwroot))
@@ -501,6 +507,11 @@ static BrowserAssets ResolveBrowserAssets(string contentRoot, string defaultWwwr
         {
             return new BrowserAssets(publishRoot, new[] { publishRoot });
         }
+    }
+
+    if (HasBrowserRuntimeAssets(defaultWwwroot))
+    {
+        return new BrowserAssets(defaultWwwroot, new[] { defaultWwwroot });
     }
 
     return new BrowserAssets(defaultWwwroot, Directory.Exists(defaultWwwroot) ? new[] { defaultWwwroot } : Array.Empty<string>());

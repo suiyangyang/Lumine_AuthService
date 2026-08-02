@@ -28,6 +28,10 @@ namespace Lumine.AuthServer.Infrastructure.Services
             new() { Name = "clients.manage", DisplayName = "管理客户端" }
         ];
 
+        public List<SeedRoleOption> Roles { get; set; } = [];
+
+        public List<SeedUserOption> Users { get; set; } = [];
+
         public List<SeedClientOption> Clients { get; set; } =
         [
             new()
@@ -68,5 +72,33 @@ namespace Lumine.AuthServer.Infrastructure.Services
         public bool IsActive { get; set; } = true;
 
         public string? Description { get; set; }
+    }
+
+    public class SeedRoleOption
+    {
+        public string Name { get; set; } = string.Empty;
+
+        public List<string> Permissions { get; set; } = [];
+    }
+
+    public class SeedUserOption
+    {
+        public string UserName { get; set; } = string.Empty;
+
+        public string Email { get; set; } = string.Empty;
+
+        public string? NickName { get; set; }
+
+        public string? PhoneNumber { get; set; }
+
+        public string? Password { get; set; }
+
+        public string? PasswordEnvironmentVariable { get; set; }
+
+        public bool ForceUpdatePassword { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public List<string> Roles { get; set; } = [];
     }
 }

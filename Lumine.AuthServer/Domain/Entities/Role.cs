@@ -43,5 +43,13 @@ namespace Lumine.AuthServer.Domain.Entities
             var found = RolePermissions.FirstOrDefault(p => p.PermissionId == permissionId);
             if (found != null) RolePermissions.Remove(found);
         }
+
+        public void EnsurePermissions(IEnumerable<Permission> permissions)
+        {
+            foreach (var permission in permissions)
+            {
+                AddPermission(permission);
+            }
+        }
     }
 }

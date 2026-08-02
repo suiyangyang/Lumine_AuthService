@@ -35,6 +35,8 @@ namespace Lumine.AuthServer.Infrastructure.Services
             var permissions = await EnsurePermissionsAsync(cancellationToken);
             var adminRole = await EnsureAdminRoleAsync(permissions, cancellationToken);
             await EnsureAdminUserAsync(adminRole, cancellationToken);
+            var configuredRoles = await EnsureConfiguredRolesAsync(permissions, cancellationToken);
+            await EnsureConfiguredUsersAsync(configuredRoles, cancellationToken);
             await EnsureClientsAsync(cancellationToken);
         }
 
@@ -94,6 +96,59 @@ namespace Lumine.AuthServer.Infrastructure.Services
             return role;
         }
 
+        private async Task<Dictionary<string, Role>> EnsureConfiguredRolesAsync(
+            List<Permission> permissions,
+            CancellationToken cancellationToken)
+        {
+            var roles = new Dictionary<string, Role>(StringComparer.OrdinalIgnoreCase)
+            {
+                [_options.AdminRoleName.Trim()] = await _dbContext.Roles
+                    .FirstAsync(role => role.Name == _options.AdminRoleName.Trim(), cancellationToken)
+            };
+
+            foreach (var configuredRole in _options.Roles
+                         .Where(item => !string.IsNullOrWhiteSpace(item.Name)))
+            {
+                var roleName = configuredRole.Name.Trim();
+                var role = await _dbContext.Roles
+                    .Include(item => item.RolePermissions)
+                    .FirstOrDefaultAsync(item => item.Name == roleName, cancellationToken);
+
+                if (role == null)
+                {
+                    role = new Role(Guid.NewGuid(), roleName);
+                    _dbContext.Roles.Add(role);
+                }
+
+                var rolePermissions = configuredRole.Permissions
+                    .Where(item => !string.IsNullOrWhiteSpace(item))
+                    .Select(item => permissions.FirstOrDefault(permission =>
+                        string.Equals(permission.PermissionName, item.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    .Where(permission => permission != null)
+                    .Cast<Permission>()
+                    .ToArray();
+
+                var missingPermissions = configuredRole.Permissions
+                    .Where(item => !string.IsNullOrWhiteSpace(item))
+                    .Where(item => !permissions.Any(permission =>
+                        string.Equals(permission.PermissionName, item.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                if (missingPermissions.Length > 0)
+                {
+                    throw new InvalidOperationException(
+                        $"Seed role '{roleName}' references unknown permissions: {string.Join(", ", missingPermissions)}");
+                }
+
+                role.EnsurePermissions(rolePermissions);
+                roles[roleName] = role;
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return roles;
+        }
+
         private async Task EnsureAdminUserAsync(Role adminRole, CancellationToken cancellationToken)
         {
             var userName = _options.AdminUserName.Trim();
@@ -123,6 +178,77 @@ namespace Lumine.AuthServer.Infrastructure.Services
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task EnsureConfiguredUsersAsync(
+            IReadOnlyDictionary<string, Role> configuredRoles,
+            CancellationToken cancellationToken)
+        {
+            foreach (var configuredUser in _options.Users
+                         .Where(item => !string.IsNullOrWhiteSpace(item.UserName)))
+            {
+                var userName = configuredUser.UserName.Trim();
+                var email = configuredUser.Email.Trim();
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    throw new InvalidOperationException($"Seed user '{userName}' must define an email.");
+                }
+
+                var password = ResolveConfiguredPassword(configuredUser, userName);
+                var user = await _dbContext.Users
+                    .Include(item => item.UserRoles)
+                    .FirstOrDefaultAsync(item => item.UserName == userName, cancellationToken);
+
+                if (user == null)
+                {
+                    user = new User(Guid.NewGuid(), userName, email, string.Empty);
+                    user.SetPasswordHash(_passwordService.HashPassword(user, password));
+                    _dbContext.Users.Add(user);
+                }
+                else if (configuredUser.ForceUpdatePassword)
+                {
+                    user.SetPasswordHash(_passwordService.HashPassword(user, password));
+                }
+
+                user.UpdateProfile(userName, email, configuredUser.NickName, configuredUser.PhoneNumber, configuredUser.IsActive);
+
+                var roleNames = configuredUser.Roles
+                    .Where(item => !string.IsNullOrWhiteSpace(item))
+                    .Select(item => item.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToArray();
+
+                foreach (var roleName in roleNames)
+                {
+                    if (!configuredRoles.TryGetValue(roleName, out var role))
+                    {
+                        throw new InvalidOperationException(
+                            $"Seed user '{userName}' references unknown role '{roleName}'.");
+                    }
+
+                    user.AssignRole(role);
+                }
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private static string ResolveConfiguredPassword(SeedUserOption configuredUser, string userName)
+        {
+            var password = configuredUser.Password;
+            if (string.IsNullOrWhiteSpace(password)
+                && !string.IsNullOrWhiteSpace(configuredUser.PasswordEnvironmentVariable))
+            {
+                password = Environment.GetEnvironmentVariable(configuredUser.PasswordEnvironmentVariable);
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new InvalidOperationException(
+                    $"Seed user '{userName}' must define Password or PasswordEnvironmentVariable.");
+            }
+
+            return password;
         }
 
         private async Task EnsureClientsAsync(CancellationToken cancellationToken)
