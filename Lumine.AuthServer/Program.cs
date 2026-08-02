@@ -5,6 +5,7 @@ using Lumine.AuthServer.Infrastructure;
 using Lumine.AuthServer.Infrastructure.Repositories;
 using Lumine.AuthServer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;
@@ -91,6 +92,19 @@ services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.Cookie.Name = "lumine-auth-session";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    options.SlidingExpiration = true;
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
 })
 .AddJwtBearer(options =>
 {
@@ -422,6 +436,7 @@ static FileExtensionContentTypeProvider CreateContentTypeProvider()
     provider.Mappings[".dll"] = "application/octet-stream";
     provider.Mappings[".pdb"] = "application/octet-stream";
     provider.Mappings[".symbols"] = "application/octet-stream";
+    provider.Mappings[".mjs"] = "text/javascript";
     provider.Mappings[".wasm"] = "application/wasm";
     provider.Mappings[".br"] = "application/brotli";
     return provider;
@@ -562,7 +577,8 @@ static bool IsServerRoute(PathString requestPath)
     return requestPath.StartsWithSegments("/api")
         || requestPath.StartsWithSegments("/connect")
         || requestPath.StartsWithSegments("/.well-known")
-        || requestPath.StartsWithSegments("/swagger");
+        || requestPath.StartsWithSegments("/swagger")
+        || string.Equals(requestPath.Value, "/jwks.json", StringComparison.OrdinalIgnoreCase);
 }
 
 static string? ResolvePortOverride()

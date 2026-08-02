@@ -1,6 +1,7 @@
 using Lumine.AuthServer.Domain.Abstractions;
 using Lumine.AuthServer.Domain.Entities;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Lumine.AuthServer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -102,6 +103,10 @@ namespace Lumine.AuthServer.Controllers
             }
 
             var authResult = await HttpContext.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
+            if (!authResult.Succeeded)
+            {
+                authResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
             if (!authResult.Succeeded || authResult.Principal?.Identity?.IsAuthenticated != true)
             {
                 return Unauthorized(new
