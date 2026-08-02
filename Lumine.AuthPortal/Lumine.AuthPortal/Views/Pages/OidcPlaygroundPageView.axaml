@@ -7,6 +7,8 @@
     <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
       <StackPanel Spacing="10">
         <TextBlock Text="OIDC Discovery" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+        <TextBlock Text="{Binding RuntimeSummary}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+        <TextBlock Text="{Binding EndpointSummary}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
         <TextBox Text="{Binding ClientId}" Watermark="client_id"/>
         <TextBox Text="{Binding RedirectUri}" Watermark="redirect_uri"/>
         <TextBox Text="{Binding Scope}" Watermark="scope"/>

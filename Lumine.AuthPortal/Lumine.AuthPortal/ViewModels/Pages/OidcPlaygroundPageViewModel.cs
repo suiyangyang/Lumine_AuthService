@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Lumine.AuthPortal;
 using Lumine.AuthPortal.Models;
 using Lumine.AuthPortal.Services;
 using System.Security.Cryptography;
@@ -16,10 +17,11 @@ public partial class OidcPlaygroundPageViewModel : ViewModelBase
     {
         _apiClient = apiClient;
         _session = session;
-        RedirectUri = "http://localhost:5235/signin-oidc";
-        Scope = "openid profile email roles permissions";
-        ClientId = "lumine-demo-client";
+        RedirectUri = AppEnvironment.DefaultOidcRedirectUri;
+        Scope = AppEnvironment.DefaultOidcScope;
+        ClientId = AppEnvironment.DefaultOidcClientId;
         GeneratePkce();
+        _ = LoadConfigurationAsync();
     }
 
     [ObservableProperty] private string _clientId;
@@ -35,7 +37,13 @@ public partial class OidcPlaygroundPageViewModel : ViewModelBase
     [ObservableProperty] private string _tokenIdToken = string.Empty;
     [ObservableProperty] private string _userInfoSummary = "尚未调用 userinfo。";
     [ObservableProperty] private string _statusMessage = "可在此串联 authorize -> token -> userinfo。";
+    [ObservableProperty] private string _runtimeSummary = "正在读取服务配置。";
+    [ObservableProperty] private string _issuer = "尚未读取";
+    [ObservableProperty] private string _authorizationEndpoint = "尚未读取";
+    [ObservableProperty] private string _tokenEndpoint = "尚未读取";
     [ObservableProperty] private bool _isBusy;
+
+    public string EndpointSummary => $"Issuer: {Issuer}\nAuthorize: {AuthorizationEndpoint}\nToken: {TokenEndpoint}";
 
     [RelayCommand]
     private void RegeneratePkce()
@@ -50,6 +58,11 @@ public partial class OidcPlaygroundPageViewModel : ViewModelBase
         if (!_session.IsAuthenticated)
         {
             StatusMessage = "请先登录，再执行 authorize。";
+            return;
+        }
+
+        if (!ValidateRequest())
+        {
             return;
         }
 
@@ -86,6 +99,11 @@ public partial class OidcPlaygroundPageViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(AuthorizeCode))
         {
             StatusMessage = "请先获取授权码。";
+            return;
+        }
+
+        if (!ValidateRequest())
+        {
             return;
         }
 
@@ -142,6 +160,61 @@ public partial class OidcPlaygroundPageViewModel : ViewModelBase
         TokenAccessToken = string.Empty;
         TokenIdToken = string.Empty;
         UserInfoSummary = "尚未调用 userinfo。";
+    }
+
+    private async Task LoadConfigurationAsync()
+    {
+        var runtime = await _apiClient.GetRuntimeConfigurationAsync();
+        if (runtime.IsSuccess && runtime.Data != null)
+        {
+            var data = runtime.Data;
+            ClientId = string.IsNullOrWhiteSpace(data.DefaultClientId) ? AppEnvironment.DefaultOidcClientId : data.DefaultClientId;
+            RedirectUri = string.IsNullOrWhiteSpace(data.DefaultRedirectUri) ? AppEnvironment.DefaultOidcRedirectUri : data.DefaultRedirectUri;
+            RuntimeSummary = $"服务地址：{data.ApiBase ?? _apiClient.BaseUrl}\n客户端：{data.DefaultClientName ?? ClientId}\n回调地址：{RedirectUri}";
+        }
+        else
+        {
+            RuntimeSummary = runtime.ErrorMessage ?? "读取服务配置失败，已使用本地默认值。";
+        }
+
+        var discovery = await _apiClient.GetDiscoveryAsync();
+        if (discovery.IsSuccess && discovery.Data != null)
+        {
+            Issuer = discovery.Data.Issuer ?? "未返回 Issuer";
+            AuthorizationEndpoint = discovery.Data.AuthorizationEndpoint ?? "未返回 Authorize 地址";
+            TokenEndpoint = discovery.Data.TokenEndpoint ?? "未返回 Token 地址";
+            OnPropertyChanged(nameof(EndpointSummary));
+            StatusMessage = "服务配置已就绪，可开始授权码联调。";
+        }
+        else
+        {
+            RuntimeSummary = $"{RuntimeSummary}\nDiscovery：{discovery.ErrorMessage ?? "读取失败"}";
+            StatusMessage = "服务配置已读取，但 Discovery 读取失败。";
+        }
+    }
+
+    private bool ValidateRequest()
+    {
+        if (string.IsNullOrWhiteSpace(ClientId))
+        {
+            StatusMessage = "client_id 不能为空。";
+            return false;
+        }
+
+        if (!Uri.TryCreate(RedirectUri, UriKind.Absolute, out var redirectUri)
+            || (redirectUri.Scheme != Uri.UriSchemeHttp && redirectUri.Scheme != Uri.UriSchemeHttps))
+        {
+            StatusMessage = "redirect_uri 必须是完整的 http 或 https 地址，并且需要在客户端白名单中。";
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(Scope))
+        {
+            StatusMessage = "至少请求一个 scope。";
+            return false;
+        }
+
+        return true;
     }
 
     private static string ToBase64Url(byte[] bytes)

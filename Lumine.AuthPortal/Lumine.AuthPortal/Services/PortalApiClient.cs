@@ -32,6 +32,11 @@ public sealed class PortalApiClient
         set => _httpClient.BaseAddress = new Uri(EnsureTrailingSlash(value));
     }
 
+    public Task<ApiResult<PortalRuntimeConfigurationDto>> GetRuntimeConfigurationAsync(CancellationToken cancellationToken = default)
+    {
+        return SendAsync<PortalRuntimeConfigurationDto>(HttpMethod.Get, "/config", cancellationToken: cancellationToken);
+    }
+
     public async Task<ApiResult<OpenIdConfigurationDto>> GetDiscoveryAsync(CancellationToken cancellationToken = default)
     {
         var result = await SendAsync<OpenIdConfigurationDto>(HttpMethod.Get, "/.well-known/openid-configuration", cancellationToken: cancellationToken);

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MySqlConnector;
@@ -225,14 +226,23 @@ if (staticFileProvider is not null)
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapGet("/config", (HttpRequest request) =>
+app.MapGet("/config", (HttpRequest request, IOptions<AuthSeedOptions> seedOptions) =>
 {
     var envPort = ResolvePortOverride();
     var scheme = string.IsNullOrWhiteSpace(request.Scheme) ? "http" : request.Scheme;
     var port = request.Host.Port?.ToString() ?? envPort ?? "5115";
     var host = request.Host.HasValue ? request.Host.Value : $"localhost:{port}";
     var apiBase = $"{scheme}://{host}";
-    return Results.Ok(new { apiBase, port });
+    var defaultClient = seedOptions.Value.Clients.FirstOrDefault();
+    return Results.Ok(new
+    {
+        apiBase,
+        port,
+        issuer = oidcSigningCredentialsService.Issuer.TrimEnd('/'),
+        defaultClientId = defaultClient?.ClientId,
+        defaultClientName = defaultClient?.ClientName,
+        defaultRedirectUri = defaultClient?.RedirectUris.FirstOrDefault()
+    });
 });
 app.MapControllers();
 

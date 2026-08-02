@@ -16,6 +16,14 @@ public sealed record OpenIdConfigurationDto(
     string? UserinfoEndpoint,
     IReadOnlyList<string>? ScopesSupported);
 
+public sealed record PortalRuntimeConfigurationDto(
+    string? ApiBase,
+    string? Issuer,
+    string? DefaultClientId,
+    string? DefaultClientName,
+    string? DefaultRedirectUri,
+    string? Port);
+
 public sealed record AuthorizeRequestDto(
     string ResponseType,
     string ClientId,

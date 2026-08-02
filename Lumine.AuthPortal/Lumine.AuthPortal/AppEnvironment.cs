@@ -5,6 +5,9 @@ namespace Lumine.AuthPortal;
 public static class AppEnvironment
 {
     public const string DefaultServerBaseUrl = "http://localhost:5115";
+    public const string DefaultOidcClientId = "lumine-demo-client";
+    public const string DefaultOidcRedirectUri = "http://localhost:5173/signin-oidc";
+    public const string DefaultOidcScope = "openid profile email roles permissions";
 
     private static string _serverBaseUrl = DefaultServerBaseUrl;
 
@@ -30,8 +33,31 @@ public static class AppEnvironment
             ? DefaultServerBaseUrl
             : serverBaseUrl.Trim();
 
-        return Uri.TryCreate(normalized, UriKind.Absolute, out var uri)
-            ? uri.ToString().TrimEnd('/')
+        return TryNormalize(normalized, out var result, out _)
+            ? result
             : DefaultServerBaseUrl;
+    }
+
+    public static bool TryNormalize(string? serverBaseUrl, out string normalized, out string errorMessage)
+    {
+        normalized = string.Empty;
+        errorMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(serverBaseUrl))
+        {
+            errorMessage = "后端地址不能为空。";
+            return false;
+        }
+
+        if (!Uri.TryCreate(serverBaseUrl.Trim(), UriKind.Absolute, out var uri)
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+            || string.IsNullOrWhiteSpace(uri.Host))
+        {
+            errorMessage = "后端地址必须是包含主机名的 http 或 https 地址。";
+            return false;
+        }
+
+        normalized = uri.ToString().TrimEnd('/');
+        return true;
     }
 }

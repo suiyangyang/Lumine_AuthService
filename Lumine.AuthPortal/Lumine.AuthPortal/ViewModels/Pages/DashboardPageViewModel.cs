@@ -106,9 +106,16 @@ public partial class DashboardPageViewModel : ViewModelBase
         }
 
         IsBusy = true;
-        _apiClient.BaseUrl = BackendBaseUrl;
         try
         {
+            if (!AppEnvironment.TryNormalize(BackendBaseUrl, out var normalizedBackendUrl, out var addressError))
+            {
+                StatusMessage = addressError;
+                return;
+            }
+
+            BackendBaseUrl = normalizedBackendUrl;
+            _apiClient.BaseUrl = normalizedBackendUrl;
             var discovery = await _apiClient.GetDiscoveryAsync();
             DiscoverySummary = discovery.IsSuccess && discovery.Data != null
                 ? $"Issuer: {discovery.Data.Issuer}\nAuthorize: {discovery.Data.AuthorizationEndpoint}\nToken: {discovery.Data.TokenEndpoint}"

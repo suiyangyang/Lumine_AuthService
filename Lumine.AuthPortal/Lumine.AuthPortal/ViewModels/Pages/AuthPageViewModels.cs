@@ -14,8 +14,8 @@ public partial class LoginPageViewModel : ViewModelBase
     private readonly PortalSession _session;
     private readonly Action _onLoginSucceeded;
     private readonly Action _openRegister;
-    private const string DefaultScope = "openid profile email roles permissions";
-    private const string DefaultClientId = "lumine-demo-client";
+    private const string DefaultScope = AppEnvironment.DefaultOidcScope;
+    private const string DefaultClientId = AppEnvironment.DefaultOidcClientId;
     private const string DefaultNonce = "portal-login-nonce";
 
     [ObservableProperty]
@@ -312,9 +312,9 @@ public partial class ConsentPageViewModel : ViewModelBase
 {
     private readonly PortalApiClient _apiClient;
     private readonly PortalSession _session;
-    private const string DefaultScope = "openid profile email roles permissions";
-    private const string DefaultClientId = "lumine-demo-client";
-    private const string DefaultRedirectUri = "http://localhost:5173/signin-oidc";
+    private const string DefaultScope = AppEnvironment.DefaultOidcScope;
+    private const string DefaultClientId = AppEnvironment.DefaultOidcClientId;
+    private const string DefaultRedirectUri = AppEnvironment.DefaultOidcRedirectUri;
 
     public ConsentPageViewModel(PortalApiClient apiClient, PortalSession session)
     {
@@ -333,7 +333,7 @@ public partial class ConsentPageViewModel : ViewModelBase
     private string _redirectUri = DefaultRedirectUri;
 
     [ObservableProperty]
-    private string _requestedScopes = "openid profile email roles permissions";
+    private string _requestedScopes = DefaultScope;
 
     [ObservableProperty]
     private string _state = string.Empty;
@@ -444,6 +444,14 @@ public partial class ConsentPageViewModel : ViewModelBase
 
     private async Task LoadPreviewAsync()
     {
+        var runtime = await _apiClient.GetRuntimeConfigurationAsync();
+        if (runtime.IsSuccess && runtime.Data != null)
+        {
+            ClientId = string.IsNullOrWhiteSpace(runtime.Data.DefaultClientId) ? DefaultClientId : runtime.Data.DefaultClientId;
+            ClientName = string.IsNullOrWhiteSpace(runtime.Data.DefaultClientName) ? ClientName : runtime.Data.DefaultClientName;
+            RedirectUri = string.IsNullOrWhiteSpace(runtime.Data.DefaultRedirectUri) ? DefaultRedirectUri : runtime.Data.DefaultRedirectUri;
+        }
+
         GeneratePkce();
 
         if (!_session.IsAuthenticated)

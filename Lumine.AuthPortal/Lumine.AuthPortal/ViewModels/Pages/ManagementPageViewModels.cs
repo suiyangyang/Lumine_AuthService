@@ -1935,7 +1935,7 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
 {
     private const string DefaultPurpose = "第三方系统接入";
     private const string DefaultScopes = "openid,profile,email,roles,permissions";
-    private const string DefaultRedirectUris = "http://localhost:5173/signin-oidc";
+    private const string DefaultRedirectUris = AppEnvironment.DefaultOidcRedirectUri;
 
     public ClientsManagementPageViewModel(PortalApiClient apiClient, PortalSession session) : base(apiClient, session)
     {
@@ -1951,7 +1951,7 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
     [ObservableProperty] private string _clientName = string.Empty;
     [ObservableProperty] private string _clientType = "public";
     [ObservableProperty] private string _allowedScopesInput = "openid,profile,email,roles,permissions";
-    [ObservableProperty] private string _redirectUrisInput = "http://localhost:5173/signin-oidc";
+    [ObservableProperty] private string _redirectUrisInput = AppEnvironment.DefaultOidcRedirectUri;
     [ObservableProperty] private bool _requirePkce = true;
     [ObservableProperty] private bool _isActive = true;
     [ObservableProperty] private string _description = string.Empty;
