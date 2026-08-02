@@ -43,4 +43,5 @@ Lumine_AuthService/
 - [前端菜单权限清单](docs/permissions/前端菜单权限清单.md)
 - [权限系统当前状态](docs/permissions/权限系统检查报告.md)
 - [AuthPortal 后台页面改进计划](docs/working/AuthPortal后台页面改进计划.md)
+- [AuthPortal 仪表盘顶部标题栏设计](docs/working/AuthPortal仪表盘顶部标题栏设计.md)
 - [历史文档归档](docs/archive/README.md)

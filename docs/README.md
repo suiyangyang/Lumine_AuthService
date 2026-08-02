@@ -42,6 +42,7 @@
 ## 当前工作计划
 
 - [AuthPortal 后台页面改进计划](working/AuthPortal后台页面改进计划.md)
+- [AuthPortal 仪表盘顶部标题栏设计](working/AuthPortal仪表盘顶部标题栏设计.md)
 
 ## 历史归档
 
