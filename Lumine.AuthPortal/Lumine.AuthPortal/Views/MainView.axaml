@@ -280,7 +280,7 @@
       <Border Grid.RowSpan="2"
               Background="{DynamicResource SidebarBackgroundBrush}"
               Padding="20,20,16,20">
-        <StackPanel Spacing="16">
+        <Grid RowDefinitions="Auto,*" RowSpacing="16">
           <StackPanel Orientation="Horizontal" Spacing="12">
             <controls:LumineBrandMark Width="44" Height="44"/>
             <StackPanel Spacing="2" VerticalAlignment="Center">
@@ -293,10 +293,13 @@
             </StackPanel>
           </StackPanel>
 
-          <ItemsControl ItemsSource="{Binding VisibleNavigationSections}"
-                        HorizontalAlignment="Stretch">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="vm:NavigationSectionViewModel">
+          <ScrollViewer Grid.Row="1"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding VisibleNavigationSections}"
+                          HorizontalAlignment="Stretch">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:NavigationSectionViewModel">
                 <Border Classes="nav-section-container">
                   <StackPanel Spacing="6">
                     <Button Classes="nav-section-toggle"
@@ -367,9 +370,10 @@
                   </StackPanel>
                 </Border>
               </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </StackPanel>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </Grid>
       </Border>
 
       <Border Grid.Column="1"

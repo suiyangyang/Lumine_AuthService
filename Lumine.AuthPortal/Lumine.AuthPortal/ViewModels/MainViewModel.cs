@@ -224,12 +224,12 @@ public partial class MainViewModel : ViewModelBase
 
         if (navigationItem.RequiresPermission && !navigationItem.Permissions.Any(_session.HasPermission))
         {
-            CurrentPage = new PlaceholderPageViewModel("无权限访问", $"当前页面需要权限之一：{navigationItem.PermissionHint}");
+            SetCurrentPage(new PlaceholderPageViewModel("无权限访问", $"当前页面需要权限之一：{navigationItem.PermissionHint}"));
             CurrentPageTitle = "访问受限";
             return;
         }
 
-        CurrentPage = _pageFactory[key]();
+        SetCurrentPage(() => _pageFactory[key]());
         CurrentPageTitle = navigationItem.Title;
         CurrentPageKey = key;
         IsAccountMenuOpen = false;
@@ -269,7 +269,7 @@ public partial class MainViewModel : ViewModelBase
     private void OpenProfileCenter()
     {
         IsAccountMenuOpen = false;
-        CurrentPage = new ProfileCenterPageViewModel(_apiClient, _session);
+        SetCurrentPage(new ProfileCenterPageViewModel(_apiClient, _session));
         CurrentPageTitle = "个人中心";
         CurrentPageKey = "profile-center";
         UpdateSelectedNavigation(string.Empty);
@@ -279,7 +279,7 @@ public partial class MainViewModel : ViewModelBase
     private void OpenSecuritySettings()
     {
         IsAccountMenuOpen = false;
-        CurrentPage = new SecuritySettingsPageViewModel(_apiClient, _session);
+        SetCurrentPage(new SecuritySettingsPageViewModel(_apiClient, _session));
         CurrentPageTitle = "安全设置";
         CurrentPageKey = "security-settings";
         UpdateSelectedNavigation(string.Empty);
@@ -360,7 +360,7 @@ public partial class MainViewModel : ViewModelBase
             _apiClient,
             (userName, statusMessage, isSuccess) =>
             {
-                CurrentPage = CreateLoginPage(userName, statusMessage, isSuccess);
+                SetCurrentPage(CreateLoginPage(userName, statusMessage, isSuccess));
                 CurrentPageTitle = "登录";
                 CurrentPageKey = "login";
                 IsAccountMenuOpen = false;
@@ -386,11 +386,28 @@ public partial class MainViewModel : ViewModelBase
 
     private void ShowLoginPage(string? initialStatusMessage = null, bool initialSuccessMessage = false)
     {
-        CurrentPage = CreateLoginPage(initialStatusMessage: initialStatusMessage, initialSuccessMessage: initialSuccessMessage);
+        SetCurrentPage(CreateLoginPage(initialStatusMessage: initialStatusMessage, initialSuccessMessage: initialSuccessMessage));
         CurrentPageTitle = "登录";
         CurrentPageKey = "login";
         IsAccountMenuOpen = false;
         UpdateSelectedNavigation("login");
+    }
+
+    private void SetCurrentPage(ViewModelBase page)
+    {
+        DisposeCurrentPage();
+        CurrentPage = page;
+    }
+
+    private void SetCurrentPage(Func<ViewModelBase> pageFactory)
+    {
+        DisposeCurrentPage();
+        CurrentPage = pageFactory();
+    }
+
+    private void DisposeCurrentPage()
+    {
+        (CurrentPage as IDisposable)?.Dispose();
     }
 
     partial void OnCurrentPageKeyChanged(string value)

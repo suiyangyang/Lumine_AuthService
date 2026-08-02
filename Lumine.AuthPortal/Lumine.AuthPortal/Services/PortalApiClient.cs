@@ -16,6 +16,7 @@ public sealed class PortalApiClient
 {
     private readonly HttpClient _httpClient;
     private readonly PortalSession _session;
+    private Uri _baseAddress;
     private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = true
@@ -25,12 +26,15 @@ public sealed class PortalApiClient
     {
         _httpClient = httpClient;
         _session = session;
+        _baseAddress = new Uri(EnsureTrailingSlash(
+            httpClient.BaseAddress?.ToString() ?? AppEnvironment.DefaultServerBaseUrl),
+            UriKind.Absolute);
     }
 
     public string BaseUrl
     {
-        get => _httpClient.BaseAddress?.ToString().TrimEnd('/') ?? AppEnvironment.DefaultServerBaseUrl;
-        set => _httpClient.BaseAddress = new Uri(EnsureTrailingSlash(value));
+        get => _baseAddress.ToString().TrimEnd('/');
+        set => _baseAddress = new Uri(EnsureTrailingSlash(value), UriKind.Absolute);
     }
 
     public Task<ApiResult<PortalRuntimeConfigurationDto>> GetRuntimeConfigurationAsync(CancellationToken cancellationToken = default)
@@ -103,7 +107,7 @@ public sealed class PortalApiClient
 
     public async Task<ApiResult<TokenResponseDto>> ExchangeCodeAsync(string clientId, string code, string redirectUri, string codeVerifier, CancellationToken cancellationToken = default)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, "/connect/token")
+        using var request = new HttpRequestMessage(HttpMethod.Post, BuildRequestUri("/connect/token"))
         {
             Content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
@@ -347,7 +351,7 @@ public sealed class PortalApiClient
 
     private async Task<ApiResult<T>> SendAsync<T>(HttpMethod method, string path, object? body = null, string? bearerToken = null, CancellationToken cancellationToken = default)
     {
-        using var request = new HttpRequestMessage(method, path);
+        using var request = new HttpRequestMessage(method, BuildRequestUri(path));
         if (!string.IsNullOrWhiteSpace(bearerToken))
         {
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
@@ -428,6 +432,12 @@ public sealed class PortalApiClient
     private static string EnsureTrailingSlash(string value)
     {
         return AppEnvironment.EnsureTrailingSlash(value);
+    }
+
+    private Uri BuildRequestUri(string path)
+    {
+        var baseAddress = _baseAddress;
+        return new Uri(baseAddress, path.TrimStart('/'));
     }
 
     private static string BuildQueryString(string path, IDictionary<string, string?> parameters)

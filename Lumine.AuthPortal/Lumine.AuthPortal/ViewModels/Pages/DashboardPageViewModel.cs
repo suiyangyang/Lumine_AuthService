@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -7,7 +8,7 @@ using Lumine.AuthPortal.Services;
 
 namespace Lumine.AuthPortal.ViewModels.Pages;
 
-public partial class DashboardPageViewModel : ViewModelBase
+public partial class DashboardPageViewModel : ViewModelBase, IDisposable
 {
     private static readonly IBrush UserBrush = Brush.Parse("#60A5FA");
     private static readonly IBrush RoleBrush = Brush.Parse("#A78BFA");
@@ -18,6 +19,8 @@ public partial class DashboardPageViewModel : ViewModelBase
 
     private readonly PortalApiClient _apiClient;
     private readonly PortalSession _session;
+    private readonly CancellationTokenSource _lifetimeCancellation = new();
+    private bool _isDisposed;
 
     [ObservableProperty]
     private string _backendBaseUrl;
@@ -121,11 +124,12 @@ public partial class DashboardPageViewModel : ViewModelBase
     [RelayCommand]
     private async Task RefreshAsync()
     {
-        if (IsBusy)
+        if (IsBusy || _isDisposed)
         {
             return;
         }
 
+        var cancellationToken = _lifetimeCancellation.Token;
         IsBusy = true;
         HasLoadError = false;
         LoadErrorMessage = string.Empty;
@@ -139,10 +143,17 @@ public partial class DashboardPageViewModel : ViewModelBase
 
             BackendBaseUrl = normalizedBackendUrl;
             _apiClient.BaseUrl = normalizedBackendUrl;
-            var discovery = await _apiClient.GetDiscoveryAsync();
+            var discovery = await _apiClient.GetDiscoveryAsync(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             DiscoverySummary = discovery.IsSuccess && discovery.Data != null
                 ? $"Issuer: {discovery.Data.Issuer}\nAuthorize: {discovery.Data.AuthorizationEndpoint}\nToken: {discovery.Data.TokenEndpoint}"
                 : discovery.ErrorMessage ?? "读取 discovery 失败。";
+
+            if (!discovery.IsSuccess || discovery.Data == null)
+            {
+                SetLoadError(DiscoverySummary, clearData: !HasLoadedData);
+                return;
+            }
 
             if (!_session.IsAuthenticated)
             {
@@ -150,10 +161,14 @@ public partial class DashboardPageViewModel : ViewModelBase
                 return;
             }
 
-            var summaryResult = await _apiClient.GetDashboardSummaryAsync(_session.AccessToken);
+            var summaryResult = await _apiClient.GetDashboardSummaryAsync(_session.AccessToken, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             if (!summaryResult.IsSuccess || summaryResult.Data == null)
             {
-                SetLoadError(summaryResult.ErrorMessage ?? "加载仪表盘摘要失败。", clearData: !HasLoadedData);
+                var errorMessage = summaryResult.StatusCode == 401
+                    ? "登录状态已失效，请重新登录后再加载仪表盘。"
+                    : summaryResult.ErrorMessage ?? "加载仪表盘摘要失败。";
+                SetLoadError(errorMessage, clearData: !HasLoadedData);
                 return;
             }
 
@@ -162,14 +177,33 @@ public partial class DashboardPageViewModel : ViewModelBase
             LastUpdatedText = $"最近更新：{summaryResult.Data.GeneratedAtUtc.ToLocalTime():yyyy-MM-dd HH:mm:ss}";
             StatusMessage = BuildStatusMessage(summaryResult.Data);
         }
-        catch (Exception)
+        catch (OperationCanceledException) when (_lifetimeCancellation.IsCancellationRequested)
         {
-            SetLoadError("加载仪表盘失败，请检查服务连接后重试。", clearData: !HasLoadedData);
+        }
+        catch (JsonException)
+        {
+            SetLoadError("仪表盘接口返回的数据格式无法识别，请检查前后端版本是否一致。", clearData: !HasLoadedData);
+        }
+        catch (Exception ex)
+        {
+            SetLoadError($"加载仪表盘失败：{ex.Message}", clearData: !HasLoadedData);
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    public void Dispose()
+    {
+        if (_isDisposed)
+        {
+            return;
+        }
+
+        _isDisposed = true;
+        _lifetimeCancellation.Cancel();
+        _lifetimeCancellation.Dispose();
     }
 
     private void ApplyDashboardSummary(DashboardSummaryDto summary)
