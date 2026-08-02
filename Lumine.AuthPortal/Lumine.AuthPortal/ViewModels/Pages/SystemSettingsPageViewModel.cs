@@ -36,7 +36,7 @@ public partial class SystemSettingsPageViewModel : ViewModelBase
 
     public string Title => "系统配置";
 
-    public string Description => "统一管理后台的体验参数。当前已支持切换 Fluent Light 与 VS Code Dark 两套主题。";
+    public string Description => "统一管理后台的体验参数，并展示由部署环境管理的认证服务摘要。";
 
     public int DefaultManagementPageSize => PortalUiDefaults.ManagementPageSize;
 
@@ -53,8 +53,14 @@ public partial class SystemSettingsPageViewModel : ViewModelBase
         new("当前主题", CurrentThemeLabel, CurrentThemeDescription),
         new("管理列表默认分页", $"{DefaultManagementPageSize} 条 / 页", "用户、角色、权限、客户端等后台列表统一使用该默认值。"),
         new("搜索交互", "按需展开", "列表页搜索框改为点击图标后展开，避免占用常驻空间。"),
-        new("默认客户端", string.IsNullOrWhiteSpace(ServerSummary?.DefaultClientId) ? "--" : ServerSummary.DefaultClientId, "当前后端种子数据中的默认 OIDC 客户端。")
+        new("默认客户端", string.IsNullOrWhiteSpace(ServerSummary?.DefaultClientId) ? "未配置" : ServerSummary.DefaultClientId, "当前后端种子数据中的默认 OIDC 客户端。")
     ];
+
+    public string ConfigurationSourceText => "体验设置保存在当前 Portal；Issuer、Token 策略和客户端 Secret 由部署环境管理。";
+
+    public string LastReadText => ServerSummary == null
+        ? "尚未读取服务端摘要"
+        : $"最近读取：{ServerSummary.ServerTimeUtc.ToLocalTime():yyyy-MM-dd HH:mm:ss}";
 
     public IReadOnlyList<SystemSettingGroupItemViewModel> SettingGroups =>
     [
@@ -97,6 +103,15 @@ public partial class SystemSettingsPageViewModel : ViewModelBase
 
         _themeService.ApplyTheme(option.Mode);
         RefreshThemeSelection();
+        StatusMessage = $"已保存主题设置：{CurrentThemeLabel}。";
+    }
+
+    [RelayCommand]
+    private void ResetTheme()
+    {
+        _themeService.ApplyTheme(PortalThemeMode.Fluent);
+        RefreshThemeSelection();
+        StatusMessage = "已恢复默认主题：Fluent Light。";
     }
 
     [RelayCommand]
