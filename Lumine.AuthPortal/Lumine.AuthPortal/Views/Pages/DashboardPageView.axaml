@@ -24,6 +24,20 @@
         </Grid>
       </Border>
 
+      <Border Background="{DynamicResource SurfaceSoftBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="12" Padding="14" IsVisible="{Binding ShowLoadingState}">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock Text="正在加载仪表盘数据…" Foreground="{DynamicResource TextSecondaryBrush}"/>
+          <TextBlock Text="首次加载可能需要几秒钟。" Foreground="{DynamicResource TextMutedBrush}"/>
+        </StackPanel>
+      </Border>
+
+      <Border Background="{DynamicResource SurfaceSoftBrush}" BorderBrush="{DynamicResource StatusInfoBrush}" BorderThickness="1" CornerRadius="12" Padding="14" IsVisible="{Binding ShowLoadError}">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+          <TextBlock Text="{Binding LoadErrorMessage}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+          <Button Grid.Column="1" Content="重试" Command="{Binding RefreshCommand}" IsEnabled="{Binding CanRefresh}"/>
+        </Grid>
+      </Border>
+
       <ItemsControl ItemsSource="{Binding SummaryCards}">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>

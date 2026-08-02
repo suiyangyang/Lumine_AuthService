@@ -46,10 +46,13 @@ namespace Lumine.AuthServer.Controllers
             var recentLoginStartDate = utcToday.AddDays(-30);
 
             var loginTrendEntries = canViewLoginActivity
-                ? await _dbContext.AuthorizationCodes
+                ? await _dbContext.AuditLogEntries
                     .AsNoTracking()
-                    .Where(item => item.CreatedAtUtc >= trendStartDate)
-                    .Select(item => item.CreatedAtUtc)
+                    .Where(item => item.Category == "认证"
+                        && item.Action == "登录"
+                        && item.Outcome == "成功"
+                        && item.OccurredAtUtc >= trendStartDate)
+                    .Select(item => item.OccurredAtUtc)
                     .ToListAsync(cancellationToken)
                 : [];
 
@@ -62,12 +65,10 @@ namespace Lumine.AuthServer.Controllers
                 : [];
 
             var recentLoginUsers = canViewLoginActivity
-                ? await _dbContext.AuthorizationCodes
+                ? await _dbContext.Users
                     .AsNoTracking()
-                    .Where(item => item.CreatedAtUtc >= recentLoginStartDate)
-                    .Include(item => item.User)
-                    .Include(item => item.Client)
-                    .OrderByDescending(item => item.CreatedAtUtc)
+                    .Where(item => item.LastLoginAtUtc.HasValue && item.LastLoginAtUtc >= recentLoginStartDate)
+                    .OrderByDescending(item => item.LastLoginAtUtc)
                     .Take(100)
                     .ToListAsync(cancellationToken)
                 : [];
@@ -117,22 +118,16 @@ namespace Lumine.AuthServer.Controllers
             return result;
         }
 
-        private static List<RecentLoginUserDto> BuildRecentLoginUsers(IEnumerable<Domain.Entities.AuthorizationCode> authorizationCodes, bool includeEmail)
+        private static List<RecentLoginUserDto> BuildRecentLoginUsers(IEnumerable<Domain.Entities.User> users, bool includeEmail)
         {
-            return authorizationCodes
-                .Where(item => item.User != null)
-                .GroupBy(item => item.UserId)
-                .Select(group => group.OrderByDescending(item => item.CreatedAtUtc).First())
-                .OrderByDescending(item => item.CreatedAtUtc)
+            return users
                 .Take(8)
                 .Select(item => new RecentLoginUserDto
                 {
-                    UserId = item.UserId,
-                    UserName = item.User?.UserName ?? "未知用户",
-                    Email = includeEmail ? item.User?.Email : null,
-                    ClientId = item.Client?.ClientId,
-                    ClientName = item.Client?.ClientName,
-                    LoginAtUtc = item.CreatedAtUtc
+                    UserId = item.Id,
+                    UserName = item.UserName,
+                    Email = includeEmail ? item.Email : null,
+                    LoginAtUtc = item.LastLoginAtUtc!.Value
                 })
                 .ToList();
         }

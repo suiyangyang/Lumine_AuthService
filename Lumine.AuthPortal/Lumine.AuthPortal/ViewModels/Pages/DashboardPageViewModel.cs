@@ -35,6 +35,15 @@ public partial class DashboardPageViewModel : ViewModelBase
     private bool _isBusy;
 
     [ObservableProperty]
+    private bool _hasLoadedData;
+
+    [ObservableProperty]
+    private bool _hasLoadError;
+
+    [ObservableProperty]
+    private string _loadErrorMessage = string.Empty;
+
+    [ObservableProperty]
     private IReadOnlyList<DashboardStatCardItemViewModel> _summaryCards = CreateDefaultSummaryCards();
 
     [ObservableProperty]
@@ -65,6 +74,10 @@ public partial class DashboardPageViewModel : ViewModelBase
 
     public bool CanRefresh => !IsBusy;
 
+    public bool ShowLoadingState => IsBusy && !HasLoadedData;
+
+    public bool ShowLoadError => HasLoadError;
+
     public bool HasLoginTrendData => LoginTrendItems.Count > 0;
 
     public bool HasTokenTrendData => TokenTrendItems.Count > 0;
@@ -77,7 +90,15 @@ public partial class DashboardPageViewModel : ViewModelBase
 
     public bool ShowRecentLoginUsersEmptyState => !HasRecentLoginUsers;
 
-    partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(CanRefresh));
+    partial void OnIsBusyChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanRefresh));
+        OnPropertyChanged(nameof(ShowLoadingState));
+    }
+
+    partial void OnHasLoadedDataChanged(bool value) => OnPropertyChanged(nameof(ShowLoadingState));
+
+    partial void OnHasLoadErrorChanged(bool value) => OnPropertyChanged(nameof(ShowLoadError));
 
     partial void OnLoginTrendItemsChanged(IReadOnlyList<DashboardTrendBarItemViewModel> value)
     {
@@ -106,11 +127,13 @@ public partial class DashboardPageViewModel : ViewModelBase
         }
 
         IsBusy = true;
+        HasLoadError = false;
+        LoadErrorMessage = string.Empty;
         try
         {
             if (!AppEnvironment.TryNormalize(BackendBaseUrl, out var normalizedBackendUrl, out var addressError))
             {
-                StatusMessage = addressError;
+                SetLoadError(addressError);
                 return;
             }
 
@@ -130,13 +153,18 @@ public partial class DashboardPageViewModel : ViewModelBase
             var summaryResult = await _apiClient.GetDashboardSummaryAsync(_session.AccessToken);
             if (!summaryResult.IsSuccess || summaryResult.Data == null)
             {
-                ResetDashboardState(summaryResult.ErrorMessage ?? "加载仪表盘摘要失败。", keepCards: false);
+                SetLoadError(summaryResult.ErrorMessage ?? "加载仪表盘摘要失败。", clearData: !HasLoadedData);
                 return;
             }
 
             ApplyDashboardSummary(summaryResult.Data);
+            HasLoadedData = true;
             LastUpdatedText = $"最近更新：{summaryResult.Data.GeneratedAtUtc.ToLocalTime():yyyy-MM-dd HH:mm:ss}";
             StatusMessage = BuildStatusMessage(summaryResult.Data);
+        }
+        catch (Exception)
+        {
+            SetLoadError("加载仪表盘失败，请检查服务连接后重试。", clearData: !HasLoadedData);
         }
         finally
         {
@@ -172,6 +200,9 @@ public partial class DashboardPageViewModel : ViewModelBase
 
     private void ResetDashboardState(string message, bool keepCards)
     {
+        HasLoadedData = false;
+        HasLoadError = false;
+        LoadErrorMessage = string.Empty;
         if (!keepCards)
         {
             SummaryCards = CreateDefaultSummaryCards();
@@ -185,6 +216,19 @@ public partial class DashboardPageViewModel : ViewModelBase
         RecentLoginUsersHint = "最近 30 天暂无登录用户记录。";
         LastUpdatedText = "尚未刷新";
         StatusMessage = message;
+    }
+
+    private void SetLoadError(string message, bool clearData = false)
+    {
+        HasLoadError = true;
+        LoadErrorMessage = message;
+        StatusMessage = HasLoadedData ? "刷新失败，页面仍显示上一次成功加载的数据。" : message;
+        if (clearData)
+        {
+            ResetDashboardState(message, keepCards: false);
+            HasLoadError = true;
+            LoadErrorMessage = message;
+        }
     }
 
     private static DashboardStatCardItemViewModel CreateCard(DashboardMetricDto metric, IBrush accentBrush)
@@ -222,10 +266,10 @@ public partial class DashboardPageViewModel : ViewModelBase
     {
         return
         [
-            new DashboardStatCardItemViewModel("用户总数", "--", "登录后自动加载。", UserBrush),
-            new DashboardStatCardItemViewModel("角色数量", "--", "登录后自动加载。", RoleBrush),
-            new DashboardStatCardItemViewModel("权限数量", "--", "登录后自动加载。", PermissionBrush),
-            new DashboardStatCardItemViewModel("OAuth 客户端数量", "--", "登录后自动加载。", ClientBrush)
+            new DashboardStatCardItemViewModel("用户总数", "加载中", "正在读取当前用户统计。", UserBrush),
+            new DashboardStatCardItemViewModel("角色数量", "加载中", "正在读取当前角色统计。", RoleBrush),
+            new DashboardStatCardItemViewModel("权限数量", "加载中", "正在读取当前权限统计。", PermissionBrush),
+            new DashboardStatCardItemViewModel("OAuth 客户端数量", "加载中", "正在读取当前客户端统计。", ClientBrush)
         ];
     }
 
