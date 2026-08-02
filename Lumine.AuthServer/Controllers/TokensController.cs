@@ -26,6 +26,8 @@ namespace Lumine.AuthServer.Controllers
         [Permission("clients.view")]
         public async Task<ActionResult<PagedResultDto<RefreshTokenRecordDto>>> GetAll(
             [FromQuery] string? keyword,
+            [FromQuery] string? status,
+            [FromQuery] DateTime? expiresBeforeUtc,
             [FromQuery] int pageIndex = 1,
             [FromQuery] int pageSize = ManagementApiDefaults.DefaultPageSize,
             CancellationToken cancellationToken = default)
@@ -46,6 +48,21 @@ namespace Lumine.AuthServer.Controllers
                     item.Token.Contains(normalizedKeyword)
                     || (item.User != null && (item.User.UserName.Contains(normalizedKeyword) || item.User.Email.Contains(normalizedKeyword)))
                     || (item.Client != null && (item.Client.ClientId.Contains(normalizedKeyword) || item.Client.ClientName.Contains(normalizedKeyword))));
+            }
+
+            var now = DateTime.UtcNow;
+            query = status?.Trim().ToLowerInvariant() switch
+            {
+                "active" or "有效" => query.Where(item => item.RevokedAtUtc == null && item.ExpiresAtUtc > now),
+                "revoked" or "已撤销" => query.Where(item => item.RevokedAtUtc != null),
+                "expired" or "已过期" => query.Where(item => item.RevokedAtUtc == null && item.ExpiresAtUtc <= now),
+                null or "" or "all" or "全部" => query,
+                _ => query
+            };
+
+            if (expiresBeforeUtc.HasValue)
+            {
+                query = query.Where(item => item.ExpiresAtUtc <= expiresBeforeUtc.Value.ToUniversalTime());
             }
 
             var totalCount = await query.CountAsync(cancellationToken);

@@ -116,6 +116,8 @@
 - `SeedData:Clients[0].RedirectUris`：默认 `http://localhost:5173/signin-oidc`
 
 Portal 启动后可通过后端公开的 `/config` 读取当前 API 地址、Issuer、默认客户端和默认回调地址。`OIDC Discovery` 联调页会优先使用该运行时配置，页面中的回调地址在发起授权码请求前还会校验为完整的 `http` 或 `https` URL；最终是否允许使用仍由 AuthServer 根据客户端回调白名单校验。
+
+联调页获得 Token 后默认只显示脱敏结果；调用 UserInfo 使用页面内存中的完整 Access Token，只有明确点击“显示敏感结果”才会在界面展开令牌内容。
 - `SeedData:Clients[0].RequirePkce`：默认 `true`
 
 如果部署地址变化，至少同步检查：

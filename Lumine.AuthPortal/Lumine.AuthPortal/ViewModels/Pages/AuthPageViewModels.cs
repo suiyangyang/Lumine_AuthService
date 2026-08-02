@@ -353,11 +353,20 @@ public partial class ConsentPageViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isBusy;
 
-    public bool CanSubmitDecision => _session.IsAuthenticated && !IsBusy;
+    public bool CanSubmitDecision => _session.IsAuthenticated && !IsBusy && IsRequestReady;
 
     public bool HasDecisionMessage => !string.IsNullOrWhiteSpace(DecisionMessage);
 
     public string CurrentRequestSummary => $"{ClientName} · {ClientId}";
+
+    public bool IsRequestReady => !string.IsNullOrWhiteSpace(ClientId)
+        && Uri.TryCreate(RedirectUri, UriKind.Absolute, out var redirectUri)
+        && (redirectUri.Scheme == Uri.UriSchemeHttp || redirectUri.Scheme == Uri.UriSchemeHttps)
+        && !string.IsNullOrWhiteSpace(RequestedScopes);
+
+    public string ScopeDisplay => string.Join("、", RequestedScopes
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Select(GetScopeDisplayName));
 
     public string PkceSummary => $"state: {State}{Environment.NewLine}nonce: {Nonce}{Environment.NewLine}challenge: {CodeChallenge}";
 
@@ -373,6 +382,11 @@ public partial class ConsentPageViewModel : ViewModelBase
         if (!_session.IsAuthenticated)
         {
             DecisionMessage = "请先登录，再执行授权确认。";
+            return;
+        }
+
+        if (!ValidateRequest())
+        {
             return;
         }
 
@@ -396,6 +410,11 @@ public partial class ConsentPageViewModel : ViewModelBase
             return;
         }
 
+        if (!ValidateRequest())
+        {
+            return;
+        }
+
         IsBusy = true;
         var result = await _apiClient.AuthorizeAsync(
             _session.AccessToken,
@@ -412,6 +431,13 @@ public partial class ConsentPageViewModel : ViewModelBase
         OnPropertyChanged(nameof(CanSubmitDecision));
     }
 
+    partial void OnRequestedScopesChanged(string value)
+    {
+        OnPropertyChanged(nameof(ScopeDisplay));
+        OnPropertyChanged(nameof(IsRequestReady));
+        OnPropertyChanged(nameof(CanSubmitDecision));
+    }
+
     partial void OnDecisionMessageChanged(string value)
     {
         OnPropertyChanged(nameof(HasDecisionMessage));
@@ -420,11 +446,19 @@ public partial class ConsentPageViewModel : ViewModelBase
     partial void OnClientIdChanged(string value)
     {
         OnPropertyChanged(nameof(CurrentRequestSummary));
+        OnPropertyChanged(nameof(IsRequestReady));
+        OnPropertyChanged(nameof(CanSubmitDecision));
     }
 
     partial void OnClientNameChanged(string value)
     {
         OnPropertyChanged(nameof(CurrentRequestSummary));
+    }
+
+    partial void OnRedirectUriChanged(string value)
+    {
+        OnPropertyChanged(nameof(IsRequestReady));
+        OnPropertyChanged(nameof(CanSubmitDecision));
     }
 
     partial void OnStateChanged(string value)
@@ -444,6 +478,16 @@ public partial class ConsentPageViewModel : ViewModelBase
 
     private async Task LoadPreviewAsync()
     {
+        if (!_session.IsAuthenticated)
+        {
+            GeneratePkce();
+            DecisionMessage = "请先登录，再查看授权确认。";
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
         var runtime = await _apiClient.GetRuntimeConfigurationAsync();
         if (runtime.IsSuccess && runtime.Data != null)
         {
@@ -453,14 +497,6 @@ public partial class ConsentPageViewModel : ViewModelBase
         }
 
         GeneratePkce();
-
-        if (!_session.IsAuthenticated)
-        {
-            DecisionMessage = "请先登录，再查看授权确认。";
-            return;
-        }
-
-        IsBusy = true;
         var result = await _apiClient.GetAuthorizePreviewAsync(
             _session.AccessToken,
             new AuthorizeRequestDto("code", ClientId, RedirectUri, DefaultScope, State, Nonce, CodeChallenge, "S256", string.Empty, "json"));
@@ -479,8 +515,33 @@ public partial class ConsentPageViewModel : ViewModelBase
             DecisionMessage = result.ErrorMessage ?? "读取授权预览失败。";
         }
 
-        IsBusy = false;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
+
+    private bool ValidateRequest()
+    {
+        if (!IsRequestReady)
+        {
+            DecisionMessage = "授权请求尚未准备完成，请检查 client_id、回调地址和 Scope。";
+            return false;
+        }
+
+        return true;
+    }
+
+    private static string GetScopeDisplayName(string scope) => scope.ToLowerInvariant() switch
+    {
+        "openid" => "用户身份",
+        "profile" => "用户资料",
+        "email" => "邮箱地址",
+        "roles" => "角色信息",
+        "permissions" => "权限信息",
+        _ => scope
+    };
 
     private void GeneratePkce()
     {

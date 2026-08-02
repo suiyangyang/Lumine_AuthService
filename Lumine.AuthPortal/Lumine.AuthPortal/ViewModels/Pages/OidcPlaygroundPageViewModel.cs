@@ -35,6 +35,7 @@ public partial class OidcPlaygroundPageViewModel : ViewModelBase
     [ObservableProperty] private string _authorizeRedirectUrl = string.Empty;
     [ObservableProperty] private string _tokenAccessToken = string.Empty;
     [ObservableProperty] private string _tokenIdToken = string.Empty;
+    [ObservableProperty] private bool _showSensitiveResults;
     [ObservableProperty] private string _userInfoSummary = "尚未调用 userinfo。";
     [ObservableProperty] private string _statusMessage = "可在此串联 authorize -> token -> userinfo。";
     [ObservableProperty] private string _runtimeSummary = "正在读取服务配置。";
@@ -44,6 +45,12 @@ public partial class OidcPlaygroundPageViewModel : ViewModelBase
     [ObservableProperty] private bool _isBusy;
 
     public string EndpointSummary => $"Issuer: {Issuer}\nAuthorize: {AuthorizationEndpoint}\nToken: {TokenEndpoint}";
+
+    public string TokenAccessTokenDisplay => FormatSensitive(TokenAccessToken);
+
+    public string TokenIdTokenDisplay => FormatSensitive(TokenIdToken);
+
+    public string SensitiveResultsToggleText => ShowSensitiveResults ? "隐藏敏感结果" : "显示敏感结果";
 
     [RelayCommand]
     private void RegeneratePkce()
@@ -113,7 +120,7 @@ public partial class OidcPlaygroundPageViewModel : ViewModelBase
         {
             TokenAccessToken = result.Data.AccessToken;
             TokenIdToken = result.Data.IdToken ?? string.Empty;
-            StatusMessage = "授权码换 token 成功。";
+            StatusMessage = "授权码换 token 成功，令牌默认已脱敏。";
         }
         else
         {
@@ -159,7 +166,35 @@ public partial class OidcPlaygroundPageViewModel : ViewModelBase
         AuthorizeRedirectUrl = string.Empty;
         TokenAccessToken = string.Empty;
         TokenIdToken = string.Empty;
+        ShowSensitiveResults = false;
         UserInfoSummary = "尚未调用 userinfo。";
+    }
+
+    [RelayCommand]
+    private void ToggleSensitiveResults()
+    {
+        ShowSensitiveResults = !ShowSensitiveResults;
+    }
+
+    partial void OnTokenAccessTokenChanged(string value) => OnPropertyChanged(nameof(TokenAccessTokenDisplay));
+
+    partial void OnTokenIdTokenChanged(string value) => OnPropertyChanged(nameof(TokenIdTokenDisplay));
+
+    partial void OnShowSensitiveResultsChanged(bool value)
+    {
+        OnPropertyChanged(nameof(TokenAccessTokenDisplay));
+        OnPropertyChanged(nameof(TokenIdTokenDisplay));
+        OnPropertyChanged(nameof(SensitiveResultsToggleText));
+    }
+
+    private string FormatSensitive(string value)
+    {
+        if (ShowSensitiveResults || string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        return value.Length <= 12 ? "••••••••" : $"{value[..6]}••••{value[^4..]}";
     }
 
     private async Task LoadConfigurationAsync()

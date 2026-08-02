@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Globalization;
 using Lumine.AuthPortal.Models;
 
 namespace Lumine.AuthPortal.Services;
@@ -213,13 +214,15 @@ public sealed class PortalApiClient
         return SendAsync<PagedResultDto<UserGroupDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
-    public Task<ApiResult<PagedResultDto<RefreshTokenRecordDto>>> GetTokensAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
+    public Task<ApiResult<PagedResultDto<RefreshTokenRecordDto>>> GetTokensAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, string? status = null, DateTime? expiresBeforeUtc = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/tokens", new Dictionary<string, string?>
         {
             ["pageIndex"] = pageIndex.ToString(),
             ["pageSize"] = pageSize.ToString(),
-            ["keyword"] = string.IsNullOrWhiteSpace(keyword) ? null : keyword.Trim()
+            ["keyword"] = string.IsNullOrWhiteSpace(keyword) ? null : keyword.Trim(),
+            ["status"] = string.IsNullOrWhiteSpace(status) ? null : status.Trim(),
+            ["expiresBeforeUtc"] = expiresBeforeUtc?.ToString("O", CultureInfo.InvariantCulture)
         });
 
         return SendAsync<PagedResultDto<RefreshTokenRecordDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);

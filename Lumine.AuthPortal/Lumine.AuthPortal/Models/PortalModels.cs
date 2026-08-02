@@ -189,7 +189,7 @@ public sealed record RefreshTokenRecordDto(
 
     public string RevokedStatusText => RevokedAtUtc.HasValue
         ? RevokedAtUtc.Value.ToLocalTime().ToString("MM-dd HH:mm")
-        : "有效";
+        : ExpiresAtUtc <= DateTime.UtcNow ? "已过期" : "有效";
 }
 
 public sealed record PortalMenuItemDto(

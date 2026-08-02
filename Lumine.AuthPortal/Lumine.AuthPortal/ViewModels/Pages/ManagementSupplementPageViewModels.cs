@@ -190,6 +190,8 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private IReadOnlyList<RefreshTokenRecordDto> _items = Array.Empty<RefreshTokenRecordDto>();
     [ObservableProperty] private RefreshTokenRecordDto? _selectedItem;
     [ObservableProperty] private string _searchKeyword = string.Empty;
+    [ObservableProperty] private string _statusFilter = "全部";
+    [ObservableProperty] private string _expiresBeforeText = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
@@ -211,6 +213,8 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
     public string PaginationSummaryText => $"第 {PageIndex} / {TotalPages} 页 · 共 {TotalCount} 条 Token 记录";
 
     public bool HasSearchKeyword => !string.IsNullOrWhiteSpace(SearchKeyword);
+
+    public IReadOnlyList<string> StatusOptions { get; } = ["全部", "有效", "已撤销", "已过期"];
 
     public string DeleteConfirmationText => PendingRevokeToken == null
         ? string.Empty
@@ -272,6 +276,12 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
     private async Task SearchAsync()
     {
         await SearchFromFirstPageAsync(LoadPageAsync);
+    }
+
+    [RelayCommand]
+    private async Task ApplyFiltersAsync()
+    {
+        await SearchAsync();
     }
 
     [RelayCommand]
@@ -360,7 +370,25 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
             PendingRevokeToken = null;
             var normalizedPageIndex = NormalizePageIndex(targetPageIndex);
             var currentSelectedId = SelectedItem?.Id;
-            var result = await ApiClient.GetTokensAsync(Session.AccessToken, normalizedPageIndex, PageSize, SearchKeyword);
+            DateTime? expiresBeforeUtc = null;
+            if (!string.IsNullOrWhiteSpace(ExpiresBeforeText))
+            {
+                if (!DateTime.TryParse(ExpiresBeforeText.Trim(), out var expiresBefore))
+                {
+                    StatusMessage = "过期时间必须是有效日期，例如 2026-12-31。";
+                    return;
+                }
+
+                expiresBeforeUtc = expiresBefore.Date.ToUniversalTime();
+            }
+
+            var result = await ApiClient.GetTokensAsync(
+                Session.AccessToken,
+                normalizedPageIndex,
+                PageSize,
+                SearchKeyword,
+                StatusFilter == "全部" ? null : StatusFilter,
+                expiresBeforeUtc);
 
             Items = result.Data?.Items ?? Array.Empty<RefreshTokenRecordDto>();
             TotalCount = result.Data?.TotalCount ?? 0;

@@ -30,18 +30,25 @@
           <Border Grid.Row="1"
                   Classes="admin-search-shell"
                   IsVisible="{Binding IsSearchVisible}">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
-              <TextBox x:Name="SearchKeywordTextBox"
-                       Classes="admin-search-input"
-                       Text="{Binding SearchKeyword}"
-                       Watermark="搜索 Token、用户或客户端，按 Enter 执行"
-                       KeyDown="SearchKeywordTextBox_OnKeyDown"/>
-              <Button Grid.Column="1"
-                      Classes="admin-row-icon-button"
-                      Command="{Binding ClearSearchCommand}"
-                      ToolTip.Tip="清空搜索">
-                <PathIcon Data="{Binding ClearSearchIconData}" Classes="admin-row-button-icon"/>
-              </Button>
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+                <TextBox x:Name="SearchKeywordTextBox"
+                         Classes="admin-search-input"
+                         Text="{Binding SearchKeyword}"
+                         Watermark="搜索 Token、用户或客户端，按 Enter 执行"
+                         KeyDown="SearchKeywordTextBox_OnKeyDown"/>
+                <Button Grid.Column="1"
+                        Classes="admin-row-icon-button"
+                        Command="{Binding ClearSearchCommand}"
+                        ToolTip.Tip="清空搜索">
+                  <PathIcon Data="{Binding ClearSearchIconData}" Classes="admin-row-button-icon"/>
+                </Button>
+              </Grid>
+              <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
+                <ComboBox Width="110" ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding StatusFilter}"/>
+                <TextBox Grid.Column="1" Width="150" Text="{Binding ExpiresBeforeText}" Watermark="过期前 YYYY-MM-DD"/>
+                <Button Grid.Column="2" Classes="admin-button" Content="应用筛选" Command="{Binding ApplyFiltersCommand}"/>
+              </Grid>
             </Grid>
           </Border>
 

@@ -21,6 +21,7 @@
           <Button Content="1. 获取授权码" Command="{Binding RequestAuthorizeCommand}"/>
           <Button Content="2. 换 Token" Command="{Binding ExchangeTokenCommand}"/>
           <Button Content="3. 调 UserInfo" Command="{Binding LoadUserInfoCommand}"/>
+          <Button Content="{Binding SensitiveResultsToggleText}" Command="{Binding ToggleSensitiveResultsCommand}"/>
         </StackPanel>
         <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
       </StackPanel>
@@ -37,8 +38,8 @@
       <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
         <StackPanel Spacing="8">
           <TextBlock Text="Token 结果" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-          <TextBox Text="{Binding TokenAccessToken}" Watermark="access token" AcceptsReturn="True" Height="90"/>
-          <TextBox Text="{Binding TokenIdToken}" Watermark="id token" AcceptsReturn="True" Height="90"/>
+          <TextBox Text="{Binding TokenAccessTokenDisplay}" Watermark="access token（默认脱敏）" AcceptsReturn="True" Height="90" IsReadOnly="True"/>
+          <TextBox Text="{Binding TokenIdTokenDisplay}" Watermark="id token（默认脱敏）" AcceptsReturn="True" Height="90" IsReadOnly="True"/>
         </StackPanel>
       </Border>
       <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
