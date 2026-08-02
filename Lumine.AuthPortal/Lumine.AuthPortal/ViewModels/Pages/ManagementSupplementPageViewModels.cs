@@ -18,6 +18,9 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
 
     [ObservableProperty] private IReadOnlyList<UserGroupDto> _items = Array.Empty<UserGroupDto>();
     [ObservableProperty] private UserGroupDto? _selectedItem;
+    [ObservableProperty] private string _groupNameInput = string.Empty;
+    [ObservableProperty] private bool _isEditorOpen;
+    [ObservableProperty] private UserGroupDto? _pendingDeleteGroup;
     [ObservableProperty] private string _searchKeyword = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
@@ -25,6 +28,16 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
     [ObservableProperty] private bool _isSearchVisible;
 
     public bool HasGroups => Items.Count > 0;
+
+    public bool HasSelectedGroup => SelectedItem != null;
+
+    public bool HasPendingDelete => PendingDeleteGroup != null;
+
+    public string GroupEditorTitle => SelectedItem == null ? "新建用户组" : "编辑用户组";
+
+    public string DeleteConfirmationText => PendingDeleteGroup == null
+        ? string.Empty
+        : $"确认删除用户组“{PendingDeleteGroup.GroupName}”吗？仅当没有成员时才允许删除。";
 
     public bool ShowEmptyState => !HasGroups;
 
@@ -83,6 +96,18 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
         OnPropertyChanged(nameof(SelectedGroupRoleSummary));
         OnPropertyChanged(nameof(SelectedGroupPermissionSummary));
         OnPropertyChanged(nameof(SelectedGroupMetaSummary));
+        OnPropertyChanged(nameof(HasSelectedGroup));
+        OnPropertyChanged(nameof(GroupEditorTitle));
+        if (value != null && !IsEditorOpen)
+        {
+            GroupNameInput = value.GroupName;
+        }
+    }
+
+    partial void OnPendingDeleteGroupChanged(UserGroupDto? value)
+    {
+        OnPropertyChanged(nameof(HasPendingDelete));
+        OnPropertyChanged(nameof(DeleteConfirmationText));
     }
 
     partial void OnSearchKeywordChanged(string value)
@@ -154,6 +179,109 @@ public partial class UserGroupsManagementPageViewModel : ManagementPageViewModel
 
         SearchKeyword = string.Empty;
         _ = SearchAsync();
+    }
+
+    [RelayCommand]
+    private void OpenCreateGroup()
+    {
+        SelectedItem = null;
+        GroupNameInput = string.Empty;
+        IsEditorOpen = true;
+        StatusMessage = "请输入用户组名称。用户组将映射为一个角色。";
+    }
+
+    [RelayCommand]
+    private void OpenEditGroup()
+    {
+        if (!EnsureAuthenticated() || SelectedItem == null)
+        {
+            StatusMessage = "请选择一个用户组后再编辑。";
+            return;
+        }
+
+        GroupNameInput = SelectedItem.GroupName;
+        IsEditorOpen = true;
+        StatusMessage = $"正在编辑用户组：{SelectedItem.GroupName}";
+    }
+
+    [RelayCommand]
+    private void CancelGroupEdit()
+    {
+        IsEditorOpen = false;
+        GroupNameInput = SelectedItem?.GroupName ?? string.Empty;
+        StatusMessage = "已取消用户组编辑。";
+    }
+
+    [RelayCommand]
+    private async Task SaveGroupAsync()
+    {
+        if (!EnsureAuthenticated())
+        {
+            return;
+        }
+
+        var normalizedName = GroupNameInput.Trim();
+        if (string.IsNullOrWhiteSpace(normalizedName))
+        {
+            StatusMessage = "用户组名称不能为空。";
+            return;
+        }
+
+        await RunBusyActionAsync(async () =>
+        {
+            var result = SelectedItem == null
+                ? await ApiClient.CreateRoleAsync(Session.AccessToken, new CreateRoleRequestDto(normalizedName, null))
+                : await ApiClient.UpdateRoleAsync(Session.AccessToken, Guid.Parse(SelectedItem.Id), new UpdateRoleRequestDto(normalizedName));
+
+            SetRequestStatus(result.IsSuccess, "用户组已保存。", "保存用户组失败。", result.ErrorMessage);
+            if (result.IsSuccess)
+            {
+                IsEditorOpen = false;
+                await LoadAsync();
+            }
+        });
+    }
+
+    [RelayCommand]
+    private void DeleteGroup(UserGroupDto? group)
+    {
+        if (!EnsureAuthenticated() || group == null)
+        {
+            return;
+        }
+
+        PendingDeleteGroup = group;
+        SelectedItem = group;
+        StatusMessage = $"待删除用户组：{group.GroupName}";
+    }
+
+    [RelayCommand]
+    private void CancelGroupDelete()
+    {
+        PendingDeleteGroup = null;
+        StatusMessage = "已取消删除用户组。";
+    }
+
+    [RelayCommand]
+    private async Task ConfirmGroupDeleteAsync()
+    {
+        if (!EnsureAuthenticated() || PendingDeleteGroup == null)
+        {
+            return;
+        }
+
+        var group = PendingDeleteGroup;
+        await RunBusyActionAsync(async () =>
+        {
+            var result = await ApiClient.DeleteRoleAsync(Session.AccessToken, Guid.Parse(group.Id));
+            SetRequestStatus(result.IsSuccess, "用户组已删除。", "删除用户组失败。", result.ErrorMessage);
+            if (result.IsSuccess)
+            {
+                PendingDeleteGroup = null;
+                IsEditorOpen = false;
+                await LoadAsync();
+            }
+        });
     }
 
     private async Task LoadPageAsync(int targetPageIndex)

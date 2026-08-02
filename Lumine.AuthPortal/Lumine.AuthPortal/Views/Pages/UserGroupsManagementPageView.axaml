@@ -14,6 +14,9 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="admin-button" Content="新增" Command="{Binding OpenCreateGroupCommand}"/>
+              <Button Classes="admin-button" Content="编辑" Command="{Binding OpenEditGroupCommand}" IsEnabled="{Binding HasSelectedGroup}"/>
+              <Button Classes="admin-button admin-danger" Content="删除" Command="{Binding DeleteGroupCommand}" CommandParameter="{Binding SelectedItem}" IsEnabled="{Binding HasSelectedGroup}"/>
               <Button Classes="admin-icon-button"
                       Command="{Binding ToggleSearchCommand}"
                       Click="ToggleSearchButton_OnClick"
@@ -139,12 +142,24 @@
                   <Border Background="{DynamicResource SurfaceSoftBrush}" CornerRadius="10" Padding="12">
                     <StackPanel Spacing="6">
                       <TextBlock Text="成员明细" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
-                      <TextBlock Text="{Binding SelectedGroupMembersText}"
-                                 Foreground="{DynamicResource TextSecondaryBrush}"
-                                 TextWrapping="Wrap"/>
-                    </StackPanel>
-                  </Border>
-                </StackPanel>
+                   <TextBlock Text="{Binding SelectedGroupMembersText}"
+                              Foreground="{DynamicResource TextSecondaryBrush}"
+                              TextWrapping="Wrap"/>
+                 </StackPanel>
+               </Border>
+
+               <Border Background="{DynamicResource SurfaceSoftBrush}" CornerRadius="10" Padding="12" IsVisible="{Binding IsEditorOpen}">
+                 <StackPanel Spacing="8">
+                   <TextBlock Text="{Binding GroupEditorTitle}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                   <TextBox Text="{Binding GroupNameInput}" Watermark="用户组名称"/>
+                   <TextBlock Text="用户组沿用角色权限模型；成员分配请在用户管理页完成。" Classes="admin-hint" TextWrapping="Wrap"/>
+                   <StackPanel Orientation="Horizontal" Spacing="8">
+                     <Button Classes="admin-button admin-primary" Content="保存" Command="{Binding SaveGroupCommand}"/>
+                     <Button Classes="admin-button" Content="取消" Command="{Binding CancelGroupEditCommand}"/>
+                   </StackPanel>
+                 </StackPanel>
+               </Border>
+             </StackPanel>
               </Border>
             </Grid>
           </Border>
@@ -153,6 +168,15 @@
             <StackPanel Spacing="10">
               <Border Classes="admin-status-banner" Padding="10,8">
                 <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
+              </Border>
+              <Border Classes="admin-danger-banner" IsVisible="{Binding HasPendingDelete}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                  <TextBlock Text="{Binding DeleteConfirmationText}" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                  <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Classes="admin-button admin-danger-solid" Content="确认删除" Command="{Binding ConfirmGroupDeleteCommand}"/>
+                    <Button Classes="admin-button" Content="取消" Command="{Binding CancelGroupDeleteCommand}"/>
+                  </StackPanel>
+                </Grid>
               </Border>
             </StackPanel>
 

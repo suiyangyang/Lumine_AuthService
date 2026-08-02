@@ -3,6 +3,7 @@ using Lumine.AuthServer.Api.Auth;
 using Lumine.AuthServer.Domain.Abstractions;
 using Lumine.AuthServer.Domain.Entities;
 using Lumine.AuthServer.Infrastructure;
+using Lumine.AuthServer.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,12 +18,18 @@ namespace Lumine.AuthServer.Controllers
         private readonly AuthDbContext _dbContext;
         private readonly IRoleRepository _roleRepository;
         private readonly IPermissionRepository _permissionRepository;
+        private readonly IAuditLogService _auditLogService;
 
-        public RolesController(AuthDbContext dbContext, IRoleRepository roleRepository, IPermissionRepository permissionRepository)
+        public RolesController(
+            AuthDbContext dbContext,
+            IRoleRepository roleRepository,
+            IPermissionRepository permissionRepository,
+            IAuditLogService auditLogService)
         {
             _dbContext = dbContext;
             _roleRepository = roleRepository;
             _permissionRepository = permissionRepository;
+            _auditLogService = auditLogService;
         }
 
         [HttpGet]
@@ -99,6 +106,7 @@ namespace Lumine.AuthServer.Controllers
 
             _dbContext.Roles.Add(role);
             await _dbContext.SaveChangesAsync(cancellationToken);
+            await _auditLogService.WriteAsync("权限", "创建角色", User.Identity?.Name ?? "当前用户", role.Name, "成功", cancellationToken: cancellationToken);
 
             var createdRole = await QueryRoles(_dbContext.Roles.AsNoTracking())
                 .FirstAsync(item => item.Id == role.Id, cancellationToken);
@@ -128,6 +136,7 @@ namespace Lumine.AuthServer.Controllers
 
             role.Rename(normalizedRoleName);
             await _dbContext.SaveChangesAsync(cancellationToken);
+            await _auditLogService.WriteAsync("权限", "修改角色", User.Identity?.Name ?? "当前用户", role.Name, "成功", cancellationToken: cancellationToken);
 
             return Ok(MapRole(role));
         }
@@ -136,14 +145,27 @@ namespace Lumine.AuthServer.Controllers
         [Permission("roles.manage")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            var role = await _dbContext.Roles.FirstOrDefaultAsync(item => item.Id == id, cancellationToken);
+            var role = await _dbContext.Roles
+                .Include(item => item.UserRoles)
+                .FirstOrDefaultAsync(item => item.Id == id, cancellationToken);
             if (role == null)
             {
                 return NotFound();
             }
 
+            if (string.Equals(role.Name, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return Conflict("系统内置 Admin 角色不能删除。");
+            }
+
+            if (role.UserRoles.Count > 0)
+            {
+                return Conflict("该角色仍关联用户，请先移除成员后再删除。");
+            }
+
             _dbContext.Roles.Remove(role);
             await _dbContext.SaveChangesAsync(cancellationToken);
+            await _auditLogService.WriteAsync("权限", "删除角色", User.Identity?.Name ?? "当前用户", role.Name, "成功", cancellationToken: cancellationToken);
             return NoContent();
         }
 
