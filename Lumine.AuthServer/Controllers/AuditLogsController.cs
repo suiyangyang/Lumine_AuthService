@@ -23,6 +23,11 @@ namespace Lumine.AuthServer.Controllers
         [Permission("clients.view")]
         public async Task<ActionResult<PagedResultDto<AuditLogEntryDto>>> GetAll(
             [FromQuery] string? keyword,
+            [FromQuery] string? category,
+            [FromQuery] string? action,
+            [FromQuery] string? outcome,
+            [FromQuery] DateTime? fromUtc,
+            [FromQuery] DateTime? toUtc,
             [FromQuery] int pageIndex = 1,
             [FromQuery] int pageSize = ManagementApiDefaults.DefaultPageSize,
             CancellationToken cancellationToken = default)
@@ -56,6 +61,31 @@ namespace Lumine.AuthServer.Controllers
                     || item.Target.Contains(normalizedKeyword)
                     || item.Outcome.Contains(normalizedKeyword)
                     || item.Details.Contains(normalizedKeyword));
+            }
+
+            if (!string.IsNullOrWhiteSpace(category) && !string.Equals(category, "全部", StringComparison.OrdinalIgnoreCase))
+            {
+                persistedQuery = persistedQuery.Where(item => item.Category == category.Trim());
+            }
+
+            if (!string.IsNullOrWhiteSpace(action) && !string.Equals(action, "全部", StringComparison.OrdinalIgnoreCase))
+            {
+                persistedQuery = persistedQuery.Where(item => item.Action == action.Trim());
+            }
+
+            if (!string.IsNullOrWhiteSpace(outcome) && !string.Equals(outcome, "全部", StringComparison.OrdinalIgnoreCase))
+            {
+                persistedQuery = persistedQuery.Where(item => item.Outcome == outcome.Trim());
+            }
+
+            if (fromUtc.HasValue)
+            {
+                persistedQuery = persistedQuery.Where(item => item.OccurredAtUtc >= fromUtc.Value.ToUniversalTime());
+            }
+
+            if (toUtc.HasValue)
+            {
+                persistedQuery = persistedQuery.Where(item => item.OccurredAtUtc <= toUtc.Value.ToUniversalTime());
             }
 
             var totalCount = await persistedQuery.CountAsync(cancellationToken);

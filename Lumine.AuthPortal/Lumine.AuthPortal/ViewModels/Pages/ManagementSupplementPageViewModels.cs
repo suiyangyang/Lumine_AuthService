@@ -634,6 +634,11 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
     [ObservableProperty] private IReadOnlyList<AuditLogEntryDto> _items = Array.Empty<AuditLogEntryDto>();
     [ObservableProperty] private AuditLogEntryDto? _selectedItem;
     [ObservableProperty] private string _searchKeyword = string.Empty;
+    [ObservableProperty] private string _categoryFilter = "全部";
+    [ObservableProperty] private string _actionFilter = "全部";
+    [ObservableProperty] private string _outcomeFilter = "全部";
+    [ObservableProperty] private string _fromDateText = string.Empty;
+    [ObservableProperty] private string _toDateText = string.Empty;
     [ObservableProperty] private int _pageIndex = 1;
     [ObservableProperty] private int _pageSize = PortalUiDefaults.ManagementPageSize;
     [ObservableProperty] private int _totalCount;
@@ -652,6 +657,12 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
     public string PaginationSummaryText => $"第 {PageIndex} / {TotalPages} 页 · 共 {TotalCount} 条审计记录";
 
     public bool HasSearchKeyword => !string.IsNullOrWhiteSpace(SearchKeyword);
+
+    public IReadOnlyList<string> CategoryOptions { get; } = ["全部", "认证", "授权", "Token", "权限"];
+
+    public IReadOnlyList<string> ActionOptions { get; } = ["全部", "登录", "登出", "批准授权", "拒绝授权", "签发授权码", "换取访问令牌", "撤销", "创建角色", "修改角色", "删除角色"];
+
+    public IReadOnlyList<string> OutcomeOptions { get; } = ["全部", "成功", "失败"];
 
     public StreamGeometry RefreshIconData => NavigationIconData.Get("refresh");
 
@@ -702,6 +713,12 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
     }
 
     [RelayCommand]
+    private async Task ApplyAuditFiltersAsync()
+    {
+        await SearchAsync();
+    }
+
+    [RelayCommand]
     private async Task PreviousPageAsync()
     {
         await GoToPreviousPageAsync(CanGoPreviousPage, PageIndex, LoadPageAsync);
@@ -746,7 +763,24 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
         {
             var normalizedPageIndex = NormalizePageIndex(targetPageIndex);
             var currentSelectedId = SelectedItem?.Id;
-            var result = await ApiClient.GetAuditLogsAsync(Session.AccessToken, normalizedPageIndex, PageSize, SearchKeyword);
+            DateTime? fromUtc = null;
+            DateTime? toUtc = null;
+            if (!TryParseDate(FromDateText, out fromUtc) || !TryParseDate(ToDateText, out toUtc))
+            {
+                StatusMessage = "日期筛选必须是有效日期，例如 2026-01-31。";
+                return;
+            }
+
+            var result = await ApiClient.GetAuditLogsAsync(
+                Session.AccessToken,
+                normalizedPageIndex,
+                PageSize,
+                SearchKeyword,
+                CategoryFilter == "全部" ? null : CategoryFilter,
+                ActionFilter == "全部" ? null : ActionFilter,
+                OutcomeFilter == "全部" ? null : OutcomeFilter,
+                fromUtc,
+                toUtc);
 
             Items = result.Data?.Items ?? Array.Empty<AuditLogEntryDto>();
             TotalCount = result.Data?.TotalCount ?? 0;
@@ -758,5 +792,23 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
 
             SetRequestStatus(result.IsSuccess, $"已加载第 {PageIndex} 页，共 {TotalCount} 条审计记录。", "加载审计日志失败。", result.ErrorMessage);
         });
+    }
+
+    private static bool TryParseDate(string value, out DateTime? result)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            result = null;
+            return true;
+        }
+
+        if (DateTime.TryParse(value.Trim(), out var parsed))
+        {
+            result = parsed.Date.ToUniversalTime();
+            return true;
+        }
+
+        result = null;
+        return false;
     }
 }

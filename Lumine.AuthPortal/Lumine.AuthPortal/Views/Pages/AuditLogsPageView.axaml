@@ -30,18 +30,28 @@
           <Border Grid.Row="1"
                   Classes="admin-search-shell"
                   IsVisible="{Binding IsSearchVisible}">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
-              <TextBox x:Name="SearchKeywordTextBox"
-                       Classes="admin-search-input"
-                       Text="{Binding SearchKeyword}"
-                       Watermark="搜索分类、动作、操作者或结果，按 Enter 执行"
-                       KeyDown="SearchKeywordTextBox_OnKeyDown"/>
-              <Button Grid.Column="1"
-                      Classes="admin-row-icon-button"
-                      Command="{Binding ClearSearchCommand}"
-                      ToolTip.Tip="清空搜索">
-                <PathIcon Data="{Binding ClearSearchIconData}" Classes="admin-row-button-icon"/>
-              </Button>
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+                <TextBox x:Name="SearchKeywordTextBox"
+                         Classes="admin-search-input"
+                         Text="{Binding SearchKeyword}"
+                         Watermark="搜索分类、动作、操作者或结果，按 Enter 执行"
+                         KeyDown="SearchKeywordTextBox_OnKeyDown"/>
+                <Button Grid.Column="1"
+                        Classes="admin-row-icon-button"
+                        Command="{Binding ClearSearchCommand}"
+                        ToolTip.Tip="清空搜索">
+                  <PathIcon Data="{Binding ClearSearchIconData}" Classes="admin-row-button-icon"/>
+                </Button>
+              </Grid>
+              <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+                <ComboBox Width="100" ItemsSource="{Binding CategoryOptions}" SelectedItem="{Binding CategoryFilter}"/>
+                <ComboBox Grid.Column="1" Width="130" ItemsSource="{Binding ActionOptions}" SelectedItem="{Binding ActionFilter}"/>
+                <ComboBox Grid.Column="2" Width="90" ItemsSource="{Binding OutcomeOptions}" SelectedItem="{Binding OutcomeFilter}"/>
+                <TextBox Grid.Column="3" Width="130" Text="{Binding FromDateText}" Watermark="起始日期"/>
+                <TextBox Grid.Column="4" Width="130" Text="{Binding ToDateText}" Watermark="结束日期"/>
+                <Button Grid.Column="5" Classes="admin-button" Content="应用筛选" Command="{Binding ApplyAuditFiltersCommand}"/>
+              </Grid>
             </Grid>
           </Border>
 

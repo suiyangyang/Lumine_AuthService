@@ -238,13 +238,18 @@ public sealed class PortalApiClient
         return SendAsync<IReadOnlyList<PortalMenuItemDto>>(HttpMethod.Get, "/api/menus", bearerToken: accessToken, cancellationToken: cancellationToken);
     }
 
-    public Task<ApiResult<PagedResultDto<AuditLogEntryDto>>> GetAuditLogsAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
+    public Task<ApiResult<PagedResultDto<AuditLogEntryDto>>> GetAuditLogsAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, string? category = null, string? action = null, string? outcome = null, DateTime? fromUtc = null, DateTime? toUtc = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/auditlogs", new Dictionary<string, string?>
         {
             ["pageIndex"] = pageIndex.ToString(),
             ["pageSize"] = pageSize.ToString(),
-            ["keyword"] = string.IsNullOrWhiteSpace(keyword) ? null : keyword.Trim()
+            ["keyword"] = string.IsNullOrWhiteSpace(keyword) ? null : keyword.Trim(),
+            ["category"] = string.IsNullOrWhiteSpace(category) ? null : category.Trim(),
+            ["action"] = string.IsNullOrWhiteSpace(action) ? null : action.Trim(),
+            ["outcome"] = string.IsNullOrWhiteSpace(outcome) ? null : outcome.Trim(),
+            ["fromUtc"] = fromUtc?.ToString("O", CultureInfo.InvariantCulture),
+            ["toUtc"] = toUtc?.ToString("O", CultureInfo.InvariantCulture)
         });
 
         return SendAsync<PagedResultDto<AuditLogEntryDto>>(HttpMethod.Get, path, bearerToken: accessToken, cancellationToken: cancellationToken);
