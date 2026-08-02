@@ -9,7 +9,7 @@
     <DockerfileRunEnvironmentFiles>$(MSBuildProjectDirectory)\..\.env</DockerfileRunEnvironmentFiles>
     <AuthPortalBrowserProjectDir>$(MSBuildProjectDirectory)\..\Lumine.AuthPortal\Lumine.AuthPortal.Browser</AuthPortalBrowserProjectDir>
     <AuthPortalBrowserProjectPath>$(AuthPortalBrowserProjectDir)\Lumine.AuthPortal.Browser.csproj</AuthPortalBrowserProjectPath>
-    <AuthPortalBrowserBuildWwwroot>$(AuthPortalBrowserProjectDir)\bin\$(Configuration)\net10.0-browser\wwwroot</AuthPortalBrowserBuildWwwroot>
+    <SkipBrowserBuild Condition="'$(SkipBrowserBuild)' == ''">false</SkipBrowserBuild>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -34,72 +34,8 @@
   </ItemGroup>
 
     <Target Name="BuildAuthPortalBrowser" BeforeTargets="Build;Publish"
-        Condition="Exists('$(AuthPortalBrowserProjectPath)') and ('$(SolutionPath)' == '' or '$(SolutionPath)' == '*Undefined*')">
+        Condition="Exists('$(AuthPortalBrowserProjectPath)') and '$(SkipBrowserBuild)' != 'true' and ('$(SolutionPath)' == '' or '$(SolutionPath)' == '*Undefined*')">
       <Exec Command="dotnet build &quot;$(AuthPortalBrowserProjectPath)&quot; -c $(Configuration)$(BuildAuthPortalBrowserPackagesArg)" />
     </Target>
-
-    <Target Name="StageAuthPortalBrowserForBuild" AfterTargets="Build"
-        Condition="Exists('$(AuthPortalBrowserProjectPath)')">
-      <PropertyGroup>
-    <AuthPortalBrowserOutputRoot>$(TargetDir)wwwroot</AuthPortalBrowserOutputRoot>
-      </PropertyGroup>
-
-      <RemoveDir Directories="$(AuthPortalBrowserOutputRoot)" Condition="Exists('$(AuthPortalBrowserOutputRoot)')" />
-      <MakeDir Directories="$(AuthPortalBrowserOutputRoot)" />
-
-      <ItemGroup>
-    <AuthPortalBrowserPageAssets Include="$(AuthPortalBrowserProjectDir)\wwwroot\**\*.*" />
-    <AuthPortalBrowserFrameworkAssets Include="$(AuthPortalBrowserBuildWwwroot)\_framework\**\*.*"
-                 Condition="Exists('$(AuthPortalBrowserBuildWwwroot)\_framework')" />
-    <AuthPortalBrowserContentAssets Include="$(AuthPortalBrowserBuildWwwroot)\_content\**\*.*"
-               Condition="Exists('$(AuthPortalBrowserBuildWwwroot)\_content')" />
-      </ItemGroup>
-
-      <Copy SourceFiles="@(AuthPortalBrowserPageAssets)"
-        DestinationFiles="@(AuthPortalBrowserPageAssets->'$(AuthPortalBrowserOutputRoot)\%(RecursiveDir)%(Filename)%(Extension)')"
-        SkipUnchangedFiles="true" />
-
-      <Copy SourceFiles="@(AuthPortalBrowserFrameworkAssets)"
-        DestinationFiles="@(AuthPortalBrowserFrameworkAssets->'$(AuthPortalBrowserOutputRoot)\_framework\%(RecursiveDir)%(Filename)%(Extension)')"
-        SkipUnchangedFiles="true"
-        Condition="'@(AuthPortalBrowserFrameworkAssets)' != ''" />
-
-      <Copy SourceFiles="@(AuthPortalBrowserContentAssets)"
-        DestinationFiles="@(AuthPortalBrowserContentAssets->'$(AuthPortalBrowserOutputRoot)\_content\%(RecursiveDir)%(Filename)%(Extension)')"
-        SkipUnchangedFiles="true"
-        Condition="'@(AuthPortalBrowserContentAssets)' != ''" />
-    </Target>
-
-    <Target Name="StageAuthPortalBrowserForPublish" AfterTargets="Publish"
-        Condition="Exists('$(AuthPortalBrowserProjectPath)') and '$(PublishDir)' != ''">
-      <PropertyGroup>
-    <AuthPortalBrowserPublishRoot>$(PublishDir)wwwroot</AuthPortalBrowserPublishRoot>
-      </PropertyGroup>
-
-      <RemoveDir Directories="$(AuthPortalBrowserPublishRoot)" Condition="Exists('$(AuthPortalBrowserPublishRoot)')" />
-      <MakeDir Directories="$(AuthPortalBrowserPublishRoot)" />
-
-      <ItemGroup>
-    <AuthPortalBrowserPublishPageAssets Include="$(AuthPortalBrowserProjectDir)\wwwroot\**\*.*" />
-    <AuthPortalBrowserPublishFrameworkAssets Include="$(AuthPortalBrowserBuildWwwroot)\_framework\**\*.*"
-                    Condition="Exists('$(AuthPortalBrowserBuildWwwroot)\_framework')" />
-    <AuthPortalBrowserPublishContentAssets Include="$(AuthPortalBrowserBuildWwwroot)\_content\**\*.*"
-                  Condition="Exists('$(AuthPortalBrowserBuildWwwroot)\_content')" />
-      </ItemGroup>
-
-      <Copy SourceFiles="@(AuthPortalBrowserPublishPageAssets)"
-        DestinationFiles="@(AuthPortalBrowserPublishPageAssets->'$(AuthPortalBrowserPublishRoot)\%(RecursiveDir)%(Filename)%(Extension)')"
-        SkipUnchangedFiles="true" />
-
-      <Copy SourceFiles="@(AuthPortalBrowserPublishFrameworkAssets)"
-        DestinationFiles="@(AuthPortalBrowserPublishFrameworkAssets->'$(AuthPortalBrowserPublishRoot)\_framework\%(RecursiveDir)%(Filename)%(Extension)')"
-        SkipUnchangedFiles="true"
-        Condition="'@(AuthPortalBrowserPublishFrameworkAssets)' != ''" />
-
-      <Copy SourceFiles="@(AuthPortalBrowserPublishContentAssets)"
-        DestinationFiles="@(AuthPortalBrowserPublishContentAssets->'$(AuthPortalBrowserPublishRoot)\_content\%(RecursiveDir)%(Filename)%(Extension)')"
-        SkipUnchangedFiles="true"
-        Condition="'@(AuthPortalBrowserPublishContentAssets)' != ''" />
-  </Target>
 
 </Project>

@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<TargetFramework>net10.0-browser</TargetFramework>
 		<OutputType>Exe</OutputType>
+		<RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -13,41 +14,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="Avalonia.Browser" />
+		<PackageReference Include="SkiaSharp" />
+		<PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Lumine.AuthPortal\Lumine.AuthPortal.csproj" />
 	</ItemGroup>
-
-	<Target Name="CleanPublishOutput" BeforeTargets="Publish">
-		<RemoveDir Directories="$(PublishDir)" Condition="'$(PublishDir)' != '' and Exists('$(PublishDir)')" />
-	</Target>
-
-	<Target Name="StageBrowserPublishOutput" AfterTargets="Publish" Condition="'$(PublishDir)' != ''">
-		<ItemGroup>
-			<BrowserProjectStaticAssets Include="wwwroot\**\*.*" />
-			<BrowserBuildFrameworkAssets Include="$(OutputPath)wwwroot\_framework\**\*.*"
-										Condition="Exists('$(OutputPath)wwwroot\_framework')" />
-			<BrowserBuildContentAssets Include="$(OutputPath)wwwroot\_content\**\*.*"
-									  Condition="Exists('$(OutputPath)wwwroot\_content')" />
-		</ItemGroup>
-
-		<MakeDir Directories="$(PublishDir)" />
-
-		<Copy SourceFiles="@(BrowserProjectStaticAssets)"
-			  DestinationFiles="@(BrowserProjectStaticAssets->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')"
-			  SkipUnchangedFiles="true" />
-
-		<Copy SourceFiles="@(BrowserBuildFrameworkAssets)"
-			  DestinationFiles="@(BrowserBuildFrameworkAssets->'$(PublishDir)_framework\%(RecursiveDir)%(Filename)%(Extension)')"
-			  SkipUnchangedFiles="true"
-			  Condition="'@(BrowserBuildFrameworkAssets)' != ''" />
-
-		<Copy SourceFiles="@(BrowserBuildContentAssets)"
-			  DestinationFiles="@(BrowserBuildContentAssets->'$(PublishDir)_content\%(RecursiveDir)%(Filename)%(Extension)')"
-			  SkipUnchangedFiles="true"
-			  Condition="'@(BrowserBuildContentAssets)' != ''" />
-	</Target>
 
 	<Target Name="CopyPackageStaticAssetsToOutput" AfterTargets="Build">
 		<ItemGroup>
