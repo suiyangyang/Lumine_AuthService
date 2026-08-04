@@ -5,22 +5,69 @@
              x:DataType="vm:DashboardPageViewModel">
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <StackPanel Spacing="16">
-      <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="18" Padding="20">
-        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="10" ColumnSpacing="16">
-          <StackPanel Spacing="10">
-            <TextBlock Text="系统总体信息" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-            <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-            <TextBlock Text="{Binding LastUpdatedText}" Foreground="{DynamicResource TextMutedBrush}"/>
+      <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="16">
+        <Grid ColumnDefinitions="1.15*,0.85*" RowDefinitions="Auto,Auto" RowSpacing="8" ColumnSpacing="16">
+          <StackPanel Spacing="4">
+            <TextBlock Text="系统总体信息" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding StatusMessage}"/>
           </StackPanel>
 
-          <StackPanel Grid.Column="1" Spacing="10" HorizontalAlignment="Right">
-            <TextBox Width="320" Text="{Binding BackendBaseUrl}" Watermark="http://localhost:13255"/>
+          <WrapPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" MaxWidth="520">
+            <Border Margin="0,0,12,0" VerticalAlignment="Center" ToolTip.Tip="{Binding ServiceStatusAccessibilityText}">
+              <Grid>
+                <TextBlock Text="{Binding ServiceStatusText}" Foreground="{DynamicResource StatusInfoBrush}" IsVisible="{Binding IsServiceStatusLoading}"/>
+                <TextBlock Text="{Binding ServiceStatusText}" Foreground="{DynamicResource StatusSuccessBrush}" IsVisible="{Binding IsServiceStatusHealthy}"/>
+                <TextBlock Text="{Binding ServiceStatusText}" Foreground="{DynamicResource StatusWarningBrush}" IsVisible="{Binding IsServiceStatusWarning}"/>
+                <TextBlock Text="{Binding ServiceStatusText}" Foreground="{DynamicResource StatusErrorBrush}" IsVisible="{Binding IsServiceStatusError}"/>
+                <TextBlock Text="{Binding ServiceStatusText}" Foreground="{DynamicResource StatusInfoBrush}" IsVisible="{Binding IsServiceStatusRestricted}"/>
+              </Grid>
+            </Border>
+            <Button Margin="0,0,12,0"
+                    Classes="admin-button"
+                    Background="{DynamicResource SurfaceSoftBrush}"
+                    BorderBrush="{DynamicResource StatusWarningBrush}"
+                    BorderThickness="1"
+                    Padding="8,4"
+                    Content="{Binding OperationalAttentionText}"
+                    IsVisible="{Binding ShowOperationalAttention}"
+                    Click="OnOperationalAttentionClick"
+                    ToolTip.Tip="滚动到下方的运营提醒详情"
+                    AutomationProperties.Name="查看运营提醒详情"/>
+            <TextBlock Margin="0,0,12,0" Text="{Binding LastUpdatedText}" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" MaxWidth="180" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding LastUpdatedText}" IsVisible="{Binding ShowLastUpdated}"/>
+            <Button Classes="admin-button"
+                    Content="{Binding ConnectionDiagnosticsToggleText}"
+                    Command="{Binding ToggleConnectionDiagnosticsCommand}"
+                    IsVisible="{Binding ShowConnectionDiagnostics}"
+                    ToolTip.Tip="{Binding ConnectionDiagnosticsToggleToolTip}"
+                    AutomationProperties.Name="{Binding ConnectionDiagnosticsToggleToolTip}"/>
             <Button Classes="admin-button admin-primary"
-                    Content="刷新仪表盘"
+                    Content="{Binding RefreshButtonText}"
                     Command="{Binding RefreshCommand}"
-                    HorizontalAlignment="Right"
-                    IsEnabled="{Binding CanRefresh}"/>
-          </StackPanel>
+                    IsEnabled="{Binding CanRefresh}"
+                    ToolTip.Tip="刷新仪表盘数据"
+                    AutomationProperties.Name="刷新仪表盘数据"/>
+          </WrapPanel>
+
+          <Border Grid.Row="1" Grid.ColumnSpan="2"
+                  Background="{DynamicResource SurfaceSoftBrush}"
+                  BorderBrush="{DynamicResource BorderSubtleBrush}"
+                  BorderThickness="1"
+                  CornerRadius="10"
+                  Padding="12"
+                  IsVisible="{Binding ShowConnectionDiagnosticsArea}">
+            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="8">
+              <TextBlock Text="服务地址" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+              <TextBox Grid.Column="1" Text="{Binding BackendBaseUrl}" Watermark="http://localhost:13255" MinWidth="240"/>
+              <Button Grid.Column="2"
+                      Content="应用并刷新"
+                      Command="{Binding RefreshCommand}"
+                      IsEnabled="{Binding CanRefresh}"
+                      ToolTip.Tip="应用服务地址并刷新仪表盘"
+                      AutomationProperties.Name="应用服务地址并刷新仪表盘"/>
+              <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding DiscoverySummary}" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
+              <TextBlock Grid.Row="2" Grid.ColumnSpan="3" Text="{Binding ServiceStatusAccessibilityText}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+            </Grid>
+          </Border>
         </Grid>
       </Border>
 
@@ -56,6 +103,44 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
+
+      <Border Background="{DynamicResource SurfacePanelBrush}"
+              BorderBrush="{DynamicResource BorderSubtleBrush}"
+              BorderThickness="1"
+              CornerRadius="16"
+              Padding="20"
+              IsVisible="{Binding HasOperationalSignals}"
+              x:Name="OperationalSignalsPanel">
+        <StackPanel Spacing="12">
+          <TextBlock Text="运营提醒" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <TextBlock Text="{Binding OperationalSignalsHint}" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
+          <ItemsControl ItemsSource="{Binding OperationalSignalItems}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" ItemWidth="280" ItemHeight="122"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:DashboardOperationalSignalItemViewModel">
+                <Border Background="{DynamicResource SurfaceRaisedBrush}" BorderBrush="{DynamicResource StatusWarningBrush}" BorderThickness="1" CornerRadius="12" Margin="0,0,12,0" Padding="12">
+                  <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,*,Auto" ColumnSpacing="12" RowSpacing="6">
+                    <TextBlock Text="{Binding Label}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Column="1" Text="{Binding CountText}" Foreground="{DynamicResource StatusWarningBrush}" FontSize="22" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Description}" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap"/>
+                    <Button Grid.Row="2"
+                            Grid.ColumnSpan="2"
+                            Content="查看详情"
+                            Command="{Binding OpenDetailsCommand}"
+                            IsEnabled="{Binding CanOpenDetails}"
+                            HorizontalAlignment="Right"
+                            Classes="admin-row-button"/>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
 
       <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
         <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">

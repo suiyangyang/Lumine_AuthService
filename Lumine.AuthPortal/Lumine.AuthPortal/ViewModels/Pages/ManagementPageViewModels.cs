@@ -2135,6 +2135,11 @@ public partial class ClientsManagementPageViewModel : ManagementPageViewModelBas
         await SearchFromFirstPageAsync(LoadPageAsync);
     }
 
+    public void ShowConfigurationWarningContext()
+    {
+        StatusMessage = "已打开客户端配置检查上下文：重点检查启用客户端是否配置 Redirect URI 和允许 Scope。";
+    }
+
     [RelayCommand]
     private async Task PreviousPageAsync()
     {

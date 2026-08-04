@@ -413,6 +413,18 @@ public partial class TokensManagementPageViewModel : ManagementPageViewModelBase
         await SearchAsync();
     }
 
+    public void ApplyExpiringTokenFilter()
+    {
+        StatusFilter = "有效";
+        ExpiresBeforeText = DateTime.Now.AddDays(7).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        IsSearchVisible = true;
+        OnPropertyChanged(nameof(SearchIconData));
+        if (!IsBusy)
+        {
+            _ = SearchAsync();
+        }
+    }
+
     [RelayCommand]
     private async Task PreviousPageAsync()
     {
@@ -1096,6 +1108,36 @@ public partial class AuditLogsPageViewModel : ManagementPageViewModelBase
     private async Task ApplyAuditFiltersAsync()
     {
         await SearchAsync();
+    }
+
+    public void ApplyFailedLoginFilter()
+    {
+        CategoryFilter = "认证";
+        ActionFilter = "登录";
+        OutcomeFilter = "失败";
+        FromDateText = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        ToDateText = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        IsSearchVisible = true;
+        OnPropertyChanged(nameof(SearchIconData));
+        if (!IsBusy)
+        {
+            _ = SearchAsync();
+        }
+    }
+
+    public void ApplyReviewableAuditFilter()
+    {
+        CategoryFilter = "全部";
+        ActionFilter = "全部";
+        OutcomeFilter = "失败";
+        FromDateText = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        ToDateText = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        IsSearchVisible = true;
+        OnPropertyChanged(nameof(SearchIconData));
+        if (!IsBusy)
+        {
+            _ = SearchAsync();
+        }
     }
 
     [RelayCommand]
