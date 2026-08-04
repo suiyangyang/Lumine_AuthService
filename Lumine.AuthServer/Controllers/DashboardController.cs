@@ -35,13 +35,14 @@ namespace Lumine.AuthServer.Controllers
             var canViewClients = HasAnyPermission(permissionSet, "clients.view");
             var canViewLoginActivity = canViewUsers || canViewClients;
             var canViewTokenActivity = canViewClients;
+            var utcNow = DateTime.UtcNow;
 
             var userCount = await CountIfAllowedAsync(canViewUsers, _dbContext.Users.AsNoTracking(), cancellationToken);
             var roleCount = await CountIfAllowedAsync(canViewRoles, _dbContext.Roles.AsNoTracking(), cancellationToken);
             var permissionCount = await CountIfAllowedAsync(canViewPermissions, _dbContext.Permissions.AsNoTracking(), cancellationToken);
             var clientCount = await CountIfAllowedAsync(canViewClients, _dbContext.OidcClients.AsNoTracking(), cancellationToken);
 
-            var utcToday = DateTime.UtcNow.Date;
+            var utcToday = utcNow.Date;
             var trendStartDate = utcToday.AddDays(-6);
             var recentLoginStartDate = utcToday.AddDays(-30);
 
@@ -55,6 +56,42 @@ namespace Lumine.AuthServer.Controllers
                     .Select(item => item.OccurredAtUtc)
                     .ToListAsync(cancellationToken)
                 : [];
+
+            int? failedLogins24h = canViewLoginActivity
+                ? await _dbContext.AuditLogEntries
+                    .AsNoTracking()
+                    .Where(item => item.Category == "认证"
+                        && item.Action == "登录"
+                        && item.Outcome == "失败"
+                        && item.OccurredAtUtc >= utcNow.AddHours(-24))
+                    .CountAsync(cancellationToken)
+                : null;
+
+            int? expiringRefreshTokens7d = canViewTokenActivity
+                ? await _dbContext.RefreshTokens
+                    .AsNoTracking()
+                    .Where(item => item.RevokedAtUtc == null
+                        && item.ExpiresAtUtc > utcNow
+                        && item.ExpiresAtUtc <= utcNow.AddDays(7))
+                    .CountAsync(cancellationToken)
+                : null;
+
+            int? clientConfigurationWarnings = canViewClients
+                ? await _dbContext.OidcClients
+                    .AsNoTracking()
+                    .Where(item => item.IsActive
+                        && (!item.RedirectUris.Any() || item.AllowedScopes == string.Empty))
+                    .CountAsync(cancellationToken)
+                : null;
+
+            int? reviewableAuditEvents24h = canViewClients
+                ? await _dbContext.AuditLogEntries
+                    .AsNoTracking()
+                    .Where(item => item.Outcome == "失败"
+                        && item.OccurredAtUtc >= utcNow.AddHours(-24)
+                        && !(item.Category == "认证" && item.Action == "登录"))
+                    .CountAsync(cancellationToken)
+                : null;
 
             var tokenTrendEntries = canViewTokenActivity
                 ? await _dbContext.RefreshTokens
@@ -82,7 +119,34 @@ namespace Lumine.AuthServer.Controllers
                 LoginTrend = BuildTrend(loginTrendEntries, trendStartDate, utcToday),
                 TokenIssueTrend = BuildTrend(tokenTrendEntries, trendStartDate, utcToday),
                 RecentLoginUsers = BuildRecentLoginUsers(recentLoginUsers, canViewUsers),
-                GeneratedAtUtc = DateTime.UtcNow
+                OperationalSignals = new DashboardOperationalSignalsDto
+                {
+                    FailedLogins24h = CreateOperationalSignal(
+                        "failed-logins-24h",
+                        "登录失败",
+                        failedLogins24h,
+                        canViewLoginActivity,
+                        "过去 24 小时认证失败次数。"),
+                    ExpiringRefreshTokens7d = CreateOperationalSignal(
+                        "expiring-refresh-tokens-7d",
+                        "即将过期 Token",
+                        expiringRefreshTokens7d,
+                        canViewTokenActivity,
+                        "未来 7 天内到期且尚未撤销的 Refresh Token 数量。"),
+                    ClientConfigurationWarnings = CreateOperationalSignal(
+                        "client-configuration-warnings",
+                        "客户端配置异常",
+                        clientConfigurationWarnings,
+                        canViewClients,
+                        "启用客户端中缺少 Redirect URI 或允许 Scope 的客户端数量。"),
+                    ReviewableAuditEvents24h = CreateOperationalSignal(
+                        "reviewable-audit-events-24h",
+                        "需复核审计事件",
+                        reviewableAuditEvents24h,
+                        canViewClients,
+                        "过去 24 小时除登录失败外的失败审计事件数量，作为待复核代理。")
+                },
+                GeneratedAtUtc = utcNow
             };
 
             return Ok(summary);
@@ -130,6 +194,23 @@ namespace Lumine.AuthServer.Controllers
                     LoginAtUtc = item.LastLoginAtUtc!.Value
                 })
                 .ToList();
+        }
+
+        private static DashboardOperationalSignalDto CreateOperationalSignal(
+            string key,
+            string label,
+            int? value,
+            bool isVisible,
+            string description)
+        {
+            return new DashboardOperationalSignalDto
+            {
+                Key = key,
+                Label = label,
+                Value = value,
+                IsVisible = isVisible,
+                Description = isVisible ? description : "当前账号缺少对应查看权限。"
+            };
         }
 
         private static bool HasAnyPermission(IReadOnlySet<string> permissionSet, params string[] requiredPermissions)
