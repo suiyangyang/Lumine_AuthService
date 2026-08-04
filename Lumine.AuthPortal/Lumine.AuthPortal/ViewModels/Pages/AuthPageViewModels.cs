@@ -14,10 +14,6 @@ public partial class LoginPageViewModel : ViewModelBase
     private readonly PortalSession _session;
     private readonly Action _onLoginSucceeded;
     private readonly Action _openRegister;
-    private const string DefaultScope = AppEnvironment.DefaultOidcScope;
-    private const string DefaultClientId = AppEnvironment.DefaultOidcClientId;
-    private const string DefaultNonce = "portal-login-nonce";
-
     [ObservableProperty]
     private string _userName = string.Empty;
 
@@ -26,18 +22,6 @@ public partial class LoginPageViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _showPassword;
-
-    [ObservableProperty]
-    private string _scope = DefaultScope;
-
-    [ObservableProperty]
-    private string _clientId = DefaultClientId;
-
-    [ObservableProperty]
-    private string _nonce = DefaultNonce;
-
-    [ObservableProperty]
-    private bool _showOidcParameters;
 
     [ObservableProperty]
     private bool _isBusy;
@@ -50,8 +34,6 @@ public partial class LoginPageViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _isSuccessMessage;
-
-    public string OidcToggleText => ShowOidcParameters ? "隐藏 OIDC 调试参数" : "显示 OIDC 调试参数";
 
     public string LoginButtonText => IsBusy ? "登录中..." : "登录";
 
@@ -107,11 +89,7 @@ public partial class LoginPageViewModel : ViewModelBase
         IsBusy = true;
         SetStatus("正在调用登录接口...");
 
-        var scope = ShowOidcParameters ? Scope : null;
-        var clientId = ShowOidcParameters ? ClientId : null;
-        var nonce = ShowOidcParameters ? Nonce : null;
-
-        var result = await _apiClient.LoginAsync(new LoginRequestDto(UserName, Password, scope, clientId, nonce));
+        var result = await _apiClient.LoginAsync(new LoginRequestDto(UserName, Password, null, null, null));
         if (result.IsSuccess && result.Data != null)
         {
             _session.ApplyLogin(result.Data);
@@ -125,43 +103,6 @@ public partial class LoginPageViewModel : ViewModelBase
         }
 
         IsBusy = false;
-    }
-
-    [RelayCommand]
-    private void ToggleOidcParameters()
-    {
-        ShowOidcParameters = !ShowOidcParameters;
-
-        if (ShowOidcParameters)
-        {
-            if (string.IsNullOrWhiteSpace(Scope))
-            {
-                Scope = DefaultScope;
-            }
-
-            if (string.IsNullOrWhiteSpace(ClientId))
-            {
-                ClientId = DefaultClientId;
-            }
-
-            if (string.IsNullOrWhiteSpace(Nonce))
-            {
-                Nonce = DefaultNonce;
-            }
-        }
-    }
-
-    partial void OnShowOidcParametersChanged(bool value)
-    {
-        OnPropertyChanged(nameof(OidcToggleText));
-        if (value)
-        {
-            SetStatus("已开启 OIDC 调试参数，可用于第三方授权联调。");
-        }
-        else if (!IsBusy && !IsErrorMessage && !IsSuccessMessage)
-        {
-            SetStatus(string.Empty);
-        }
     }
 
     [RelayCommand]

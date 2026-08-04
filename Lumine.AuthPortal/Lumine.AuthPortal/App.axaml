@@ -34,6 +34,10 @@
         <SolidColorBrush x:Key="TextOnSelectedBrush" Color="#0F172A" />
         <SolidColorBrush x:Key="TextAccentSoftBrush" Color="#1D4ED8" />
         <SolidColorBrush x:Key="StatusInfoBrush" Color="#1D4ED8" />
+        <SolidColorBrush x:Key="StatusSuccessBrush" Color="#15803D" />
+        <SolidColorBrush x:Key="StatusWarningBrush" Color="#B45309" />
+        <SolidColorBrush x:Key="StatusErrorBrush" Color="#B91C1C" />
+        <SolidColorBrush x:Key="StatusNeutralBrush" Color="#64748B" />
         <SolidColorBrush x:Key="AccentBrush" Color="#2563EB" />
         <SolidColorBrush x:Key="AccentHoverBrush" Color="#1D4ED8" />
         <SolidColorBrush x:Key="AccentPressedBrush" Color="#1E40AF" />
@@ -77,6 +81,44 @@
         <SolidColorBrush x:Key="SuccessPressedBorderBrush" Color="#A7F3D0" />
         <SolidColorBrush x:Key="RoleTagBackgroundBrush" Color="#312E81" />
         <SolidColorBrush x:Key="RoleTagForegroundBrush" Color="#E0E7FF" />
+        <SolidColorBrush x:Key="LoginPageBackgroundBrush" Color="#F3F7FF" />
+        <SolidColorBrush x:Key="LoginShellBackgroundBrush" Color="#F8FBFF" />
+        <SolidColorBrush x:Key="LoginShellBorderBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="LoginCardBackgroundBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="LoginCardBorderBrush" Color="#DDE5F0" />
+        <SolidColorBrush x:Key="LoginTitleBrush" Color="#14213A" />
+        <SolidColorBrush x:Key="LoginSubtitleBrush" Color="#7D8BA1" />
+        <SolidColorBrush x:Key="LoginHeadingBrush" Color="#13213A" />
+        <SolidColorBrush x:Key="LoginHeadingSecondaryBrush" Color="#1E2F4E" />
+        <SolidColorBrush x:Key="LoginBodyBrush" Color="#70809B" />
+        <SolidColorBrush x:Key="LoginLabelBrush" Color="#182743" />
+        <SolidColorBrush x:Key="LoginMutedBrush" Color="#71819B" />
+        <SolidColorBrush x:Key="LoginInputBackgroundBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="LoginInputForegroundBrush" Color="#182743" />
+        <SolidColorBrush x:Key="LoginInputBorderBrush" Color="#D7E0ED" />
+        <SolidColorBrush x:Key="LoginInputHoverBackgroundBrush" Color="#FCFDFF" />
+        <SolidColorBrush x:Key="LoginInputHoverBorderBrush" Color="#A9C3E9" />
+        <SolidColorBrush x:Key="LoginInputFocusBorderBrush" Color="#3B82F6" />
+        <SolidColorBrush x:Key="LoginFieldIconBrush" Color="#8190A7" />
+        <SolidColorBrush x:Key="LoginPrimaryBrush" Color="#2563EB" />
+        <SolidColorBrush x:Key="LoginPrimaryHoverBrush" Color="#1D5FE5" />
+        <SolidColorBrush x:Key="LoginPrimaryPressedBrush" Color="#1749B4" />
+        <SolidColorBrush x:Key="LoginLinkBrush" Color="#2563EB" />
+        <SolidColorBrush x:Key="LoginLinkHoverBrush" Color="#1D4ED8" />
+        <SolidColorBrush x:Key="LoginSelectionBrush" Color="#BBD6FF" />
+        <SolidColorBrush x:Key="LoginFeatureTextBrush" Color="#1B2B47" />
+        <SolidColorBrush x:Key="LoginFeatureMutedBrush" Color="#8290A7" />
+        <SolidColorBrush x:Key="LoginFeatureIconBrush" Color="#287AF0" />
+        <SolidColorBrush x:Key="LoginFeatureDividerBrush" Color="#D8E3F3" />
+        <SolidColorBrush x:Key="LoginIllustrationGlowBrush" Color="#E9F1FF" />
+        <SolidColorBrush x:Key="LoginIllustrationSoftBrush" Color="#DCEAFF" />
+        <SolidColorBrush x:Key="LoginIllustrationOrbitBrush" Color="#B5D3FF" />
+        <SolidColorBrush x:Key="LoginIllustrationOrbitStrongBrush" Color="#6BA6FF" />
+        <SolidColorBrush x:Key="LoginIllustrationCardBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="LoginIllustrationCardBorderBrush" Color="#E2ECFB" />
+        <SolidColorBrush x:Key="LoginIllustrationAccentBrush" Color="#4C9AFF" />
+        <SolidColorBrush x:Key="LoginIllustrationBaseBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="LoginCopyrightBrush" Color="#63738E" />
     </Application.Resources>
 
     <Application.DataTemplates>
@@ -167,8 +209,26 @@
         </Style>
         <Style Selector="Border.admin-row-card">
             <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="12" />
             <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover Border.admin-row-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceSelectedHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
+        </Style>
+        <Style Selector="ListBoxItem:selected Border.admin-row-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}" />
+        </Style>
+        <Style Selector="ListBoxItem:selected:pointerover Border.admin-row-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceSelectedHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
+        </Style>
+        <Style Selector="ListBoxItem:pressed Border.admin-row-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceSelectedPressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}" />
         </Style>
         <Style Selector="Border.admin-search-shell">
             <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}" />
@@ -764,10 +824,10 @@
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="ListBoxItem:pointerover">
-            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="ListBoxItem:selected">
-            <Setter Property="Background" Value="{DynamicResource SurfaceSelectedBrush}" />
+            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{DynamicResource TextOnSelectedBrush}" />
         </Style>
         <Style Selector="CheckBox">

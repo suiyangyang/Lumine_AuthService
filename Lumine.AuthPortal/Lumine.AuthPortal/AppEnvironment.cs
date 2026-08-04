@@ -9,6 +9,18 @@ public static class AppEnvironment
     public const string DefaultOidcRedirectUri = "http://localhost:5173/signin-oidc";
     public const string DefaultOidcScope = "openid profile email roles permissions";
 
+    public static bool IsDevelopmentBuild
+    {
+        get
+        {
+#if DEBUG
+            return true;
+#else
+            return false;
+#endif
+        }
+    }
+
     private static string _serverBaseUrl = DefaultServerBaseUrl;
 
     public static string ServerBaseUrl

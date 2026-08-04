@@ -103,6 +103,16 @@ public sealed record OidcClientDto(Guid Id, string ClientId, string ClientName, 
 {
     public string StatusText => IsActive ? "启用" : "停用";
 
+    public bool HasConfigurationWarning => IsActive && (AllowedScopes.Count == 0 || RedirectUris.Count == 0);
+
+    public string ConfigurationWarningText => !HasConfigurationWarning
+        ? string.Empty
+        : AllowedScopes.Count == 0 && RedirectUris.Count == 0
+            ? "缺少 Scope 和 Redirect URI"
+            : AllowedScopes.Count == 0
+                ? "缺少允许 Scope"
+                : "缺少 Redirect URI";
+
     public string AllowedScopesDisplay => AllowedScopes.Count == 0
         ? "未配置"
         : string.Join("、", AllowedScopes);
@@ -142,6 +152,14 @@ public sealed record DashboardTrendPointDto(DateTime Date, int Value);
 
 public sealed record RecentLoginUserDto(Guid UserId, string UserName, string? Email, string? ClientId, string? ClientName, DateTime LoginAtUtc);
 
+public sealed record DashboardOperationalSignalDto(string Key, string Label, int? Value, bool IsVisible, string? Description);
+
+public sealed record DashboardOperationalSignalsDto(
+    DashboardOperationalSignalDto? FailedLogins24h,
+    DashboardOperationalSignalDto? ExpiringRefreshTokens7d,
+    DashboardOperationalSignalDto? ClientConfigurationWarnings,
+    DashboardOperationalSignalDto? ReviewableAuditEvents24h);
+
 public sealed record DashboardSummaryDto(
     DashboardMetricDto Users,
     DashboardMetricDto Roles,
@@ -150,7 +168,8 @@ public sealed record DashboardSummaryDto(
     IReadOnlyList<DashboardTrendPointDto> LoginTrend,
     IReadOnlyList<DashboardTrendPointDto> TokenIssueTrend,
     IReadOnlyList<RecentLoginUserDto> RecentLoginUsers,
-    DateTime GeneratedAtUtc);
+    DateTime GeneratedAtUtc,
+    DashboardOperationalSignalsDto? OperationalSignals = null);
 
 public sealed record UserGroupMemberDto(
     Guid UserId,

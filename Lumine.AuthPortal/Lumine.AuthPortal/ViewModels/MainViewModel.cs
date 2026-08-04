@@ -10,6 +10,18 @@ namespace Lumine.AuthPortal.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
+    private static readonly string[] AdministrativePermissions =
+    [
+        "users.view",
+        "users.manage",
+        "roles.view",
+        "roles.manage",
+        "permissions.view",
+        "permissions.manage",
+        "clients.view",
+        "clients.manage"
+    ];
+
     private readonly PortalApiClient _apiClient;
     private readonly PortalSession _session;
     private readonly ThemeService _themeService;
@@ -83,6 +95,7 @@ public partial class MainViewModel : ViewModelBase
         var menus = new NavigationItemViewModel("menus", "菜单管理", "menus", "permissions.view", "permissions.manage");
         var settings = new NavigationItemViewModel("settings", "系统配置", "settings");
         var audit = new NavigationItemViewModel("audit", "审计日志", "audit", "clients.view", "clients.manage");
+        var profileCenter = new NavigationItemViewModel("profile-center", "个人中心", "users");
 
         NavigationItems =
         [
@@ -99,7 +112,8 @@ public partial class MainViewModel : ViewModelBase
             oidc,
             menus,
             settings,
-            audit
+            audit,
+            profileCenter
         ];
 
         NavigationSections =
@@ -107,14 +121,15 @@ public partial class MainViewModel : ViewModelBase
             new NavigationSectionViewModel("系统概览", "overview", [dashboard]),
             new NavigationSectionViewModel("身份管理", "identity", [users, roles, permissions, userGroups]),
             new NavigationSectionViewModel("认证授权", "auth", [clients, consent, tokens, oidc]),
-            new NavigationSectionViewModel("系统管理", "system", [menus, settings, audit])
+            new NavigationSectionViewModel("系统管理", "system", [menus, settings, audit]),
+            new NavigationSectionViewModel("个人中心", "users", [profileCenter])
         ];
 
         _navigationLookup = NavigationItems.ToDictionary(item => item.Key, StringComparer.OrdinalIgnoreCase);
 
         _pageFactory = new Dictionary<string, Func<ViewModelBase>>(StringComparer.OrdinalIgnoreCase)
         {
-            ["dashboard"] = () => new DashboardPageViewModel(_apiClient, _session),
+            ["dashboard"] = () => new DashboardPageViewModel(_apiClient, _session, OpenOperationalDetail),
             ["login"] = () => CreateLoginPage(),
             ["register"] = () => CreateRegisterPage(),
             ["user-groups"] = () => new UserGroupsManagementPageViewModel(_apiClient, _session),
@@ -127,13 +142,14 @@ public partial class MainViewModel : ViewModelBase
             ["oidc"] = () => new OidcPlaygroundPageViewModel(_apiClient, _session),
             ["menus"] = () => new MenusManagementPageViewModel(_apiClient, _session, SyncNavigationFromServerAsync),
             ["settings"] = () => new SystemSettingsPageViewModel(_apiClient, _session, _themeService),
-            ["audit"] = () => new AuditLogsPageViewModel(_apiClient, _session)
+            ["audit"] = () => new AuditLogsPageViewModel(_apiClient, _session),
+            ["profile-center"] = () => new ProfileCenterPageViewModel(_apiClient, _session)
         };
 
         RefreshNavigationVisibility();
         if (IsAuthenticated)
         {
-            Navigate("dashboard");
+            NavigateAfterAuthentication();
         }
         else
         {
@@ -168,9 +184,8 @@ public partial class MainViewModel : ViewModelBase
 
     public bool IsLumineDarkThemeSelected => _themeService.IsLumineDarkThemeSelected;
 
-    public bool HasAdminAccess => VisibleNavigationSections
-        .SelectMany(section => section.Items)
-        .Any(item => item.RequiresPermission);
+    public bool HasAdminAccess => _session.Permissions
+        .Any(permission => AdministrativePermissions.Contains(permission, StringComparer.OrdinalIgnoreCase));
 
     public string AccountDisplayName => string.IsNullOrWhiteSpace(_session.UserName) ? "访客" : _session.UserName;
 
@@ -237,6 +252,40 @@ public partial class MainViewModel : ViewModelBase
         UpdateSelectedNavigation(key);
     }
 
+    private void NavigateAfterAuthentication()
+    {
+        if (HasAdminAccess)
+        {
+            Navigate("dashboard");
+            return;
+        }
+
+        OpenProfileCenter();
+    }
+
+    private void OpenOperationalDetail(string key)
+    {
+        switch (key)
+        {
+            case "failed-logins-24h":
+                Navigate("audit");
+                (CurrentPage as AuditLogsPageViewModel)?.ApplyFailedLoginFilter();
+                break;
+            case "expiring-refresh-tokens-7d":
+                Navigate("tokens");
+                (CurrentPage as TokensManagementPageViewModel)?.ApplyExpiringTokenFilter();
+                break;
+            case "client-configuration-warnings":
+                Navigate("clients");
+                (CurrentPage as ClientsManagementPageViewModel)?.ShowConfigurationWarningContext();
+                break;
+            case "reviewable-audit-events-24h":
+                Navigate("audit");
+                (CurrentPage as AuditLogsPageViewModel)?.ApplyReviewableAuditFilter();
+                break;
+        }
+    }
+
     [RelayCommand]
     private void ToggleSection(NavigationSectionViewModel? section)
     {
@@ -270,10 +319,10 @@ public partial class MainViewModel : ViewModelBase
     private void OpenProfileCenter()
     {
         IsAccountMenuOpen = false;
-        SetCurrentPage(new ProfileCenterPageViewModel(_apiClient, _session));
+        SetCurrentPage(() => _pageFactory["profile-center"]());
         CurrentPageTitle = "个人中心";
         CurrentPageKey = "profile-center";
-        UpdateSelectedNavigation(string.Empty);
+        UpdateSelectedNavigation("profile-center");
     }
 
     [RelayCommand]
@@ -316,11 +365,14 @@ public partial class MainViewModel : ViewModelBase
 
     private void RefreshNavigationVisibility()
     {
+        var hasAdminAccess = HasAdminAccess;
         foreach (var item in NavigationItems)
         {
             item.IsVisible = item.Key switch
             {
                 "login" or "register" => false,
+                "profile-center" => IsAuthenticated,
+                _ when !hasAdminAccess => false,
                 _ => IsAuthenticated
                     && item.IsEnabled
                     && item.IsImplemented
@@ -337,7 +389,7 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        foreach (var navigationItem in NavigationItems.Where(item => item.Key is not "login" and not "register"))
+        foreach (var navigationItem in NavigationItems.Where(item => item.Key is not "login" and not "register" and not "profile-center"))
         {
             navigationItem.IsVisible = false;
         }
@@ -356,7 +408,13 @@ public partial class MainViewModel : ViewModelBase
             }
         }
 
+        RefreshNavigationVisibility();
+
         NavigationSections.Clear();
+        NavigationSections.Add(new NavigationSectionViewModel(
+            "个人中心",
+            "users",
+            [_navigationLookup["profile-center"]]));
         foreach (var group in configuredMenus
                      .GroupBy(menu => menu.Section)
                      .OrderBy(group => group.Min(menu => menu.Order)))

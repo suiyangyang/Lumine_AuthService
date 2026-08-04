@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Lumine.AuthPortal.ViewModels;
+using Lumine.AuthPortal.Views.Pages;
 
 namespace Lumine.AuthPortal;
 
@@ -23,6 +24,11 @@ public class ViewLocator : IDataTemplate
             .Replace(".ViewModels.", ".Views.", StringComparison.Ordinal)
             .Replace("ViewModel", "View", StringComparison.Ordinal);
         var type = Type.GetType(name);
+
+        if (type == null && param is PlaceholderPageViewModel)
+        {
+            type = typeof(PlaceholderPageView);
+        }
 
         if (type != null)
         {

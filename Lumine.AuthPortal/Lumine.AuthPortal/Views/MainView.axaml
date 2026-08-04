@@ -238,38 +238,16 @@
       <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
     </Style>
-    <Style Selector="Border.brand-title-shell">
-      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="CornerRadius" Value="20"/>
-      <Setter Property="Padding" Value="18,14"/>
-    </Style>
   </UserControl.Styles>
 
   <Grid Background="{DynamicResource AppBackgroundBrush}">
     <Grid IsVisible="{Binding IsAnonymous}">
       <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                     VerticalScrollBarVisibility="Auto">
-        <Grid RowDefinitions="Auto,*" Margin="32">
-        <Border Classes="brand-title-shell"
-                HorizontalAlignment="Center">
-          <StackPanel Orientation="Horizontal"
-                      Spacing="16"
-                      VerticalAlignment="Center">
-            <controls:LumineBrandMark Width="54" Height="54"/>
-            <TextBlock Text="Lumine AuthPortal"
-                       FontSize="28"
-                       FontWeight="Bold"
-                       Foreground="{DynamicResource TextPrimaryBrush}"
-                       VerticalAlignment="Center"/>
-          </StackPanel>
-        </Border>
-
-        <ContentControl Grid.Row="1"
-                        Content="{Binding CurrentPage}"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"/>
+        <Grid Margin="32">
+          <ContentControl Content="{Binding CurrentPage}"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"/>
         </Grid>
       </ScrollViewer>
     </Grid>
