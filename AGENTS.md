@@ -18,6 +18,12 @@
 - 如果修改接口、权限、OIDC、部署或本地数据库流程，必须同步更新对应文档。
 - 如果发现用户已有未提交修改，先识别是否和任务相关；不要回滚用户改动。
 
+## 本地开发凭据
+
+- 管理员用户名为 `admin`；管理员密码只从仓库根目录 `.env` 的 `LUMINE_AUTH_ADMIN_PASSWORD` 读取，不在本文件、其他文档或提交中记录明文。
+- 本地 MySQL 使用宿主机 `3307` 端口；root 密码只从 `.env` 的 `LUMINE_AUTH_MYSQL_ROOT_PASSWORD` 读取，不在本文件、其他文档或提交中记录明文。
+- `.env` 是本机私密配置，禁止提交；需要重置管理员密码时修改对应键后执行 `.\scripts\init-local-db.ps1 -ForceUpdateAdminPassword`。
+
 ## 常用验证
 
 在仓库根目录执行：
