@@ -59,7 +59,12 @@ if ([string]::IsNullOrWhiteSpace($reportMindPassword)) {
     throw 'Set LUMINE_AUTH_REPORTMIND_USER_PASSWORD in .env before running this script.'
 }
 
-$connectionString = "server=localhost;port=3307;database=$mysqlDatabase;user=$mysqlUser;password=$mysqlPassword;"
+$mysqlPort = if ([string]::IsNullOrWhiteSpace($env:LUMINE_AUTH_MYSQL_PORT)) { '13307' } else { $env:LUMINE_AUTH_MYSQL_PORT }
+if ($mysqlPort -notmatch '^\d+$') {
+    throw 'LUMINE_AUTH_MYSQL_PORT must be a valid TCP port.'
+}
+
+$connectionString = "server=localhost;port=$mysqlPort;database=$mysqlDatabase;user=$mysqlUser;password=$mysqlPassword;"
 
 function Get-FileTextOrEmpty {
     param(
@@ -118,7 +123,7 @@ if ($readyCheckFailed) {
     throw 'MySQL container did not become reachable in time.'
 }
 
-Write-Host '==> MySQL is ready on localhost:3307'
+Write-Host "==> MySQL is ready on localhost:$mysqlPort"
 
 if ($SkipBootstrap) {
     Write-Host '==> Bootstrap skipped. Database container is running.'
@@ -177,5 +182,5 @@ docker exec -e MYSQL_PWD=$mysqlPassword $containerName mysql -h 127.0.0.1 -P 330
 
 Write-Host ''
 Write-Host 'Local database initialization completed.'
-Write-Host "Connection: server=localhost;port=3307;database=$mysqlDatabase;user=$mysqlUser;password=<from LUMINE_AUTH_MYSQL_PASSWORD>"
+Write-Host "Connection: server=localhost;port=$mysqlPort;database=$mysqlDatabase;user=$mysqlUser;password=<from LUMINE_AUTH_MYSQL_PASSWORD>"
 Write-Host 'Default admin: admin / value from LUMINE_AUTH_ADMIN_PASSWORD'

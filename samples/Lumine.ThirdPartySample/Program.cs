@@ -28,7 +28,8 @@ builder.Services
         {
             ValidateIssuer = true,
             ValidIssuer = issuer.TrimEnd('/'),
-            ValidateAudience = false,
+            ValidateAudience = true,
+            ValidAudience = clientId,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             NameClaimType = "username",
