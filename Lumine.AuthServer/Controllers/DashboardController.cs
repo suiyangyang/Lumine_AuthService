@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Lumine.AuthServer.Application.DTOs;
+using Lumine.AuthServer.Domain.Entities;
 using Lumine.AuthServer.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -80,6 +81,7 @@ namespace Lumine.AuthServer.Controllers
                 ? await _dbContext.OidcClients
                     .AsNoTracking()
                     .Where(item => item.IsActive
+                        && !string.Equals(item.ClientId, ApiKeyClientIds.LabChromKnowledge, StringComparison.OrdinalIgnoreCase)
                         && (!item.RedirectUris.Any() || item.AllowedScopes == string.Empty))
                     .CountAsync(cancellationToken)
                 : null;

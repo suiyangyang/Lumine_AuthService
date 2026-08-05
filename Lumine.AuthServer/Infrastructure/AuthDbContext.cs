@@ -20,6 +20,7 @@ namespace Lumine.AuthServer.Infrastructure
         public DbSet<OidcClientRedirectUri> OidcClientRedirectUris => Set<OidcClientRedirectUri>();
         public DbSet<AuthorizationCode> AuthorizationCodes => Set<AuthorizationCode>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
         public DbSet<AuditLogEntry> AuditLogEntries => Set<AuditLogEntry>();
         public DbSet<PortalMenu> PortalMenus => Set<PortalMenu>();
         public DbSet<DbVersion> DbVersions => Set<DbVersion>();
@@ -181,6 +182,24 @@ namespace Lumine.AuthServer.Infrastructure
                     .OnDelete(DeleteBehavior.Cascade);
                 b.HasOne(item => item.User)
                     .WithMany()
+                    .HasForeignKey(item => item.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ApiKey>(b =>
+            {
+                b.ToTable("ApiKeys");
+                b.HasKey(item => item.Id);
+                b.Property(item => item.ClientId).IsRequired().HasMaxLength(128);
+                b.Property(item => item.KeyPrefix).IsRequired().HasMaxLength(16);
+                b.Property(item => item.KeyHash).IsRequired().HasMaxLength(64);
+                b.Property(item => item.CreateTime).IsRequired();
+                b.Property(item => item.Status).IsRequired().HasMaxLength(32);
+                b.HasIndex(item => item.KeyHash).IsUnique();
+                b.HasIndex(item => new { item.UserId, item.Status });
+                b.HasIndex(item => item.ExpireTime);
+                b.HasOne(item => item.User)
+                    .WithMany(user => user.ApiKeys)
                     .HasForeignKey(item => item.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
             });

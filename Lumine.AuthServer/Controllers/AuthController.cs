@@ -70,6 +70,10 @@ namespace Lumine.AuthServer.Controllers
             {
                 return BadRequest(new { error = "invalid_scope", message = ex.Message[15..] });
             }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("invalid_client::", StringComparison.Ordinal))
+            {
+                return Unauthorized(new { error = "invalid_client", message = ex.Message[16..] });
+            }
             catch (InvalidOperationException ex) when (ex.Message.StartsWith("invalid_request::", StringComparison.Ordinal))
             {
                 return BadRequest(new { error = "invalid_request", message = ex.Message[17..] });
@@ -111,6 +115,56 @@ namespace Lumine.AuthServer.Controllers
             catch (InvalidOperationException ex) when (ex.Message.StartsWith("conflict::", StringComparison.Ordinal))
             {
                 return Conflict(new { error = "conflict", message = ex.Message[10..] });
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("api-key/token")]
+        public async Task<IActionResult> ApiKeyToken([FromBody] ApiKeyTokenRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await _authenticationAppService.LoginWithApiKeyAsync(
+                    new ApiKeyLoginInput(request.ApiKey, request.ClientId, request.Scope, request.Nonce),
+                    cancellationToken);
+
+                return Ok(new
+                {
+                    token = result.AccessToken,
+                    access_token = result.AccessToken,
+                    token_type = "Bearer",
+                    expires_in = result.ExpiresIn,
+                    scope = result.Scope,
+                    id_token = result.IdToken,
+                    user = new
+                    {
+                        result.User.Id,
+                        result.User.UserName,
+                        result.User.Email,
+                        Roles = result.Roles.Select(role => role.Name).ToList(),
+                        Permissions = result.Permissions
+                    }
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = "invalid_request", message = ex.Message });
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("invalid_scope::", StringComparison.Ordinal))
+            {
+                return BadRequest(new { error = "invalid_scope", message = ex.Message[15..] });
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("invalid_client::", StringComparison.Ordinal))
+            {
+                return Unauthorized(new { error = "invalid_client", message = ex.Message[16..] });
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("invalid_request::", StringComparison.Ordinal))
+            {
+                return BadRequest(new { error = "invalid_request", message = ex.Message[17..] });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { error = "invalid_grant", message = ex.Message });
             }
         }
 
@@ -254,6 +308,8 @@ namespace Lumine.AuthServer.Controllers
     }
 
     public record LoginRequest(string UserName, string Password, string? Scope = null, string? ClientId = null, string? Nonce = null);
+
+    public record ApiKeyTokenRequest(string ApiKey, string ClientId, string? Scope = null, string? Nonce = null);
 
     public record RegisterRequest(string UserName, string Email, string Password, string? NickName = null, string? PhoneNumber = null);
 

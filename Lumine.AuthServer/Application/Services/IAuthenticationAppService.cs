@@ -6,12 +6,16 @@ namespace Lumine.AuthServer.Application.Services
     {
         Task<AuthenticationResult> LoginAsync(LoginInput input, CancellationToken cancellationToken = default);
 
+        Task<AuthenticationResult> LoginWithApiKeyAsync(ApiKeyLoginInput input, CancellationToken cancellationToken = default);
+
         Task<RegistrationResult> RegisterAsync(RegisterInput input, CancellationToken cancellationToken = default);
 
         Task LogoutAsync(LogoutInput input, CancellationToken cancellationToken = default);
     }
 
     public sealed record LoginInput(string UserName, string Password, string? Scope = null, string? ClientId = null, string? Nonce = null);
+
+    public sealed record ApiKeyLoginInput(string ApiKey, string ClientId, string? Scope = null, string? Nonce = null);
 
     public sealed record RegisterInput(string UserName, string Email, string Password, string? NickName = null, string? PhoneNumber = null);
 

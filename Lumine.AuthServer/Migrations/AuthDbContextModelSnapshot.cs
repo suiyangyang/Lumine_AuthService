@@ -22,6 +22,58 @@ namespace Lumine.AuthServer.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.ApiKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("ExpireTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("KeyHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("KeyPrefix")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<DateTime?>("LastUsedTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpireTime");
+
+                    b.HasIndex("KeyHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "Status");
+
+                    b.ToTable("ApiKeys", (string)null);
+                });
+
             modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.AuditLogEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -461,6 +513,17 @@ namespace Lumine.AuthServer.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.ApiKey", b =>
+                {
+                    b.HasOne("Lumine.AuthServer.Domain.Entities.User", "User")
+                        .WithMany("ApiKeys")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.OidcClientRedirectUri", b =>
                 {
                     b.HasOne("Lumine.AuthServer.Domain.Entities.OidcClient", "Client")
@@ -543,6 +606,8 @@ namespace Lumine.AuthServer.Migrations
 
             modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.User", b =>
                 {
+                    b.Navigation("ApiKeys");
+
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618

@@ -9,6 +9,8 @@ namespace Lumine.AuthServer.Infrastructure.Services
     {
         private static readonly TimeSpan AccessTokenLifetime = TimeSpan.FromHours(8);
         private readonly IUserRepository _userRepository;
+        private readonly IOidcClientRepository _oidcClientRepository;
+        private readonly IApiKeyRepository _apiKeyRepository;
         private readonly IPasswordService _passwordService;
         private readonly IOidcService _oidcService;
         private readonly IOidcSigningCredentialsService _signingCredentialsService;
@@ -16,12 +18,16 @@ namespace Lumine.AuthServer.Infrastructure.Services
 
         public AuthenticationAppService(
             IUserRepository userRepository,
+            IOidcClientRepository oidcClientRepository,
+            IApiKeyRepository apiKeyRepository,
             IPasswordService passwordService,
             IOidcService oidcService,
             IOidcSigningCredentialsService signingCredentialsService,
             IAuditLogService auditLogService)
         {
             _userRepository = userRepository;
+            _oidcClientRepository = oidcClientRepository;
+            _apiKeyRepository = apiKeyRepository;
             _passwordService = passwordService;
             _oidcService = oidcService;
             _signingCredentialsService = signingCredentialsService;
@@ -30,30 +36,22 @@ namespace Lumine.AuthServer.Infrastructure.Services
 
         public async Task<AuthenticationResult> LoginAsync(LoginInput input, CancellationToken cancellationToken = default)
         {
-            IReadOnlyCollection<string> scopes;
-            try
-            {
-                scopes = _oidcService.NormalizeScopes(input.Scope);
-            }
-            catch (ArgumentException ex)
-            {
-                throw new InvalidOperationException($"invalid_scope::{ex.Message}");
-            }
+            var (client, scopes) = await ValidateClientAndScopesAsync(input.ClientId, input.Scope, cancellationToken);
 
             var normalizedUserName = string.IsNullOrWhiteSpace(input.UserName)
-                ? throw new InvalidOperationException("invalid_request::用户名不能为空。")
+                ? throw new InvalidOperationException("invalid_request::用户名或邮箱不能为空。")
                 : input.UserName.Trim();
 
-            var user = await _userRepository.GetByUserNameAsync(normalizedUserName);
+            var user = await _userRepository.GetByUserNameOrEmailAsync(normalizedUserName);
             if (user == null || !user.IsActive)
             {
                 await _auditLogService.WriteAsync(
                     "认证",
                     "登录",
                     normalizedUserName,
-                    input.ClientId?.Trim() ?? "后台登录",
+                    client.ClientId,
                     "失败",
-                    "用户名不存在或账号已停用。",
+                    "用户名或邮箱不存在，或账号已停用。",
                     occurredAtUtc: DateTime.UtcNow,
                     cancellationToken: cancellationToken);
                 throw new UnauthorizedAccessException("用户名或密码错误。");
@@ -65,7 +63,7 @@ namespace Lumine.AuthServer.Infrastructure.Services
                     "认证",
                     "登录",
                     user.UserName,
-                    input.ClientId?.Trim() ?? "后台登录",
+                    client.ClientId,
                     "失败",
                     "密码校验失败。",
                     occurredAtUtc: DateTime.UtcNow,
@@ -78,18 +76,98 @@ namespace Lumine.AuthServer.Infrastructure.Services
                 user.SetPasswordHash(_passwordService.HashPassword(user, input.Password));
             }
 
-            var audience = string.IsNullOrWhiteSpace(input.ClientId) ? "lumine.authserver" : input.ClientId.Trim();
-            user.MarkLoginSucceeded();
+            return await IssueTokenAsync(user, client, scopes, input.Nonce, null, cancellationToken);
+        }
+
+        public async Task<AuthenticationResult> LoginWithApiKeyAsync(ApiKeyLoginInput input, CancellationToken cancellationToken = default)
+        {
+            var (client, scopes) = await ValidateClientAndScopesAsync(input.ClientId, input.Scope, cancellationToken);
+            var apiKeyValue = string.IsNullOrWhiteSpace(input.ApiKey)
+                ? throw new InvalidOperationException("invalid_request::apiKey 不能为空。")
+                : input.ApiKey.Trim();
+            var apiKey = await _apiKeyRepository.GetByHashAsync(ApiKey.ComputeHash(apiKeyValue), cancellationToken);
+            var now = DateTime.UtcNow;
+            if (apiKey == null || !apiKey.IsUsable(client.ClientId, now))
+            {
+                await _auditLogService.WriteAsync(
+                    "认证",
+                    "API-KEY换取Token",
+                    "API-KEY",
+                    client.ClientId,
+                    "失败",
+                    "API-KEY 无效、已删除、已过期或与 client_id 不匹配。",
+                    occurredAtUtc: now,
+                    cancellationToken: cancellationToken);
+                throw new UnauthorizedAccessException("API-KEY 无效、已删除、已过期或与 client_id 不匹配。");
+            }
+
+            var user = apiKey.User ?? await _userRepository.GetByIdAsync(apiKey.UserId);
+            if (user == null || !user.IsActive)
+            {
+                throw new UnauthorizedAccessException("API-KEY 对应的账号不存在或已停用。");
+            }
+
+            return await IssueTokenAsync(user, client, scopes, input.Nonce, apiKey, cancellationToken);
+        }
+
+        private async Task<(OidcClient Client, IReadOnlyCollection<string> Scopes)> ValidateClientAndScopesAsync(
+            string? requestedClientId,
+            string? scope,
+            CancellationToken cancellationToken)
+        {
+            var clientId = string.IsNullOrWhiteSpace(requestedClientId)
+                ? throw new InvalidOperationException("invalid_client::client_id 不能为空。")
+                : requestedClientId.Trim();
+            var client = await _oidcClientRepository.GetByClientIdAsync(clientId, cancellationToken);
+            if (client == null || !client.IsActive)
+            {
+                throw new InvalidOperationException("invalid_client::客户端不存在或已停用。");
+            }
+
+            IReadOnlyCollection<string> scopes;
+            try
+            {
+                scopes = _oidcService.NormalizeScopes(scope);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidOperationException($"invalid_scope::{ex.Message}");
+            }
+
+            if (!client.AllowsScopes(scopes))
+            {
+                throw new InvalidOperationException("invalid_scope::客户端未被授予所请求的 scope。");
+            }
+
+            return (client, scopes);
+        }
+
+        private async Task<AuthenticationResult> IssueTokenAsync(
+            User user,
+            OidcClient client,
+            IReadOnlyCollection<string> scopes,
+            string? nonce,
+            ApiKey? apiKey,
+            CancellationToken cancellationToken)
+        {
+            var now = DateTime.UtcNow;
+            user.MarkLoginSucceeded(now);
             _userRepository.Update(user);
+            if (apiKey != null)
+            {
+                apiKey.MarkUsed(now);
+                _apiKeyRepository.Update(apiKey);
+            }
+
             await _userRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
             await _auditLogService.WriteAsync(
                 "认证",
-                "登录",
+                apiKey == null ? "登录" : "API-KEY换取Token",
                 user.UserName,
-                audience,
+                client.ClientId,
                 "成功",
                 $"Scopes: {(scopes.Count == 0 ? "无" : string.Join(' ', scopes))}",
-                occurredAtUtc: DateTime.UtcNow,
+                occurredAtUtc: now,
                 cancellationToken: cancellationToken);
 
             var roles = await _userRepository.GetUserRolesWithPermissionsAsync(user.Id);
@@ -99,8 +177,8 @@ namespace Lumine.AuthServer.Infrastructure.Services
                 .ToArray();
             var authTime = DateTimeOffset.UtcNow;
             var issuer = _signingCredentialsService.Issuer;
-            var accessToken = _oidcService.CreateAccessToken(user, roles, scopes, issuer, _signingCredentialsService.SigningCredentials, audience, AccessTokenLifetime);
-            var idToken = _oidcService.CreateIdToken(user, roles, scopes, issuer, _signingCredentialsService.SigningCredentials, audience, input.Nonce, authTime, AccessTokenLifetime);
+            var accessToken = _oidcService.CreateAccessToken(user, roles, scopes, issuer, _signingCredentialsService.SigningCredentials, client.ClientId, AccessTokenLifetime);
+            var idToken = _oidcService.CreateIdToken(user, roles, scopes, issuer, _signingCredentialsService.SigningCredentials, client.ClientId, nonce, authTime, AccessTokenLifetime);
 
             return new AuthenticationResult(
                 accessToken,

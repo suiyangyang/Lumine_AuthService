@@ -203,7 +203,10 @@ namespace Lumine.AuthServer.Infrastructure.Services
             }
             else
             {
-                adminUser.UpdateProfile(userName, email, adminUser.NickName ?? "系统管理员", adminUser.PhoneNumber, true);
+                // Existing users may have edited their profile from the portal.
+                // Keep those persisted values; seeding should only ensure the
+                // administrator remains active and has the configured role.
+                adminUser.SetActive(true);
 
                 if (_options.ForceUpdateAdminPassword)
                 {
@@ -238,6 +241,7 @@ namespace Lumine.AuthServer.Infrastructure.Services
                 if (user == null)
                 {
                     user = new User(Guid.NewGuid(), userName, email, string.Empty);
+                    user.UpdateProfile(userName, email, configuredUser.NickName, configuredUser.PhoneNumber, configuredUser.IsActive);
                     user.SetPasswordHash(_passwordService.HashPassword(user, password));
                     _dbContext.Users.Add(user);
                 }
@@ -246,7 +250,10 @@ namespace Lumine.AuthServer.Infrastructure.Services
                     user.SetPasswordHash(_passwordService.HashPassword(user, password));
                 }
 
-                user.UpdateProfile(userName, email, configuredUser.NickName, configuredUser.PhoneNumber, configuredUser.IsActive);
+                // Existing users may have edited their profile from the portal.
+                // Do not overwrite their username, email, nickname, or phone
+                // number on every service restart.
+                user.SetActive(configuredUser.IsActive);
 
                 var roleNames = configuredUser.Roles
                     .Where(item => !string.IsNullOrWhiteSpace(item))

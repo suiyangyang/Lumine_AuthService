@@ -126,8 +126,13 @@ namespace Lumine.AuthServer.Controllers
 
             user.UpdateProfile(normalizedUserName, request.Email.Trim(), request.NickName?.Trim(), request.PhoneNumber?.Trim(), user.IsActive);
 
+            _dbContext.Entry(user).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync(cancellationToken);
-            return Ok(MapUser(user));
+
+            var persistedUser = await QueryUsers(_dbContext.Users.AsNoTracking())
+                .FirstAsync(item => item.Id == user.Id, cancellationToken);
+
+            return Ok(MapUser(persistedUser));
         }
 
         [HttpPost("me/change-password")]

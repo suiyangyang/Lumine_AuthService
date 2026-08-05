@@ -126,6 +126,7 @@ namespace Lumine.AuthServer.Infrastructure.Services
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, user.UserName),
                 new("username", user.UserName),
+                new("credential_stamp", User.ComputeCredentialStamp(user.PasswordHash)),
                 new("token_use", "access_token")
             };
 

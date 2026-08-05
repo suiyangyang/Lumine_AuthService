@@ -11,6 +11,8 @@ namespace Lumine.AuthServer.Domain.Abstractions
         
         Task<User?> GetByUserNameAsync(string userName);
 
+        Task<User?> GetByUserNameOrEmailAsync(string account);
+
         /// <summary>
         /// Get all permissions for a user across all their roles
         /// </summary>

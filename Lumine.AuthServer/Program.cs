@@ -1,4 +1,5 @@
 using Lumine.AuthServer.Api.Auth;
+using Lumine.AuthServer.Domain.Entities;
 using Lumine.AuthServer.Application.Services;
 using Lumine.AuthServer.Domain.Abstractions;
 using Lumine.AuthServer.Infrastructure;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MySqlConnector;
+using System.Security.Claims;
 using System.Text.Json;
 
 LoadLocalDotEnv();
@@ -68,6 +70,7 @@ services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
 services.AddScoped<IOidcClientRepository, OidcClientRepository>();
 services.AddScoped<IAuthorizationCodeRepository, AuthorizationCodeRepository>();
 services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
 services.AddScoped<IPasswordHasher<Lumine.AuthServer.Domain.Entities.User>, PasswordHasher<Lumine.AuthServer.Domain.Entities.User>>();
 services.AddScoped<IPasswordService, PasswordService>();
 services.AddScoped<IOidcService, OidcService>();
@@ -120,6 +123,31 @@ services.AddAuthentication(options =>
 
     options.Events = new JwtBearerEvents
     {
+        OnTokenValidated = async context =>
+        {
+            var userIdValue = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? context.Principal?.FindFirst("sub")?.Value;
+            var credentialStamp = context.Principal?.FindFirst("credential_stamp")?.Value;
+
+            if (!Guid.TryParse(userIdValue, out var userId) || string.IsNullOrWhiteSpace(credentialStamp))
+            {
+                context.Fail("Bearer Token 缺少凭据版本信息。");
+                return;
+            }
+
+            var dbContext = context.HttpContext.RequestServices.GetRequiredService<AuthDbContext>();
+            var passwordHash = await dbContext.Users
+                .AsNoTracking()
+                .Where(user => user.Id == userId)
+                .Select(user => user.PasswordHash)
+                .SingleOrDefaultAsync(context.HttpContext.RequestAborted);
+
+            if (passwordHash == null
+                || !string.Equals(credentialStamp, User.ComputeCredentialStamp(passwordHash), StringComparison.Ordinal))
+            {
+                context.Fail("当前凭据已变更，请重新登录。");
+            }
+        },
         OnChallenge = async context =>
         {
             context.HandleResponse();
@@ -346,7 +374,7 @@ static void ApplyLocalMySqlConfiguration()
     var connectionStringBuilder = new MySqlConnectionStringBuilder
     {
         Server = string.IsNullOrWhiteSpace(host) ? "localhost" : host,
-        Port = uint.TryParse(port, out var parsedPort) ? parsedPort : 3307,
+        Port = uint.TryParse(port, out var parsedPort) ? parsedPort : 13307,
         Database = database,
         UserID = user,
         Password = password

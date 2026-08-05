@@ -1,6 +1,8 @@
 using Lumine.SeedWork.Abstractions;
 using Lumine.SeedWork.Base;
 using System.Data;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Lumine.AuthServer.Domain.Entities
 {
@@ -17,6 +19,7 @@ namespace Lumine.AuthServer.Domain.Entities
         public DateTime? LastLoginAtUtc { get; private set; }
 
         public ICollection<UserRole> UserRoles { get; private set; } = new List<UserRole>();
+        public ICollection<ApiKey> ApiKeys { get; private set; } = new List<ApiKey>();
 
         protected User() { }
 
@@ -47,6 +50,16 @@ namespace Lumine.AuthServer.Domain.Entities
             PasswordHash = string.IsNullOrWhiteSpace(passwordHash)
                 ? throw new ArgumentException("Password hash is required.", nameof(passwordHash))
                 : passwordHash;
+        }
+
+        public static string ComputeCredentialStamp(string passwordHash)
+        {
+            if (string.IsNullOrWhiteSpace(passwordHash))
+            {
+                return string.Empty;
+            }
+
+            return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(passwordHash)));
         }
 
         public void SetActive(bool isActive)

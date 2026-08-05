@@ -24,6 +24,9 @@ namespace Lumine.AuthServer.Infrastructure.Repositories
         public async Task<User?> GetByUserNameAsync(string userName)
             => await _db.Users.FirstOrDefaultAsync(u => u.UserName == userName);
 
+        public async Task<User?> GetByUserNameOrEmailAsync(string account)
+            => await _db.Users.FirstOrDefaultAsync(u => u.UserName == account || u.Email == account);
+
         /// <summary>
         /// Get all permissions for a user across all their roles
         /// </summary>
