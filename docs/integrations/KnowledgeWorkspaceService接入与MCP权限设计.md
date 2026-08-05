@@ -1,12 +1,12 @@
 # Knowledge Workspace Service 接入与 MCP 权限设计
 
-> 状态：接入设计
+> 状态：已实现 KWS 鉴权适配，客户端接入待确认
 > 更新时间：2026-08-05
 > 适用范围：Lumine AuthService 与 `knowledge-workspace-service` 的集成边界、MCP 工具权限映射和后续实现约定
 
 本文档总结 `E:\Work\Code\Tools\knowledge-workspace-service` 当前实现，并给出将其纳入 Lumine 认证与权限体系时的建议。
 
-当前 Lumine 仓库尚未实现对该服务的 Token 透传、MCP 代理或权限校验接管。`knowledge.instruments.view` 与 `knowledge.instruments.manage` 已加入 Lumine 权限种子，用于承接新增的仪器 MCP 接口；`knowledge.view`、`knowledge.manage`、`knowledge.maintenance` 仍属于整体 KWS 接入目标，尚未对 KWS 生效。
+当前 Lumine 仓库负责 API-KEY 管理、换取 `labchrom_knowledge` audience 的 JWT 以及权限种子；KWS 已实现 API-KEY→JWT 换取、JWKS/JWT 校验和 MCP 工具权限检查。Codex 的具体 MCP 客户端配置仍单独确认，本文不固化客户端配置细节。
 
 ## 1. 服务定位
 
@@ -24,15 +24,15 @@
 
 ## 2. MCP 工具和建议权限
 
-当前 MCP 工具共 21 个。建议在 Lumine 中采用 `module.action` 风格，使用一个知识库模块和五个权限点：
+当前 MCP 工具共 21 个。KWS 接收 Lumine API-KEY 后向 `/api/auth/api-key/token` 换取 JWT，再按 JWT 的 `permission` / `permissions` claims 执行以下权限检查：
 
 | 建议权限 | 权限含义 | 适用工具 |
 | --- | --- | --- |
 | `knowledge.view` | 读取和检查知识库，不改变正式知识或运行时索引 | `list_directory`、`read_file`、`search_files`、`search_knowledge`、`get_file_metadata`、`get_maintenance_status`、`check_knowledge`；`sync_knowledge(mode="dry_run")` |
-| `knowledge.manage` | 修改正式知识，或管理一次知识变更事务 | `create_file`、`write_file`、`patch_file`、`move_file`、`delete_file`；`begin_transaction`、`get_transaction`、`preview_transaction`、`commit_transaction`、`rollback_transaction` |
-| `knowledge.maintenance` | 应用目录与索引对账，或重建运行时索引 | `sync_knowledge(mode="apply")`、`rebuild_runtime_index` |
+| `knowledge.manage` | 修改正式知识，或管理一次知识变更事务；自动包含 `knowledge.view` | `create_file`、`write_file`、`patch_file`、`move_file`、`delete_file`；`begin_transaction`、`get_transaction`、`preview_transaction`、`commit_transaction`、`rollback_transaction` |
+| `knowledge.maintenance` | 应用目录与索引对账，或重建运行时索引；自动包含 `knowledge.view` | `sync_knowledge(mode="apply")`、`rebuild_runtime_index` |
 | `knowledge.instruments.view` | 查询知识库仪器索引，不修改仪器元数据 | `query_instruments_mcp` |
-| `knowledge.instruments.manage` | 更新仪器 occurrence、JSON 注册表和 `all_indexes.sqlite` | `update_instrument_metadata_mcp` |
+| `knowledge.instruments.manage` | 更新仪器 occurrence、JSON 注册表和 `all_indexes.sqlite`；自动包含仪器查询权限 | `update_instrument_metadata_mcp` |
 
 权限语义建议如下：
 
@@ -65,21 +65,19 @@ KWS 当前使用两枚环境变量 Token：
 
 KWS 会从 Token 派生脱敏的 `token_id`，事务所有权和审计以该 Token ID 为准；请求参数中的 `actor` 只是非权威元数据，不能伪造调用者身份。事务只能由创建它的同一 Token 继续预览、提交或回滚。
 
-需要注意当前源码的认证接线状态：`BearerTokenAuthenticator.verify_token` 已实现，工具层也有 editor/reader 的角色判断；但当前 `FastMCP(...)` 创建代码没有启用 SDK 的传输层认证 provider，`main.py` 的 `/mcp` 挂载仅负责延迟转发。因此，仓库 README 和安装校验中期望的“无 Token 返回 401”，不能仅凭当前源码视为已完成的端到端保证。正式接入 Lumine 前，必须先补齐并验证 MCP HTTP 入口的 Bearer 校验；否则普通只读工具可能绕过统一认证入口。
-
-因此，当前 KWS 不能直接接收 Lumine 签发的普通 OIDC JWT：当前实现是对两枚固定 Token 做比对，并不是按 Lumine 的 `sub`、角色或 `permission` claim 进行授权。当前 Lumine 也尚未实现 `client_credentials` grant，不能把它当成已经存在的机器到机器授权流程。
+KWS 直接接收 `Bearer sk-...` API-KEY，调用 Lumine 的 `/api/auth/api-key/token` 换取 access token，并通过配置的 JWKS 本地校验签名、issuer、audience、有效期、subject 和 `token_use=access_token`。API-KEY 只在请求处理和短期内存缓存中存在，不写入日志、审计、事务或运行时文件。旧 reader/editor Token 仍作为兼容入口。
 
 ## 5. 推荐集成方式
 
 ### 5.1 长期方案：KWS 接入 Lumine JWT
 
-推荐让 KWS 增加 Lumine OIDC/JWKS 验证适配层，或在 `/mcp/` 前增加受 Lumine 保护的 MCP 网关：
+KWS 当前已实现 Lumine API-KEY/JWKS 适配层：
 
-1. 校验 Lumine JWT 的 issuer、签名、有效期和 `sub`。
-2. 从 `permissions` claim 或 Lumine 的实时权限检查接口得到 `knowledge.*` 权限。
-3. 按工具和参数模式执行上表权限映射。
-4. 将 Lumine 的用户 ID 作为可信审计主体传给 KWS；不能继续依赖客户端可填写的 `actor` 字段。
-5. 事务所有权应绑定到用户/客户端身份，而不是所有用户共用一个 editor Token。
+1. 校验 Lumine JWT 的 issuer、签名、audience、有效期、`sub` 和 access-token 标识。
+2. 从 `permission` / `permissions` claims 得到 `knowledge.*` 权限。
+3. 在 MCP 统一工具包装层按工具和参数模式执行权限映射。
+4. 事务所有权绑定到 API-KEY 派生的脱敏身份；请求中的 `actor` 仍只是非权威元数据。
+5. API-KEY 默认每 5 分钟重新向 AuthService 换取一次 JWT，以便较快感知 API-KEY 撤销；若要求即时撤销，可增加实时权限检查。
 
 这种方式才能保留 Lumine 的用户级撤权、角色变更和审计关联能力。
 
@@ -99,10 +97,10 @@ KWS 会从 Token 派生脱敏的 `token_id`，事务所有权和审计以该 Tok
 
 当开始实际接入时，应按以下顺序修改：
 
-1. `knowledge.instruments.view` 与 `knowledge.instruments.manage` 已加入 `AuthSeedOptions` 和 `SeedData:Permissions`；后续整体 KWS 接入时，再新增 `knowledge.view`、`knowledge.manage`、`knowledge.maintenance`，并为目标角色分配权限。
+1. `knowledge.view`、`knowledge.manage`、`knowledge.maintenance`、`knowledge.instruments.view` 与 `knowledge.instruments.manage` 已加入 `AuthSeedOptions` 和 `SeedData:Permissions`；管理员种子角色会自动获得全部已配置权限，其他角色需显式分配。
 2. 在 KWS JWT 适配层或 MCP 网关中实现工具级权限检查；不要只在 AuthPortal 隐藏入口。
 3. 为 Lumine 用户、OIDC 客户端或服务账号定义调用身份和事务所有权规则。
 4. 将 KWS 接入说明、权限清单和必要的部署密钥配置同步到 `docs/integrations`、`docs/permissions` 和部署文档。
 5. 补充 reader/editor、五种 `knowledge.*` 权限、仪器查询/更新、dry-run/apply 和跨身份事务操作的集成测试。
 
-当前项目已经登记两项仪器权限，但在 KWS JWT 适配层或 MCP 网关完成前，不应宣称 Lumine 已经保护 KWS MCP 接口；整体 KWS 的三项通用权限也仍未生效。
+当前 KWS 已具备 Lumine API-KEY→JWT→MCP 权限检查链；Codex/QwenPaw 具体客户端如何注入 API-KEY，另行根据客户端能力确定。

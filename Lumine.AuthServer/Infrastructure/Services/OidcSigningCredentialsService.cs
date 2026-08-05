@@ -52,10 +52,18 @@ namespace Lumine.AuthServer.Infrastructure.Services
         public JsonWebKey GetJsonWebKey()
         {
             var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(_securityKey);
-            jwk.Kid = KeyId;
-            jwk.Use = "sig";
-            jwk.Alg = SecurityAlgorithms.RsaSha256;
-            return jwk;
+            // JWKS is a public endpoint.  Build a fresh JWK from only the
+            // RSA public parameters so private values (d/p/q/...) from the
+            // in-memory signing key can never be serialized.
+            return new JsonWebKey
+            {
+                Kty = jwk.Kty,
+                N = jwk.N,
+                E = jwk.E,
+                Kid = KeyId,
+                Use = "sig",
+                Alg = SecurityAlgorithms.RsaSha256
+            };
         }
 
         public void Dispose()

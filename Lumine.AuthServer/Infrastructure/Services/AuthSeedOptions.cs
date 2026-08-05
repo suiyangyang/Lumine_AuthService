@@ -28,6 +28,9 @@ namespace Lumine.AuthServer.Infrastructure.Services
             new() { Name = "permissions.manage", DisplayName = "管理权限" },
             new() { Name = "clients.view", DisplayName = "查看客户端" },
             new() { Name = "clients.manage", DisplayName = "管理客户端" },
+            new() { Name = "knowledge.view", DisplayName = "查看知识库" },
+            new() { Name = "knowledge.manage", DisplayName = "维护知识库" },
+            new() { Name = "knowledge.maintenance", DisplayName = "维护知识库索引" },
             new() { Name = "knowledge.instruments.view", DisplayName = "查询知识库仪器" },
             new() { Name = "knowledge.instruments.manage", DisplayName = "维护知识库仪器元数据" }
         ];
