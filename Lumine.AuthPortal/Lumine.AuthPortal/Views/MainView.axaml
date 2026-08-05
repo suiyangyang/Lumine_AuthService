@@ -190,7 +190,8 @@
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="8"/>
       <Setter Property="Padding" Value="10,8"/>
-      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
     </Style>
     <Style Selector="Button.account-menu-item /template/ ContentPresenter">
       <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
@@ -237,6 +238,114 @@
     <Style Selector="Button.account-menu-item:pressed /template/ Border#border">
       <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="10,8"/>
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout /template/ Border#border">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout:pointerover">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftHoverForegroundBrush}"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftHoverForegroundBrush}"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftHoverForegroundBrush}"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout:pointerover /template/ Border#border">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout:pressed">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftPressedForegroundBrush}"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftPressedForegroundBrush}"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftPressedForegroundBrush}"/>
+    </Style>
+    <Style Selector="Button.account-menu-logout:pressed /template/ Border#border">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="Border.app-toast">
+      <Setter Property="Background" Value="{DynamicResource SurfacePanelBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="14,10"/>
+      <Setter Property="Opacity" Value="0"/>
+      <Setter Property="RenderTransform">
+        <Setter.Value>
+          <TranslateTransform Y="-28"/>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="Transitions">
+        <Setter.Value>
+          <Transitions>
+            <DoubleTransition Property="Opacity" Duration="0:0:0.18"/>
+            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22"/>
+          </Transitions>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style Selector="Border.app-toast.toast-visible">
+      <Setter Property="Opacity" Value="1"/>
+      <Setter Property="RenderTransform">
+        <Setter.Value>
+          <TranslateTransform Y="0"/>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style Selector="Border.app-toast.toast-success">
+      <Setter Property="Background" Value="{DynamicResource SuccessBannerBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SuccessBannerBorderBrush}"/>
+    </Style>
+    <Style Selector="Border.app-toast.toast-error">
+      <Setter Property="Background" Value="{DynamicResource DangerSoftBackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource DangerSoftBorderBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.app-toast-text">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Border.app-toast.toast-success TextBlock.app-toast-text">
+      <Setter Property="Foreground" Value="{DynamicResource SuccessBannerForegroundBrush}"/>
+    </Style>
+    <Style Selector="Border.app-toast.toast-error TextBlock.app-toast-text">
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}"/>
     </Style>
   </UserControl.Styles>
 
@@ -443,24 +552,6 @@
                     </StackPanel>
                   </Border>
 
-                  <StackPanel Spacing="6">
-                    <TextBlock Text="角色标签" Classes="account-label"/>
-                    <ItemsControl ItemsSource="{Binding AccountRoles}">
-                      <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                          <WrapPanel ItemHeight="28"/>
-                        </ItemsPanelTemplate>
-                      </ItemsControl.ItemsPanel>
-                      <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                          <Border Classes="account-chip" Margin="0,0,8,8">
-                            <TextBlock Text="{Binding .}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"/>
-                          </Border>
-                        </DataTemplate>
-                      </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                  </StackPanel>
-
                   <StackPanel Spacing="4">
                     <Button Classes="account-menu-item"
                             Command="{Binding OpenProfileCenterCommand}"
@@ -470,7 +561,7 @@
                             Content="安全设置"/>
                   </StackPanel>
 
-                  <Button Classes="admin-button admin-danger-solid"
+                  <Button Classes="account-menu-logout"
                           Content="退出登录"
                           Command="{Binding LogoutCommand}"
                           MinHeight="34"/>
@@ -498,5 +589,131 @@
               IsVisible="{Binding IsAccountMenuOpen}"
               Command="{Binding CloseAccountMenuCommand}"/>
     </Grid>
+
+    <Grid IsVisible="{Binding IsAuthenticated}">
+      <Border x:CompileBindings="False"
+              DataContext="{Binding CurrentPage}"
+              Classes="dialog-backdrop"
+              IsVisible="{Binding IsApiKeyRevealDialogOpen}">
+      <Grid>
+        <Button Background="Transparent"
+                BorderThickness="0"
+                Command="{Binding CloseApiKeyRevealDialogCommand}"/>
+        <Border Classes="dialog-card"
+                Width="620"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="16">
+            <StackPanel Spacing="5">
+              <TextBlock Text="API-KEY 已生成"
+                         FontSize="22"
+                         FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}"/>
+              <TextBlock Text="请立即复制完整 API-KEY；关闭此窗口后将不再显示完整内容。"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         TextWrapping="Wrap"/>
+            </StackPanel>
+            <TextBox Grid.Row="1"
+                     Text="{Binding NewlyGeneratedApiKey}"
+                     IsReadOnly="True"
+                     FontFamily="Consolas"/>
+            <Border Grid.Row="2" Classes="admin-danger-banner" Padding="12">
+              <TextBlock Text="API-KEY 等同于密码，请妥善保管，不要提交到代码仓库或发送给他人；如有泄露，请立即删除并重新生成。"
+                         Foreground="{DynamicResource TextOnAccentBrush}"
+                         TextWrapping="Wrap"/>
+            </Border>
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        Spacing="10"
+                        HorizontalAlignment="Right">
+              <Button Content="复制 API-KEY"
+                      Classes="admin-button admin-primary"
+                      Tag="{Binding NewlyGeneratedApiKey}"
+                      Click="OnCopyApiKeyClick"
+                      Padding="14,8"/>
+              <Button Content="我已妥善保存，关闭"
+                      Classes="admin-button"
+                      Command="{Binding CloseApiKeyRevealDialogCommand}"
+                      Padding="14,8"/>
+            </StackPanel>
+          </Grid>
+        </Border>
+      </Grid>
+      </Border>
+
+      <Border x:CompileBindings="False"
+              DataContext="{Binding CurrentPage}"
+              Classes="dialog-backdrop"
+              IsVisible="{Binding IsApiKeyDeleteDialogOpen}">
+      <Grid>
+        <Button Background="Transparent"
+                BorderThickness="0"
+                Command="{Binding CancelDeleteApiKeyCommand}"/>
+        <Border Classes="dialog-card"
+                Width="560"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <StackPanel Spacing="16">
+            <TextBlock Text="确认删除 API-KEY"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <TextBlock Text="{Binding ApiKeyDeleteConfirmationText}"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal"
+                        Spacing="10"
+                        HorizontalAlignment="Right">
+              <Button Content="取消"
+                      Classes="admin-button"
+                      Command="{Binding CancelDeleteApiKeyCommand}"
+                      Padding="14,8"/>
+              <Button Content="确认删除"
+                      Classes="admin-button admin-danger-solid"
+                      Command="{Binding ConfirmDeleteApiKeyCommand}"
+                      Padding="14,8"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Grid>
+      </Border>
+    </Grid>
+
+    <Border Classes="dialog-backdrop" IsVisible="{Binding IsReLoginDialogOpen}">
+      <Border Classes="dialog-card"
+              Width="420"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="14">
+          <TextBlock Text="需要重新登录"
+                     FontSize="22"
+                     FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <TextBlock Text="密码已修改，当前登录令牌已失效。请重新登录后继续使用。"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     TextWrapping="Wrap"/>
+          <Button Content="重新登录"
+                  Classes="admin-button admin-primary"
+                  Command="{Binding ConfirmReLoginCommand}"
+                  HorizontalAlignment="Right"
+                  Padding="16,8"/>
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <Border Classes="app-toast"
+            Classes.toast-success="{Binding IsToastSuccess}"
+            Classes.toast-error="{Binding IsToastError}"
+            Classes.toast-visible="{Binding IsToastVisible}"
+            IsHitTestVisible="{Binding IsToastVisible}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Margin="0,24,0,0"
+            ZIndex="200">
+      <TextBlock Text="{Binding ToastMessage}"
+                 Classes="app-toast-text"
+                 TextWrapping="Wrap"
+                 MaxWidth="360"/>
+    </Border>
   </Grid>
 </UserControl>

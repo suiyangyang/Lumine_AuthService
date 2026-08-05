@@ -215,7 +215,7 @@
             <Setter Property="Padding" Value="12" />
         </Style>
         <Style Selector="ListBoxItem:pointerover Border.admin-row-card">
-            <Setter Property="Background" Value="{DynamicResource SurfaceSelectedHoverBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
         </Style>
         <Style Selector="ListBoxItem:selected Border.admin-row-card">
@@ -223,11 +223,11 @@
             <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}" />
         </Style>
         <Style Selector="ListBoxItem:selected:pointerover Border.admin-row-card">
-            <Setter Property="Background" Value="{DynamicResource SurfaceSelectedHoverBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveBrush}" />
         </Style>
         <Style Selector="ListBoxItem:pressed Border.admin-row-card">
-            <Setter Property="Background" Value="{DynamicResource SurfaceSelectedPressedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceSoftBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource BorderActiveStrongBrush}" />
         </Style>
         <Style Selector="Border.admin-search-shell">
@@ -822,13 +822,44 @@
         </Style>
         <Style Selector="ListBoxItem">
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="ListBoxItem:pointerover">
             <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="ListBoxItem:selected">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{DynamicResource TextOnSelectedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="ListBoxItem:selected:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:pressed">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:selected /template/ Border#border">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:selected:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:pressed /template/ Border#border">
+            <Setter Property="Background" Value="Transparent" />
         </Style>
         <Style Selector="CheckBox">
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />

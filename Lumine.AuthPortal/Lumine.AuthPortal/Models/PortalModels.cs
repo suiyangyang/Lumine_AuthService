@@ -103,7 +103,9 @@ public sealed record OidcClientDto(Guid Id, string ClientId, string ClientName, 
 {
     public string StatusText => IsActive ? "启用" : "停用";
 
-    public bool HasConfigurationWarning => IsActive && (AllowedScopes.Count == 0 || RedirectUris.Count == 0);
+    public bool HasConfigurationWarning => IsActive
+        && !string.Equals(ClientId, "labchrom_knowledge", StringComparison.OrdinalIgnoreCase)
+        && (AllowedScopes.Count == 0 || RedirectUris.Count == 0);
 
     public string ConfigurationWarningText => !HasConfigurationWarning
         ? string.Empty
@@ -129,6 +131,40 @@ public sealed record ResetUserPasswordRequestDto(string Password);
 public sealed record UpdateCurrentUserProfileRequestDto(string UserName, string Email, string? NickName, string? PhoneNumber);
 
 public sealed record ChangeCurrentUserPasswordRequestDto(string CurrentPassword, string NewPassword);
+
+public sealed record ApiKeyDto(
+    Guid Id,
+    Guid UserId,
+    string ClientId,
+    string KeyPrefix,
+    DateTime CreateTime,
+    DateTime? ExpireTime,
+    string Status,
+    DateTime? LastUsedTime)
+{
+    public string StatusText => string.Equals(Status, "active", StringComparison.OrdinalIgnoreCase) ? "有效" : "已删除";
+
+    public string CreateTimeDisplay => CreateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
+
+    public string ExpireTimeDisplay => ExpireTime.HasValue ? ExpireTime.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm") : "永久有效";
+
+    public string LastUsedTimeDisplay => LastUsedTime.HasValue ? LastUsedTime.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm") : "尚未使用";
+
+    public bool IsRevoked => !string.Equals(Status, "active", StringComparison.OrdinalIgnoreCase);
+}
+
+public sealed record CreatedApiKeyDto(
+    Guid Id,
+    Guid UserId,
+    string ClientId,
+    string KeyPrefix,
+    DateTime CreateTime,
+    DateTime? ExpireTime,
+    string Status,
+    DateTime? LastUsedTime,
+    string ApiKey);
+
+public sealed record CreateApiKeyRequestDto(string ClientId, DateTime? ExpireTime = null);
 
 public sealed record ReplaceUserRolesRequestDto(List<Guid> RoleIds);
 

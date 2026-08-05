@@ -34,6 +34,9 @@
       <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}"/>
       <Setter Property="SelectionBrush" Value="{DynamicResource SelectionBrush}"/>
     </Style>
+    <Style Selector="TextBox.register-input.password-input-field">
+      <Setter Property="Padding" Value="12,10,44,10"/>
+    </Style>
     <Style Selector="TextBox.register-input /template/ Border#border">
       <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource BorderStrongBrush}"/>
@@ -108,6 +111,46 @@
     <Style Selector="Button.register-link-action:pressed">
       <Setter Property="Foreground" Value="{DynamicResource LinkPressedBrush}"/>
     </Style>
+    <Style Selector="Button.register-password-visibility-button">
+      <Setter Property="Width" Value="34"/>
+      <Setter Property="Height" Value="34"/>
+      <Setter Property="MinWidth" Value="34"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+    </Style>
+    <Style Selector="Button.register-password-visibility-button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <Style Selector="Button.register-password-visibility-button:pressed">
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <Style Selector="PathIcon.register-password-visibility-icon">
+      <Setter Property="Width" Value="18"/>
+      <Setter Property="Height" Value="18"/>
+    </Style>
+    <Style Selector="Button.register-back-button">
+      <Setter Property="Width" Value="32"/>
+      <Setter Property="Height" Value="32"/>
+      <Setter Property="MinWidth" Value="32"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    </Style>
+    <Style Selector="Button.register-back-button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.register-back-button:pressed">
+      <Setter Property="Background" Value="{DynamicResource SurfacePressedBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
     <Style Selector="Border.register-status-banner">
       <Setter Property="Background" Value="{DynamicResource SurfaceInsetBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}"/>
@@ -142,12 +185,22 @@
             MaxWidth="560">
       <Border Classes="register-shell">
         <Grid RowDefinitions="Auto,*,Auto">
-          <StackPanel Spacing="8">
-            <TextBlock Text="创建账号"
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <Button Classes="register-back-button"
+                    Command="{Binding OpenLoginCommand}"
+                    IsEnabled="{Binding CanInteract}"
+                    ToolTip.Tip="返回登录">
+              <PathIcon Data="{Binding BackIconData}"
+                        Width="18"
+                        Height="18"/>
+            </Button>
+            <TextBlock Grid.Column="1"
+                       Text="创建账号"
                        FontSize="26"
                        FontWeight="Bold"
-                       Foreground="{DynamicResource TextPrimaryBrush}"/>
-          </StackPanel>
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center"/>
+          </Grid>
 
           <Border Grid.Row="1"
                   Classes="register-panel"
@@ -157,31 +210,45 @@
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          FontWeight="SemiBold"/>
 
-              <Grid ColumnDefinitions="*,*"
-                    ColumnSpacing="12"
-                    RowDefinitions="Auto,Auto,Auto"
-                    RowSpacing="12">
+              <StackPanel Spacing="12">
                 <StackPanel Spacing="6">
                   <TextBlock Text="用户名" Classes="form-label"/>
                   <TextBox Text="{Binding UserName}" Classes="register-input" Watermark="请输入用户名" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
                 </StackPanel>
-                <StackPanel Grid.Column="1" Spacing="6">
+                <StackPanel Spacing="6">
                   <TextBlock Text="邮箱" Classes="form-label"/>
                   <TextBox Text="{Binding Email}" Classes="register-input" Watermark="name@example.com" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
                 </StackPanel>
-                <StackPanel Grid.Row="1" Spacing="6">
+                <StackPanel Spacing="6">
                   <TextBlock Text="密码" Classes="form-label"/>
-                  <TextBox Text="{Binding Password}" Classes="register-input" PasswordChar="●" Watermark="请输入密码" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
+                  <Grid>
+                    <TextBox Text="{Binding Password}"
+                             Classes="register-input password-input-field"
+                             PasswordChar="{Binding PasswordMaskChar}"
+                             Watermark="请输入密码"
+                             IsEnabled="{Binding CanInteract}"
+                             KeyDown="RegisterInput_OnKeyDown"/>
+                    <Button Classes="register-password-visibility-button"
+                            Command="{Binding TogglePasswordVisibilityCommand}"
+                            IsEnabled="{Binding CanInteract}"
+                            ToolTip.Tip="{Binding PasswordVisibilityToolTip}"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="0,0,8,0">
+                      <PathIcon Data="{Binding PasswordVisibilityIconData}"
+                                Classes="register-password-visibility-icon"/>
+                    </Button>
+                  </Grid>
                 </StackPanel>
-                <StackPanel Grid.Row="1" Grid.Column="1" Spacing="6">
+                <StackPanel Spacing="6">
                   <TextBlock Text="昵称" Classes="form-label"/>
                   <TextBox Text="{Binding NickName}" Classes="register-input" Watermark="选填" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
                 </StackPanel>
-                <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Spacing="6">
+                <StackPanel Spacing="6">
                   <TextBlock Text="手机号" Classes="form-label"/>
                   <TextBox Text="{Binding PhoneNumber}" Classes="register-input" Watermark="选填" IsEnabled="{Binding CanInteract}" KeyDown="RegisterInput_OnKeyDown"/>
                 </StackPanel>
-              </Grid>
+              </StackPanel>
 
               <Button Classes="register-primary-action"
                       Content="{Binding RegisterButtonText}"

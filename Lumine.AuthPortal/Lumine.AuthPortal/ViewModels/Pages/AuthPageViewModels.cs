@@ -82,14 +82,19 @@ public partial class LoginPageViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(Password))
         {
-            SetStatus("请输入用户名和密码。", isError: true);
+            SetStatus("请输入用户名或邮箱和密码。", isError: true);
             return;
         }
 
         IsBusy = true;
         SetStatus("正在调用登录接口...");
 
-        var result = await _apiClient.LoginAsync(new LoginRequestDto(UserName, Password, null, null, null));
+        var result = await _apiClient.LoginAsync(new LoginRequestDto(
+            UserName,
+            Password,
+            null,
+            AppEnvironment.DefaultOidcClientId,
+            null));
         if (result.IsSuccess && result.Data != null)
         {
             _session.ApplyLogin(result.Data);
@@ -158,6 +163,9 @@ public partial class RegisterPageViewModel : ViewModelBase
     private string _password = string.Empty;
 
     [ObservableProperty]
+    private bool _showPassword;
+
+    [ObservableProperty]
     private string _nickName = string.Empty;
 
     [ObservableProperty]
@@ -180,6 +188,14 @@ public partial class RegisterPageViewModel : ViewModelBase
     public bool CanInteract => !IsBusy;
 
     public bool HasStatusMessage => !string.IsNullOrWhiteSpace(StatusMessage);
+
+    public char PasswordMaskChar => ShowPassword ? '\0' : '●';
+
+    public StreamGeometry PasswordVisibilityIconData => NavigationIconData.Get(ShowPassword ? "close" : "eye");
+
+    public string PasswordVisibilityToolTip => ShowPassword ? "隐藏密码" : "显示密码";
+
+    public StreamGeometry BackIconData => NavigationIconData.Get("chevron-left");
 
     public RegisterPageViewModel(PortalApiClient apiClient, Action<string?, string?, bool> openLogin)
     {
@@ -211,6 +227,7 @@ public partial class RegisterPageViewModel : ViewModelBase
             UserName = string.Empty;
             Email = string.Empty;
             Password = string.Empty;
+            ShowPassword = false;
             NickName = string.Empty;
             PhoneNumber = string.Empty;
             SetStatus($"账号 {registeredUserName} 注册成功，请登录。", isSuccess: true);
@@ -228,6 +245,19 @@ public partial class RegisterPageViewModel : ViewModelBase
     private void OpenLogin()
     {
         _openLogin(null, null, false);
+    }
+
+    [RelayCommand]
+    private void TogglePasswordVisibility()
+    {
+        ShowPassword = !ShowPassword;
+    }
+
+    partial void OnShowPasswordChanged(bool value)
+    {
+        OnPropertyChanged(nameof(PasswordMaskChar));
+        OnPropertyChanged(nameof(PasswordVisibilityIconData));
+        OnPropertyChanged(nameof(PasswordVisibilityToolTip));
     }
 
     partial void OnIsBusyChanged(bool value)

@@ -1,8 +1,38 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Lumine.AuthPortal.ViewModels.Pages"
+             xmlns:model="using:Lumine.AuthPortal.Models"
              x:Class="Lumine.AuthPortal.Views.Pages.ProfileCenterPageView"
              x:DataType="vm:ProfileCenterPageViewModel">
+  <UserControl.Styles>
+    <Style Selector="TextBox.profile-password-input">
+      <Setter Property="Padding" Value="12,8,44,8"/>
+    </Style>
+    <Style Selector="Button.password-visibility-button">
+      <Setter Property="Width" Value="34"/>
+      <Setter Property="Height" Value="34"/>
+      <Setter Property="MinWidth" Value="34"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="{DynamicResource LoginMutedBrush}"/>
+    </Style>
+    <Style Selector="Button.password-visibility-button:pointerover">
+      <Setter Property="Background" Value="{DynamicResource LoginInputHoverBackgroundBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource LoginPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.password-visibility-button:pressed">
+      <Setter Property="Background" Value="{DynamicResource LoginSelectionBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource LoginPrimaryPressedBrush}"/>
+    </Style>
+    <Style Selector="PathIcon.password-visibility-icon">
+      <Setter Property="Width" Value="18"/>
+      <Setter Property="Height" Value="18"/>
+    </Style>
+  </UserControl.Styles>
+
+  <Grid>
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <StackPanel Spacing="16">
       <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="18" Padding="20">
@@ -16,111 +46,183 @@
                        FontWeight="Bold"/>
           </Border>
           <StackPanel Grid.Column="1" Spacing="8">
-            <TextBlock Text="个人中心" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <TextBlock Text="{Binding DisplayName}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
             <TextBlock Text="{Binding LoginStatus}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
             <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource StatusInfoBrush}" TextWrapping="Wrap"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-              <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="显示名称" Foreground="{DynamicResource TextMutedBrush}"/>
-                  <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
-              <Border Grid.Column="1" Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="主角色" Foreground="{DynamicResource TextMutedBrush}"/>
-                  <TextBlock Text="{Binding PrimaryRole}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
-            </Grid>
           </StackPanel>
         </Grid>
       </Border>
 
-      <ItemsControl ItemsSource="{Binding SummaryCards}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <UniformGrid Columns="4"/>
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate x:DataType="vm:ProfileInfoCardItemViewModel">
-            <Border Background="{DynamicResource SurfaceRaisedBrush}" BorderBrush="{Binding AccentColor}" BorderThickness="1.5" CornerRadius="14" Margin="0,0,12,0" Padding="16">
-              <StackPanel Spacing="8">
-                <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextMutedBrush}"/>
-                <TextBlock Text="{Binding Value}" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-              </StackPanel>
-            </Border>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-
-      <Grid ColumnDefinitions="1.1*,0.9*" ColumnSpacing="16">
-        <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
-          <StackPanel Spacing="14">
-            <TextBlock Text="资料编辑" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+      <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
+        <StackPanel Spacing="14">
+          <TextBlock Text="资料编辑" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+            <StackPanel Grid.Column="0" Spacing="14">
               <StackPanel Spacing="6">
                 <TextBlock Text="用户名" Foreground="{DynamicResource TextMutedBrush}"/>
-                <TextBox Text="{Binding UserName}" Watermark="请输入用户名"/>
+                <TextBox Text="{Binding UserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Watermark="请输入用户名"/>
               </StackPanel>
-              <StackPanel Grid.Column="1" Spacing="6">
+              <StackPanel Spacing="6">
                 <TextBlock Text="邮箱" Foreground="{DynamicResource TextMutedBrush}"/>
-                <TextBox Text="{Binding Email}" Watermark="请输入邮箱"/>
+                <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Watermark="请输入邮箱"/>
               </StackPanel>
-            </Grid>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
               <StackPanel Spacing="6">
                 <TextBlock Text="昵称" Foreground="{DynamicResource TextMutedBrush}"/>
-                <TextBox Text="{Binding NickName}" Watermark="选填"/>
+                <TextBox Text="{Binding NickName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Watermark="选填"/>
               </StackPanel>
-              <StackPanel Grid.Column="1" Spacing="6">
+              <StackPanel Spacing="6">
                 <TextBlock Text="手机号" Foreground="{DynamicResource TextMutedBrush}"/>
-                <TextBox Text="{Binding PhoneNumber}" Watermark="选填"/>
+                <TextBox Text="{Binding PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Watermark="选填"/>
               </StackPanel>
-            </Grid>
-            <StackPanel Orientation="Horizontal" Spacing="10">
-              <Button Content="刷新资料"
-                      Classes="admin-button"
-                      Command="{Binding LoadCommand}"
-                      Padding="14,8"/>
-              <Button Content="保存资料"
-                      Classes="admin-button admin-primary"
-                      Command="{Binding SaveCommand}"
-                      Padding="14,8"/>
             </StackPanel>
+          </Grid>
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button Content="刷新资料"
+                    Classes="admin-button"
+                    Command="{Binding LoadCommand}"
+                    Padding="14,8"/>
+            <Button Content="保存资料"
+                    Classes="admin-button admin-primary"
+                    Command="{Binding SaveCommand}"
+                    Padding="14,8"/>
           </StackPanel>
-        </Border>
+        </StackPanel>
+      </Border>
 
-        <Border Grid.Column="1" Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
-          <StackPanel Spacing="14">
-            <TextBlock Text="角色标签" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-            <ItemsControl ItemsSource="{Binding RoleTags}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <WrapPanel ItemHeight="32"/>
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
+      <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
+        <StackPanel Spacing="14">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel Spacing="5">
+              <TextBlock Text="API-KEY 接口管理" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+            </StackPanel>
+            <Button Grid.Column="1" Content="生成 API-KEY" Classes="admin-button admin-primary" Command="{Binding CreateApiKeyCommand}" Padding="14,8" IsEnabled="{Binding !IsBusy}"/>
+          </Grid>
+
+          <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14" IsVisible="{Binding HasApiKeys}">
+            <ItemsControl ItemsSource="{Binding ApiKeys}">
               <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <Border Background="{DynamicResource RoleTagBackgroundBrush}" CornerRadius="999" Padding="12,6" Margin="0,0,8,8">
-                    <TextBlock Text="{Binding .}" Foreground="{DynamicResource RoleTagForegroundBrush}"/>
+                <DataTemplate x:DataType="model:ApiKeyDto">
+                  <Border BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,12" Margin="0,0,0,12">
+                    <Grid ColumnDefinitions="*,*,*,Auto" ColumnSpacing="12">
+                      <StackPanel Spacing="3">
+                        <TextBlock Text="{Binding KeyPrefix}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        <TextBlock Text="{Binding ClientId}" Classes="admin-hint"/>
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Spacing="3">
+                        <TextBlock Text="创建时间" Classes="admin-hint"/>
+                        <TextBlock Text="{Binding CreateTimeDisplay}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                      </StackPanel>
+                      <StackPanel Grid.Column="2" Spacing="3">
+                        <TextBlock Text="最近使用" Classes="admin-hint"/>
+                        <TextBlock Text="{Binding LastUsedTimeDisplay}" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                      </StackPanel>
+                      <Button Grid.Column="3" Content="删除" Classes="admin-button admin-danger" Command="{Binding $parent[UserControl].DataContext.RequestDeleteApiKeyCommand}" CommandParameter="{Binding .}" IsVisible="{Binding !IsRevoked}" Padding="12,6" VerticalAlignment="Center"/>
+                    </Grid>
                   </Border>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <TextBlock Text="权限摘要" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          </Border>
+          <TextBlock Text="暂未生成 API-KEY。生成后请立即复制完整 key，并不要写入代码仓库、截图或公开聊天。"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     TextWrapping="Wrap"
+                     IsVisible="{Binding !HasApiKeys}"/>
+        </StackPanel>
+      </Border>
+
+      <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
+        <StackPanel Spacing="14">
+          <TextBlock Text="角色与权限" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <TextBlock Text="角色标签" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <ItemsControl ItemsSource="{Binding RoleTags}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Background="{DynamicResource RoleTagBackgroundBrush}" CornerRadius="999" Padding="12,6" Margin="0,0,8,8">
+                  <TextBlock Text="{Binding .}" Foreground="{DynamicResource RoleTagForegroundBrush}"/>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <TextBlock Text="权限摘要" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14">
             <TextBlock Text="{Binding PermissionSummary}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
-            <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14">
+          </Border>
+        </StackPanel>
+      </Border>
+
+      <Border Background="{DynamicResource SurfacePanelBrush}" BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="16" Padding="20">
+        <StackPanel Spacing="14">
+          <TextBlock Text="修改密码" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <TextBlock Text="修改后，下一次登录请使用新密码。" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+            <StackPanel Grid.Column="0" Spacing="14">
               <StackPanel Spacing="6">
-                <TextBlock Text="当前主角色" Foreground="{DynamicResource TextMutedBrush}"/>
-                <TextBlock Text="{Binding PrimaryRole}" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="SemiBold"/>
+                <TextBlock Text="当前密码" Foreground="{DynamicResource TextMutedBrush}"/>
+                <Grid>
+                  <TextBox Text="{Binding CurrentPassword}"
+                           Classes="profile-password-input"
+                           PasswordChar="{Binding CurrentPasswordMaskChar}"
+                           Watermark="请输入当前密码"/>
+                  <Button Classes="password-visibility-button"
+                          Command="{Binding ToggleCurrentPasswordVisibilityCommand}"
+                          ToolTip.Tip="{Binding CurrentPasswordVisibilityToolTip}"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center"
+                          Margin="0,0,8,0">
+                    <PathIcon Data="{Binding CurrentPasswordVisibilityIconData}" Classes="password-visibility-icon"/>
+                  </Button>
+                </Grid>
               </StackPanel>
-            </Border>
-          </StackPanel>
-        </Border>
-      </Grid>
+              <StackPanel Spacing="6">
+                <TextBlock Text="新密码" Foreground="{DynamicResource TextMutedBrush}"/>
+                <Grid>
+                  <TextBox Text="{Binding NewPassword}"
+                           Classes="profile-password-input"
+                           PasswordChar="{Binding NewPasswordMaskChar}"
+                           Watermark="请输入新密码"/>
+                  <Button Classes="password-visibility-button"
+                          Command="{Binding ToggleNewPasswordVisibilityCommand}"
+                          ToolTip.Tip="{Binding NewPasswordVisibilityToolTip}"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center"
+                          Margin="0,0,8,0">
+                    <PathIcon Data="{Binding NewPasswordVisibilityIconData}" Classes="password-visibility-icon"/>
+                  </Button>
+                </Grid>
+              </StackPanel>
+              <StackPanel Spacing="6">
+                <TextBlock Text="确认新密码" Foreground="{DynamicResource TextMutedBrush}"/>
+                <Grid>
+                  <TextBox Text="{Binding ConfirmNewPassword}"
+                           Classes="profile-password-input"
+                           PasswordChar="{Binding ConfirmNewPasswordMaskChar}"
+                           Watermark="请再次输入新密码"/>
+                  <Button Classes="password-visibility-button"
+                          Command="{Binding ToggleConfirmNewPasswordVisibilityCommand}"
+                          ToolTip.Tip="{Binding ConfirmNewPasswordVisibilityToolTip}"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center"
+                          Margin="0,0,8,0">
+                    <PathIcon Data="{Binding ConfirmNewPasswordVisibilityIconData}" Classes="password-visibility-icon"/>
+                  </Button>
+                </Grid>
+              </StackPanel>
+              <Button Content="立即修改密码"
+                      HorizontalAlignment="Left"
+                      Classes="admin-button admin-primary"
+                      Command="{Binding ChangePasswordCommand}"
+                      Padding="14,8"/>
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
     </StackPanel>
   </ScrollViewer>
+
+  </Grid>
 </UserControl>

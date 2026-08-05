@@ -27,6 +27,18 @@ public partial class MainViewModel : ViewModelBase
     private readonly ThemeService _themeService;
     private readonly Dictionary<string, Func<ViewModelBase>> _pageFactory;
     private readonly Dictionary<string, NavigationItemViewModel> _navigationLookup;
+    private CancellationTokenSource? _toastCancellation;
+
+    [ObservableProperty]
+    private string _toastMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _isToastVisible;
+
+    [ObservableProperty]
+    private bool _isToastSuccess;
+
+    public bool IsToastError => !IsToastSuccess;
 
     public MainViewModel(PortalApiClient apiClient, PortalSession session, ThemeService themeService)
     {
@@ -143,7 +155,7 @@ public partial class MainViewModel : ViewModelBase
             ["menus"] = () => new MenusManagementPageViewModel(_apiClient, _session, SyncNavigationFromServerAsync),
             ["settings"] = () => new SystemSettingsPageViewModel(_apiClient, _session, _themeService),
             ["audit"] = () => new AuditLogsPageViewModel(_apiClient, _session),
-            ["profile-center"] = () => new ProfileCenterPageViewModel(_apiClient, _session)
+            ["profile-center"] = () => new ProfileCenterPageViewModel(_apiClient, _session, HandlePasswordChanged, ShowToast)
         };
 
         RefreshNavigationVisibility();
@@ -228,7 +240,15 @@ public partial class MainViewModel : ViewModelBase
     private bool _isAccountMenuOpen;
 
     [ObservableProperty]
+    private bool _isReLoginDialogOpen;
+
+    [ObservableProperty]
     private string _currentPageKey = string.Empty;
+
+    partial void OnIsToastSuccessChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsToastError));
+    }
 
     [RelayCommand]
     private void Navigate(string key)
@@ -355,6 +375,16 @@ public partial class MainViewModel : ViewModelBase
         _session.Clear();
     }
 
+    [RelayCommand]
+    private void ConfirmReLogin()
+    {
+        IsReLoginDialogOpen = false;
+        if (!IsLoginPageSelected)
+        {
+            ShowLoginPage();
+        }
+    }
+
     private void UpdateSelectedNavigation(string key)
     {
         foreach (var item in NavigationItems)
@@ -450,7 +480,7 @@ public partial class MainViewModel : ViewModelBase
         return new LoginPageViewModel(
             _apiClient,
             _session,
-            () => Navigate("dashboard"),
+            NavigateAfterAuthentication,
             () => Navigate("register"),
             initialUserName,
             initialStatusMessage,
@@ -487,6 +517,46 @@ public partial class MainViewModel : ViewModelBase
         ShowLoginPage();
     }
 
+    private void HandlePasswordChanged()
+    {
+        IsAccountMenuOpen = false;
+        _session.Clear();
+        IsReLoginDialogOpen = true;
+    }
+
+    private async void ShowToast(string message, bool isSuccess)
+    {
+        _toastCancellation?.Cancel();
+        _toastCancellation?.Dispose();
+
+        var cancellation = new CancellationTokenSource();
+        _toastCancellation = cancellation;
+        ToastMessage = message;
+        IsToastSuccess = isSuccess;
+        IsToastVisible = true;
+
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(3), cancellation.Token);
+            if (!cancellation.IsCancellationRequested)
+            {
+                IsToastVisible = false;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            if (ReferenceEquals(_toastCancellation, cancellation))
+            {
+                _toastCancellation = null;
+            }
+
+            cancellation.Dispose();
+        }
+    }
+
     private void ShowLoginPage(string? initialStatusMessage = null, bool initialSuccessMessage = false)
     {
         SetCurrentPage(CreateLoginPage(initialStatusMessage: initialStatusMessage, initialSuccessMessage: initialSuccessMessage));
@@ -510,6 +580,11 @@ public partial class MainViewModel : ViewModelBase
 
     private void DisposeCurrentPage()
     {
+        if (CurrentPage is ProfileCenterPageViewModel profilePage)
+        {
+            profilePage.CloseApiKeyDialogs();
+        }
+
         (CurrentPage as IDisposable)?.Dispose();
     }
 

@@ -1,3 +1,4 @@
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lumine.AuthPortal.Models;
@@ -37,14 +38,21 @@ public abstract partial class AccountPageViewModelBase : ViewModelBase
 
 public partial class ProfileCenterPageViewModel : AccountPageViewModelBase
 {
-    public ProfileCenterPageViewModel(PortalApiClient apiClient, PortalSession session) : base(apiClient, session)
+    private readonly Action _onPasswordChanged;
+    private readonly Action<string, bool> _showToast;
+
+    public ProfileCenterPageViewModel(
+        PortalApiClient apiClient,
+        PortalSession session,
+        Action? onPasswordChanged = null,
+        Action<string, bool>? showToast = null) : base(apiClient, session)
     {
+        _onPasswordChanged = onPasswordChanged ?? (() => { });
+        _showToast = showToast ?? ((_, _) => { });
         Session.PropertyChanged += (_, _) =>
         {
             OnPropertyChanged(nameof(RoleTags));
-            OnPropertyChanged(nameof(PrimaryRole));
             OnPropertyChanged(nameof(PermissionSummary));
-            OnPropertyChanged(nameof(SummaryCards));
         };
 
         _ = LoadAsync();
@@ -65,11 +73,70 @@ public partial class ProfileCenterPageViewModel : AccountPageViewModelBase
     [ObservableProperty]
     private string _phoneNumber = string.Empty;
 
+    [ObservableProperty]
+    private string _currentPassword = string.Empty;
+
+    [ObservableProperty]
+    private string _newPassword = string.Empty;
+
+    [ObservableProperty]
+    private string _confirmNewPassword = string.Empty;
+
+    [ObservableProperty]
+    private bool _showCurrentPassword;
+
+    [ObservableProperty]
+    private bool _showNewPassword;
+
+    [ObservableProperty]
+    private bool _showConfirmNewPassword;
+
+    [ObservableProperty]
+    private IReadOnlyList<ApiKeyDto> _apiKeys = Array.Empty<ApiKeyDto>();
+
+    [ObservableProperty]
+    private ApiKeyDto? _pendingDeleteApiKey;
+
+    [ObservableProperty]
+    private bool _isApiKeyRevealDialogOpen;
+
+    [ObservableProperty]
+    private bool _isApiKeyDeleteDialogOpen;
+
+    [ObservableProperty]
+    private string _newlyGeneratedApiKey = string.Empty;
+
     public string DisplayName => string.IsNullOrWhiteSpace(Profile?.NickName) ? (Profile?.UserName ?? Session.UserName) : Profile.NickName!;
 
     public string LoginStatus => Session.IsAuthenticated ? "当前已登录，可编辑个人资料并同步到后台。" : "当前未登录，仅展示默认信息。";
 
-    public string PrimaryRole => RoleTags.FirstOrDefault() ?? (Session.IsAuthenticated ? "未分配角色" : "访客");
+    public char CurrentPasswordMaskChar => ShowCurrentPassword ? '\0' : '●';
+
+    public StreamGeometry CurrentPasswordVisibilityIconData => NavigationIconData.Get(ShowCurrentPassword ? "close" : "eye");
+
+    public string CurrentPasswordVisibilityToolTip => ShowCurrentPassword ? "隐藏密码" : "显示密码";
+
+    public char NewPasswordMaskChar => ShowNewPassword ? '\0' : '●';
+
+    public StreamGeometry NewPasswordVisibilityIconData => NavigationIconData.Get(ShowNewPassword ? "close" : "eye");
+
+    public string NewPasswordVisibilityToolTip => ShowNewPassword ? "隐藏密码" : "显示密码";
+
+    public char ConfirmNewPasswordMaskChar => ShowConfirmNewPassword ? '\0' : '●';
+
+    public StreamGeometry ConfirmNewPasswordVisibilityIconData => NavigationIconData.Get(ShowConfirmNewPassword ? "close" : "eye");
+
+    public string ConfirmNewPasswordVisibilityToolTip => ShowConfirmNewPassword ? "隐藏密码" : "显示密码";
+
+    public bool HasApiKeys => ApiKeys.Count > 0;
+
+    public bool HasPendingApiKeyDelete => PendingDeleteApiKey != null;
+
+    public string ApiKeyDeleteConfirmationText => PendingDeleteApiKey == null
+        ? string.Empty
+        : $"确认删除 {PendingDeleteApiKey.KeyPrefix}？删除后，使用该 API-KEY 的第三方请求将立即失效。";
+
+    public string ApiKeyClientId => "labchrom_knowledge";
 
     public IReadOnlyList<string> RoleTags => Profile?.Roles.Select(role => role.Name).ToArray()
         ?? (Session.Roles.Count == 0
@@ -82,14 +149,6 @@ public partial class ProfileCenterPageViewModel : AccountPageViewModelBase
         <= 6 => $"已分配权限：{string.Join("、", Session.Permissions)}",
         _ => $"已分配 {Session.Permissions.Count} 项权限，包含：{string.Join("、", Session.Permissions.Take(6))} 等。"
     };
-
-    public IReadOnlyList<ProfileInfoCardItemViewModel> SummaryCards =>
-    [
-        new("账号状态", Session.IsAuthenticated ? "已登录" : "未登录", Session.IsAuthenticated ? "当前会话有效，可直接访问后台页面。" : "登录后可使用后台功能。", "#2563EB"),
-        new("主角色", PrimaryRole, "用于快速识别当前账号所属职责。", "#7C3AED"),
-        new("角色数量", RoleTags.Count.ToString(), "展示当前账号拥有的角色标签数。", "#059669"),
-        new("权限数量", Session.Permissions.Count.ToString(), "权限数据来自当前登录态。", "#D97706")
-    ];
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -111,7 +170,123 @@ public partial class ProfileCenterPageViewModel : AccountPageViewModelBase
             StatusMessage = result.ErrorMessage ?? "加载个人资料失败。";
         }
 
+        await LoadApiKeysAsync();
+
         IsBusy = false;
+    }
+
+    private async Task LoadApiKeysAsync()
+    {
+        var result = await ApiClient.GetApiKeysAsync(Session.AccessToken);
+        if (result.IsSuccess && result.Data != null)
+        {
+            ApiKeys = result.Data;
+            return;
+        }
+
+        StatusMessage = result.ErrorMessage ?? "加载 API-KEY 列表失败。";
+    }
+
+    [RelayCommand]
+    private async Task CreateApiKeyAsync()
+    {
+        if (!EnsureAuthenticated())
+        {
+            return;
+        }
+
+        IsBusy = true;
+        var result = await ApiClient.CreateApiKeyAsync(
+            Session.AccessToken,
+            new CreateApiKeyRequestDto(ApiKeyClientId));
+        if (result.IsSuccess && result.Data != null)
+        {
+            NewlyGeneratedApiKey = result.Data.ApiKey;
+            IsApiKeyDeleteDialogOpen = false;
+            IsApiKeyRevealDialogOpen = true;
+            PendingDeleteApiKey = null;
+            await LoadApiKeysAsync();
+            StatusMessage = "API-KEY 已生成，请在关闭弹窗前复制并妥善保管。";
+        }
+        else
+        {
+            StatusMessage = result.ErrorMessage ?? "生成 API-KEY 失败。";
+        }
+
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private void RequestDeleteApiKey(ApiKeyDto? apiKey)
+    {
+        if (apiKey == null || apiKey.IsRevoked)
+        {
+            return;
+        }
+
+        IsApiKeyRevealDialogOpen = false;
+        NewlyGeneratedApiKey = string.Empty;
+        PendingDeleteApiKey = apiKey;
+        IsApiKeyDeleteDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmDeleteApiKeyAsync()
+    {
+        if (PendingDeleteApiKey == null || !EnsureAuthenticated())
+        {
+            return;
+        }
+
+        var apiKey = PendingDeleteApiKey;
+        IsBusy = true;
+        var result = await ApiClient.DeleteApiKeyAsync(Session.AccessToken, apiKey.Id);
+        if (result.IsSuccess)
+        {
+            ApiKeys = ApiKeys.Where(item => item.Id != apiKey.Id).ToArray();
+            _showToast("API-KEY 已删除。", true);
+        }
+        else
+        {
+            _showToast(result.ErrorMessage ?? "删除 API-KEY 失败。", false);
+        }
+
+        IsApiKeyDeleteDialogOpen = false;
+        PendingDeleteApiKey = null;
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private void CancelDeleteApiKey()
+    {
+        IsApiKeyDeleteDialogOpen = false;
+        PendingDeleteApiKey = null;
+    }
+
+    [RelayCommand]
+    private void CloseApiKeyRevealDialog()
+    {
+        IsApiKeyRevealDialogOpen = false;
+        NewlyGeneratedApiKey = string.Empty;
+    }
+
+    public void CloseApiKeyDialogs()
+    {
+        IsApiKeyRevealDialogOpen = false;
+        IsApiKeyDeleteDialogOpen = false;
+        PendingDeleteApiKey = null;
+        NewlyGeneratedApiKey = string.Empty;
+    }
+
+    partial void OnApiKeysChanged(IReadOnlyList<ApiKeyDto> value)
+    {
+        OnPropertyChanged(nameof(HasApiKeys));
+    }
+
+    partial void OnPendingDeleteApiKeyChanged(ApiKeyDto? value)
+    {
+        OnPropertyChanged(nameof(HasPendingApiKeyDelete));
+        OnPropertyChanged(nameof(ApiKeyDeleteConfirmationText));
     }
 
     [RelayCommand]
@@ -139,13 +314,99 @@ public partial class ProfileCenterPageViewModel : AccountPageViewModelBase
         {
             ApplyProfile(result.Data, syncSession: true);
             StatusMessage = "个人资料已保存。";
+            _showToast("资料保存成功。", true);
         }
         else
         {
             StatusMessage = result.ErrorMessage ?? "保存个人资料失败。";
+            _showToast(StatusMessage, false);
         }
 
         IsBusy = false;
+    }
+
+    [RelayCommand]
+    private async Task ChangePasswordAsync()
+    {
+        if (!EnsureAuthenticated())
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(CurrentPassword) || string.IsNullOrWhiteSpace(NewPassword))
+        {
+            StatusMessage = "请输入当前密码和新密码。";
+            return;
+        }
+
+        if (!string.Equals(NewPassword, ConfirmNewPassword, StringComparison.Ordinal))
+        {
+            StatusMessage = "两次输入的新密码不一致。";
+            return;
+        }
+
+        IsBusy = true;
+        var result = await ApiClient.ChangeCurrentUserPasswordAsync(
+            Session.AccessToken,
+            new ChangeCurrentUserPasswordRequestDto(CurrentPassword, NewPassword));
+
+        if (result.IsSuccess)
+        {
+            CurrentPassword = string.Empty;
+            NewPassword = string.Empty;
+            ConfirmNewPassword = string.Empty;
+            ShowCurrentPassword = false;
+            ShowNewPassword = false;
+            ShowConfirmNewPassword = false;
+            IsBusy = false;
+            _onPasswordChanged();
+            return;
+        }
+        else
+        {
+            StatusMessage = result.ErrorMessage ?? "修改密码失败。";
+        }
+
+        IsBusy = false;
+    }
+
+    [RelayCommand]
+    private void ToggleCurrentPasswordVisibility()
+    {
+        ShowCurrentPassword = !ShowCurrentPassword;
+    }
+
+    [RelayCommand]
+    private void ToggleNewPasswordVisibility()
+    {
+        ShowNewPassword = !ShowNewPassword;
+    }
+
+    [RelayCommand]
+    private void ToggleConfirmNewPasswordVisibility()
+    {
+        ShowConfirmNewPassword = !ShowConfirmNewPassword;
+    }
+
+    partial void OnShowCurrentPasswordChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CurrentPasswordMaskChar));
+        OnPropertyChanged(nameof(CurrentPasswordVisibilityIconData));
+        OnPropertyChanged(nameof(CurrentPasswordVisibilityToolTip));
+    }
+
+    partial void OnShowNewPasswordChanged(bool value)
+    {
+        OnPropertyChanged(nameof(NewPasswordMaskChar));
+        OnPropertyChanged(nameof(NewPasswordVisibilityIconData));
+        OnPropertyChanged(nameof(NewPasswordVisibilityToolTip));
+    }
+
+    partial void OnShowConfirmNewPasswordChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ConfirmNewPasswordMaskChar));
+        OnPropertyChanged(nameof(ConfirmNewPasswordVisibilityIconData));
+        OnPropertyChanged(nameof(ConfirmNewPasswordVisibilityToolTip));
     }
 
     private void ApplyProfile(UserDto profile, bool syncSession)
@@ -165,9 +426,7 @@ public partial class ProfileCenterPageViewModel : AccountPageViewModelBase
 
         OnPropertyChanged(nameof(DisplayName));
         OnPropertyChanged(nameof(RoleTags));
-        OnPropertyChanged(nameof(PrimaryRole));
         OnPropertyChanged(nameof(PermissionSummary));
-        OnPropertyChanged(nameof(SummaryCards));
     }
 
     private static string? EmptyToNull(string? value)
@@ -264,25 +523,6 @@ public partial class SecuritySettingsPageViewModel : AccountPageViewModelBase
 
         IsBusy = false;
     }
-}
-
-public sealed class ProfileInfoCardItemViewModel
-{
-    public ProfileInfoCardItemViewModel(string title, string value, string description, string accentColor)
-    {
-        Title = title;
-        Value = value;
-        Description = description;
-        AccentColor = accentColor;
-    }
-
-    public string Title { get; }
-
-    public string Value { get; }
-
-    public string Description { get; }
-
-    public string AccentColor { get; }
 }
 
 public sealed class SecurityCardItemViewModel

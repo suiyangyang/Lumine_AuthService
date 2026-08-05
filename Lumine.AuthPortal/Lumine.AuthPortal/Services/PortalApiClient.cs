@@ -170,6 +170,21 @@ public sealed class PortalApiClient
         return SendAsync<object>(HttpMethod.Post, "/api/users/me/change-password", request, accessToken, cancellationToken);
     }
 
+    public Task<ApiResult<IReadOnlyList<ApiKeyDto>>> GetApiKeysAsync(string accessToken, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<IReadOnlyList<ApiKeyDto>>(HttpMethod.Get, "/api/api-keys", bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
+    public Task<ApiResult<CreatedApiKeyDto>> CreateApiKeyAsync(string accessToken, CreateApiKeyRequestDto request, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<CreatedApiKeyDto>(HttpMethod.Post, "/api/api-keys", request, accessToken, cancellationToken);
+    }
+
+    public Task<ApiResult<object>> DeleteApiKeyAsync(string accessToken, Guid id, CancellationToken cancellationToken = default)
+    {
+        return SendAsync<object>(HttpMethod.Delete, $"/api/api-keys/{id}", bearerToken: accessToken, cancellationToken: cancellationToken);
+    }
+
     public Task<ApiResult<PagedResultDto<RoleDto>>> GetRolesAsync(string accessToken, int pageIndex = 1, int pageSize = PortalManagementDefaults.DefaultPageSize, string? keyword = null, CancellationToken cancellationToken = default)
     {
         var path = BuildQueryString("/api/roles", new Dictionary<string, string?>
@@ -382,6 +397,11 @@ public sealed class PortalApiClient
             using var response = await _httpClient.SendAsync(request, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    return ApiResult<T>.Success(default);
+                }
+
                 var data = await response.Content.ReadFromJsonAsync<T>(_jsonOptions, cancellationToken);
                 return ApiResult<T>.Success(data);
             }
