@@ -32,6 +32,7 @@ Lumine_AuthService/
 - 用户、角色、权限三级权限模型。
 - `PortalMenus` 持久化后台导航标题、分组、顺序、启停与权限绑定；Key、路由、图标和实现状态由 `PortalMenuCatalog` 注册。
 - OIDC 客户端、授权码、刷新令牌和 token 相关服务。
+- 用户 API-KEY 的生成、哈希持久化、删除和按 `client_id` 换取 access token。
 - AuthPortal 登录 Cookie 会话，以及第三方系统所需的当前用户权限读取和实时权限检查接口。
 - EF Core migration、数据库初始化和种子数据。
 - Swagger 权限说明和统一的 401/403 响应处理。
@@ -82,6 +83,11 @@ OIDC 相关代码主要在：
 - `GET /api/auth/me` 与 `GET /api/auth/me/permissions`：从数据库读取当前用户的实时角色、权限。
 - `POST /api/auth/check-permission`：按当前 Bearer Token 实时检查单个权限。
 
+API-KEY 入口：
+
+- `GET/POST/DELETE /api/api-keys`：当前用户管理自己的 API-KEY，完整 key 只在创建响应中出现一次。
+- `POST /api/auth/api-key/token`：携带 `apiKey` 和 `clientId` 换取与简化登录一致的 access token；当前支持的 API-KEY 客户端为 `labchrom_knowledge`。
+
 维护注意：
 
 - 修改授权码、token、scope、redirect uri、client secret 逻辑前，先读 `docs/auth/OAuth2.1-OIDC-Avalonia改造说明.md`。
@@ -100,7 +106,7 @@ OIDC 相关代码主要在：
 
 ## ReportMind 集成边界
 
-`ReportMind` 是独立仓库和独立容器，登录由 `Lumine.AuthServer` 的 `POST /api/auth/login` 完成；ReportMind Server 不保存员工密码或用户列表，使用 Lumine JWKS 验证 JWT，并通过 `reportmind.test`、`reportmind.reports.upload` 权限保护测试和上传接口。种子用户、角色和权限由 `SeedData:Users`、`SeedData:Roles` 配置；完整 Docker 与联调说明见 `docs/integrations/ReportMind接入与Docker部署.md`。
+`ReportMind` 是独立仓库和独立容器，使用已注册的 `reportmind` OIDC 客户端调用 `Lumine.AuthServer` 的 `POST /api/auth/login`；ReportMind Server 不保存员工密码或用户列表，使用 Lumine JWKS 验证 JWT 的 issuer、audience、签名和有效期，并通过 `reportmind.test`、`reportmind.reports.upload` 权限保护测试和上传接口。种子用户、角色和客户端由 `SeedData:Users`、`SeedData:Roles`、`SeedData:Clients` 配置；完整 Docker 与联调说明见 `docs/integrations/ReportMind接入与Docker部署.md`。
 
 ## 文档边界
 

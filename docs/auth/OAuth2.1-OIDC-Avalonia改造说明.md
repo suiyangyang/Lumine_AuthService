@@ -1,7 +1,7 @@
 # Lumine AuthService OIDC 当前实现说明
 
 > 状态：Current
-> 更新时间：2026-08-02
+> 更新时间：2026-08-05
 > 适用范围：`Lumine.AuthServer` 的 OIDC 端点与 `Lumine.AuthPortal` 的联调能力
 
 本文档描述当前仓库已经实现的认证与 OIDC 能力，不再记录历史改造计划。
@@ -10,10 +10,14 @@
 
 - 当前服务已提供 `/.well-known/openid-configuration`、`/jwks.json`、`/connect/authorize`、`/connect/token`、`/connect/userinfo`。
 - 当前授权流以 `authorization code + PKCE` 为主，适配默认公共客户端 `lumine-demo-client`。
-- `POST /api/auth/login` 仍保留，供后台登录和简化联调用途。
+- `POST /api/auth/login` 仍保留，供已注册 OIDC 客户端的后台登录和简化联调用途；请求必须携带有效的 `client_id`。
+- `POST /api/auth/api-key/token` 支持 `labchrom_knowledge` 使用用户 API-KEY 换取与简化登录一致的 access token。
+- 后台登录支持使用用户名或邮箱作为登录账号，接口字段仍使用 `userName` 以保持现有客户端兼容。
 - `POST /api/auth/logout` 已提供，供后台退出登录并记录审计日志。
 - 登录成功后会建立 `lumine-auth-session` Cookie，授权端点可复用 AuthPortal 的登录态。
+- 修改密码后，用户凭据版本发生变化，原有 access token 立即失效；AuthPortal 会清理当前会话、提示重新登录并回到登录页。
 - `Lumine.AuthPortal` 已包含登录、注册、授权确认、客户端管理、OIDC Discovery 与授权码联调页面。
+- `Lumine.AuthPortal` 的个人中心已包含 API-KEY 生成、删除和一次性复制弹窗。
 - 服务会签发 `access_token`、`id_token` 和 `refresh_token`，但 `token` 端点当前只接受 `authorization_code`，尚未开放 `refresh_token` 续期。
 
 ## 当前端点
@@ -26,6 +30,7 @@
 | `/connect/token` | `POST` | 用授权码换取 token |
 | `/connect/userinfo` | `GET`/`POST` | 使用 access token 读取用户信息 |
 | `/api/auth/login` | `POST` | 后台登录与简化联调入口 |
+| `/api/auth/api-key/token` | `POST` | 使用 API-KEY 和 `client_id` 换取 access token |
 | `/api/auth/logout` | `POST` | 后台登出并记录审计日志 |
 | `/api/auth/register` | `POST` | 注册用户 |
 
@@ -42,11 +47,28 @@
 - `scope`
 - 当前用户基础信息、角色与权限摘要
 
+请求中的 `userName` 字段可以填写用户名或邮箱地址。
+
 这个接口适合：
 
 - Portal 后台登录
 - Swagger 调试
 - 不走标准授权码跳转时的开发联调
+
+调用方必须提供已注册且启用的 `client_id`。服务端会校验客户端及其允许的 `scope`，并将该客户端写入 Token 的 `aud`；缺少、未知或已停用的客户端会被拒绝。
+
+### API-KEY 换 token
+
+`labchrom_knowledge` 是当前支持 API-KEY 换 token 的第三方客户端。请求体至少包含：
+
+```json
+{
+  "apiKey": "sk-xxxxxx...",
+  "clientId": "labchrom_knowledge"
+}
+```
+
+成功响应字段与 `/api/auth/login` 一致，使用同一套 access token claims 和 8 小时有效期；服务端不会为 API-KEY 换 token 请求建立 Portal Cookie。API-KEY 由用户在个人中心生成，完整值只返回一次，持久化时只保存哈希。
 
 ### 2. 授权码 + PKCE
 

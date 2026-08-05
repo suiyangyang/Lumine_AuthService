@@ -108,11 +108,13 @@ ReportMind Server 的 `ReportMind:Auth` 配置如下：
 - `BaseUrl`：ReportMind Server 调用 Lumine 登录接口的地址。
 - `Issuer`：JWT 的 `iss`，必须与 Lumine `Oidc:Issuer` 完全一致。
 - `JwksUrl`：ReportMind 容器访问 Lumine 公钥的地址；建议显式配置，避免容器内无法访问 JWT issuer 中的 `localhost`。
-- `ClientId`：传给 Lumine 简化登录接口的客户端标识，用于 JWT audience 记录；当前 AuthServer 不校验 audience。
+- `ClientId`：ReportMind 在 Lumine 中注册的 OIDC 客户端标识。ReportMind 登录请求会携带该值，Lumine 会校验客户端存在且启用，并将其写入 JWT 的 `aud`；ReportMind 会校验 JWT 的 `iss`、`aud`、签名和有效期。
 - `LoginScope`：建议保留 `roles permissions`，便于客户端显示权限；access token 的权限 claim 由 Lumine 统一签发。
 - `UploadPermission`、`TestPermission`：分别绑定上传接口和测试接口的本地授权策略。
 
-ReportMind 不再配置员工列表，也不提供用户列表读取功能。登录页由用户直接输入 Auth 用户名；上传时服务端只接受与 JWT 当前用户一致的用户名。
+当前 ReportMind 使用 `POST /api/auth/login` 的客户端化简化登录入口；`ClientId` 由 ReportMind Server 配置注入，不由用户填写。标准 `/connect/authorize` 授权码跳转仍按 OIDC 客户端的回调地址和 PKCE 规则单独处理。
+
+ReportMind 不再配置员工列表，也不提供用户列表读取功能。登录页由用户直接输入 Auth 用户名；ReportMind Server 使用已注册的 OIDC 客户端配置向 Lumine 发起登录请求。上传时服务端只接受与 JWT 当前用户一致的用户名。
 
 ## 三、ReportMind Docker Desktop 配置
 

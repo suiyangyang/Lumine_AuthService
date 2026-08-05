@@ -27,6 +27,7 @@
 ## 第三方服务接入
 
 - [第三方服务接入说明](integrations/第三方服务接入说明.md)
+- [Knowledge Workspace Service 接入与 MCP 权限设计](integrations/KnowledgeWorkspaceService接入与MCP权限设计.md)
 - [ReportMind 接入与 Docker 部署](integrations/ReportMind接入与Docker部署.md)
 - [第三方最小服务示例](../samples/Lumine.ThirdPartySample/README.md)
 
