@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-var authServerBaseUrl = builder.Configuration["AuthServer:BaseUrl"] ?? "http://localhost:13255";
+var authServerBaseUrl = builder.Configuration["AuthServer:BaseUrl"] ?? "http://localhost:14255";
 var issuer = builder.Configuration["AuthServer:Issuer"] ?? authServerBaseUrl;
 var clientId = builder.Configuration["AuthServer:ClientId"] ?? "lumine-demo-client";
 var operationPermission = builder.Configuration["ThirdParty:OperationPermission"] ?? "users.view";

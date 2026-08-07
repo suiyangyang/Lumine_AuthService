@@ -59,7 +59,7 @@ if ([string]::IsNullOrWhiteSpace($reportMindPassword)) {
     throw 'Set LUMINE_AUTH_REPORTMIND_USER_PASSWORD in .env before running this script.'
 }
 
-$mysqlPort = if ([string]::IsNullOrWhiteSpace($env:LUMINE_AUTH_MYSQL_PORT)) { '13307' } else { $env:LUMINE_AUTH_MYSQL_PORT }
+$mysqlPort = if ([string]::IsNullOrWhiteSpace($env:LUMINE_AUTH_MYSQL_PORT)) { '14307' } else { $env:LUMINE_AUTH_MYSQL_PORT }
 if ($mysqlPort -notmatch '^\d+$') {
     throw 'LUMINE_AUTH_MYSQL_PORT must be a valid TCP port.'
 }

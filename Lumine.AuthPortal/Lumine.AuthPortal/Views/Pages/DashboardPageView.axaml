@@ -57,7 +57,7 @@
                   IsVisible="{Binding ShowConnectionDiagnosticsArea}">
             <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="8">
               <TextBlock Text="服务地址" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
-              <TextBox Grid.Column="1" Text="{Binding BackendBaseUrl}" Watermark="http://localhost:13255" MinWidth="240"/>
+              <TextBox Grid.Column="1" Text="{Binding BackendBaseUrl}" Watermark="http://localhost:14255" MinWidth="240"/>
               <Button Grid.Column="2"
                       Content="应用并刷新"
                       Command="{Binding RefreshCommand}"

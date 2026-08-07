@@ -32,7 +32,7 @@ Lumine_AuthService/
 - 用户、角色、权限三级权限模型。
 - `PortalMenus` 持久化后台导航标题、分组、顺序、启停与权限绑定；Key、路由、图标和实现状态由 `PortalMenuCatalog` 注册。
 - OIDC 客户端、授权码、刷新令牌和 token 相关服务。
-- 用户 API-KEY 的生成、哈希持久化、删除和按 `client_id` 换取 access token。
+- 用户 API-KEY 的生成、完整值与哈希持久化、删除和按 `client_id` 换取 access token。
 - AuthPortal 登录 Cookie 会话，以及第三方系统所需的当前用户权限读取和实时权限检查接口。
 - EF Core migration、数据库初始化和种子数据。
 - Swagger 权限说明和统一的 401/403 响应处理。
@@ -85,7 +85,7 @@ OIDC 相关代码主要在：
 
 API-KEY 入口：
 
-- `GET/POST/DELETE /api/api-keys`：当前用户管理自己的 API-KEY，完整 key 只在创建响应中出现一次。
+- `GET/POST/DELETE /api/api-keys`：当前用户管理自己的 API-KEY，列表接口返回可复制的完整 key。
 - `POST /api/auth/api-key/token`：携带 `apiKey` 和 `clientId` 换取与简化登录一致的 access token；当前支持的 API-KEY 客户端为 `labchrom_knowledge`。
 
 维护注意：

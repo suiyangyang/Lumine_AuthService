@@ -56,10 +56,12 @@ services.AddDbContext<AuthDbContext>(opt =>
     opt.UseMySql(
         connectionString,
         new MySqlServerVersion(new Version(9, 4, 0)),
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(10),
-            errorNumbersToAdd: null)
+        mySqlOptions => mySqlOptions
+            .EnableStringComparisonTranslations()
+            .EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null)
     ));
 
 services.AddScoped<IUserRepository, UserRepository>();
@@ -374,7 +376,7 @@ static void ApplyLocalMySqlConfiguration()
     var connectionStringBuilder = new MySqlConnectionStringBuilder
     {
         Server = string.IsNullOrWhiteSpace(host) ? "localhost" : host,
-        Port = uint.TryParse(port, out var parsedPort) ? parsedPort : 13307,
+        Port = uint.TryParse(port, out var parsedPort) ? parsedPort : 14307,
         Database = database,
         UserID = user,
         Password = password

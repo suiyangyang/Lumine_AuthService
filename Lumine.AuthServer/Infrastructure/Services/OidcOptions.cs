@@ -4,7 +4,7 @@ namespace Lumine.AuthServer.Infrastructure.Services
     {
         public const string SectionName = "Oidc";
 
-        public string Issuer { get; set; } = "http://localhost:13255";
+        public string Issuer { get; set; } = "http://localhost:14255";
 
         public string KeyId { get; set; } = "lumine-auth-rsa-key";
 

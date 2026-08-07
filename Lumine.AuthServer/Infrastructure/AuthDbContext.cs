@@ -192,6 +192,8 @@ namespace Lumine.AuthServer.Infrastructure
                 b.HasKey(item => item.Id);
                 b.Property(item => item.ClientId).IsRequired().HasMaxLength(128);
                 b.Property(item => item.KeyPrefix).IsRequired().HasMaxLength(16);
+                b.Property(item => item.PlainTextKey).HasMaxLength(128);
+                b.Property(item => item.KeySuffix).IsRequired().HasMaxLength(3);
                 b.Property(item => item.KeyHash).IsRequired().HasMaxLength(64);
                 b.Property(item => item.CreateTime).IsRequired();
                 b.Property(item => item.Status).IsRequired().HasMaxLength(32);

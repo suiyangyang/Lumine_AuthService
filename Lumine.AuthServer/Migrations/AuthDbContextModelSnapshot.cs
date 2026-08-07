@@ -49,6 +49,15 @@ namespace Lumine.AuthServer.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("varchar(16)");
 
+                    b.Property<string>("PlainTextKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("KeySuffix")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("varchar(3)");
+
                     b.Property<DateTime?>("LastUsedTime")
                         .HasColumnType("datetime(6)");
 

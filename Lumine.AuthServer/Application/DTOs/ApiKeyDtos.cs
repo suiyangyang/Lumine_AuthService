@@ -6,6 +6,8 @@ public class ApiKeyDto
     public Guid UserId { get; set; }
     public string ClientId { get; set; } = string.Empty;
     public string KeyPrefix { get; set; } = string.Empty;
+    public string? PlainTextKey { get; set; }
+    public string KeySuffix { get; set; } = string.Empty;
     public DateTime CreateTime { get; set; }
     public DateTime? ExpireTime { get; set; }
     public string Status { get; set; } = string.Empty;

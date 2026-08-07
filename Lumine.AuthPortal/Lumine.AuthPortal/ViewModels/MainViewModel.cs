@@ -184,6 +184,8 @@ public partial class MainViewModel : ViewModelBase
 
     public bool IsRegisterPageSelected => string.Equals(CurrentPageKey, "register", StringComparison.OrdinalIgnoreCase);
 
+    public bool IsProfileCenterPageSelected => string.Equals(CurrentPageKey, "profile-center", StringComparison.OrdinalIgnoreCase);
+
     public PortalSession Session => _session;
 
     public StreamGeometry AccountMenuChevronIconData => NavigationIconData.Get("chevron-down");
@@ -592,6 +594,7 @@ public partial class MainViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(IsLoginPageSelected));
         OnPropertyChanged(nameof(IsRegisterPageSelected));
+        OnPropertyChanged(nameof(IsProfileCenterPageSelected));
     }
 }
 

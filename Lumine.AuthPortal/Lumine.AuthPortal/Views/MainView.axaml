@@ -591,7 +591,8 @@
     </Grid>
 
     <Grid IsVisible="{Binding IsAuthenticated}">
-      <Border x:CompileBindings="False"
+      <Grid IsVisible="{Binding IsProfileCenterPageSelected}">
+        <Border x:CompileBindings="False"
               DataContext="{Binding CurrentPage}"
               Classes="dialog-backdrop"
               IsVisible="{Binding IsApiKeyRevealDialogOpen}">
@@ -609,7 +610,7 @@
                          FontSize="22"
                          FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"/>
-              <TextBlock Text="请立即复制完整 API-KEY；关闭此窗口后将不再显示完整内容。"
+              <TextBlock Text="API-KEY 已保存到列表中；关闭此窗口后仍可在列表中复制完整内容。"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          TextWrapping="Wrap"/>
             </StackPanel>
@@ -617,9 +618,9 @@
                      Text="{Binding NewlyGeneratedApiKey}"
                      IsReadOnly="True"
                      FontFamily="Consolas"/>
-            <Border Grid.Row="2" Classes="admin-danger-banner" Padding="12">
+            <Border Grid.Row="2" Padding="12">
               <TextBlock Text="API-KEY 等同于密码，请妥善保管，不要提交到代码仓库或发送给他人；如有泄露，请立即删除并重新生成。"
-                         Foreground="{DynamicResource TextOnAccentBrush}"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
                          TextWrapping="Wrap"/>
             </Border>
             <StackPanel Grid.Row="3"
@@ -658,7 +659,7 @@
                        FontSize="22"
                        FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"/>
-            <TextBlock Text="{Binding ApiKeyDeleteConfirmationText}"
+            <TextBlock Text="删除后，该 API-KEY 将立即失效，关联的第三方请求也将无法继续使用。此操作不可撤销。"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal"
@@ -676,7 +677,8 @@
           </StackPanel>
         </Border>
       </Grid>
-      </Border>
+        </Border>
+      </Grid>
     </Grid>
 
     <Border Classes="dialog-backdrop" IsVisible="{Binding IsReLoginDialogOpen}">

@@ -106,6 +106,22 @@ public partial class ProfileCenterPageViewModel : AccountPageViewModelBase
     [ObservableProperty]
     private string _newlyGeneratedApiKey = string.Empty;
 
+    partial void OnIsApiKeyRevealDialogOpenChanged(bool value)
+    {
+        if (value)
+        {
+            IsApiKeyDeleteDialogOpen = false;
+        }
+    }
+
+    partial void OnIsApiKeyDeleteDialogOpenChanged(bool value)
+    {
+        if (value)
+        {
+            IsApiKeyRevealDialogOpen = false;
+        }
+    }
+
     public string DisplayName => string.IsNullOrWhiteSpace(Profile?.NickName) ? (Profile?.UserName ?? Session.UserName) : Profile.NickName!;
 
     public string LoginStatus => Session.IsAuthenticated ? "当前已登录，可编辑个人资料并同步到后台。" : "当前未登录，仅展示默认信息。";
@@ -137,6 +153,10 @@ public partial class ProfileCenterPageViewModel : AccountPageViewModelBase
         : $"确认删除 {PendingDeleteApiKey.KeyPrefix}？删除后，使用该 API-KEY 的第三方请求将立即失效。";
 
     public string ApiKeyClientId => "labchrom_knowledge";
+
+    public StreamGeometry ApiKeyCopyIconData => NavigationIconData.Get("copy");
+
+    public StreamGeometry ApiKeyDeleteIconData => NavigationIconData.Get("trash");
 
     public IReadOnlyList<string> RoleTags => Profile?.Roles.Select(role => role.Name).ToArray()
         ?? (Session.Roles.Count == 0
@@ -206,7 +226,10 @@ public partial class ProfileCenterPageViewModel : AccountPageViewModelBase
             IsApiKeyRevealDialogOpen = true;
             PendingDeleteApiKey = null;
             await LoadApiKeysAsync();
-            StatusMessage = "API-KEY 已生成，请在关闭弹窗前复制并妥善保管。";
+            ApiKeys = ApiKeys
+                .Select(item => item.Id == result.Data.Id ? item with { PlainTextKey = result.Data.ApiKey } : item)
+                .ToArray();
+            StatusMessage = "API-KEY 已生成，可在列表中随时复制并妥善保管。";
         }
         else
         {

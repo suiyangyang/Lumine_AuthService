@@ -96,10 +96,12 @@ public sealed class ApiKeysController : ControllerBase
             UserId = apiKey.UserId,
             ClientId = apiKey.ClientId,
             KeyPrefix = apiKey.KeyPrefix,
+            KeySuffix = apiKey.KeySuffix,
             CreateTime = apiKey.CreateTime,
             ExpireTime = apiKey.ExpireTime,
             Status = apiKey.Status,
             LastUsedTime = apiKey.LastUsedTime,
+            PlainTextKey = plainTextKey,
             ApiKey = plainTextKey
         });
     }
@@ -150,6 +152,8 @@ public sealed class ApiKeysController : ControllerBase
             UserId = item.UserId,
             ClientId = item.ClientId,
             KeyPrefix = item.KeyPrefix,
+            PlainTextKey = item.PlainTextKey,
+            KeySuffix = item.KeySuffix,
             CreateTime = item.CreateTime,
             ExpireTime = item.ExpireTime,
             Status = item.Status,

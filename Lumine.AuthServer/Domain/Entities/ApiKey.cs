@@ -13,6 +13,8 @@ public sealed class ApiKey : Entity, IAggregateRoot
     public Guid UserId { get; private set; }
     public string ClientId { get; private set; } = null!;
     public string KeyPrefix { get; private set; } = null!;
+    public string? PlainTextKey { get; private set; }
+    public string KeySuffix { get; private set; } = null!;
     public string KeyHash { get; private set; } = null!;
     public DateTime CreateTime { get; private set; }
     public DateTime? ExpireTime { get; private set; }
@@ -23,12 +25,14 @@ public sealed class ApiKey : Entity, IAggregateRoot
 
     private ApiKey() { }
 
-    private ApiKey(Guid id, Guid userId, string clientId, string keyPrefix, string keyHash, DateTime createTime, DateTime? expireTime)
+    private ApiKey(Guid id, Guid userId, string clientId, string keyPrefix, string plainTextKey, string keySuffix, string keyHash, DateTime createTime, DateTime? expireTime)
     {
         Id = id;
         UserId = userId;
         ClientId = Normalize(clientId, nameof(clientId), 128);
         KeyPrefix = Normalize(keyPrefix, nameof(keyPrefix), 16);
+        PlainTextKey = Normalize(plainTextKey, nameof(plainTextKey), 128);
+        KeySuffix = Normalize(keySuffix, nameof(keySuffix), 3);
         KeyHash = Normalize(keyHash, nameof(keyHash), 64);
         CreateTime = createTime;
         ExpireTime = expireTime;
@@ -44,6 +48,8 @@ public sealed class ApiKey : Entity, IAggregateRoot
             userId,
             clientId,
             plainTextKey[..9],
+            plainTextKey,
+            plainTextKey[^3..],
             ComputeHash(plainTextKey),
             DateTime.UtcNow,
             expireTimeUtc);

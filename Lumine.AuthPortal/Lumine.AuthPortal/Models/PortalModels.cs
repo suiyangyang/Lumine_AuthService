@@ -137,12 +137,28 @@ public sealed record ApiKeyDto(
     Guid UserId,
     string ClientId,
     string KeyPrefix,
+    string KeySuffix,
     DateTime CreateTime,
     DateTime? ExpireTime,
     string Status,
     DateTime? LastUsedTime)
 {
     public string StatusText => string.Equals(Status, "active", StringComparison.OrdinalIgnoreCase) ? "有效" : "已删除";
+
+    public string? PlainTextKey { get; init; }
+
+    public string MaskedKeyDisplay
+    {
+        get
+        {
+            var prefix = KeyPrefix.StartsWith("sk-", StringComparison.OrdinalIgnoreCase) ? KeyPrefix[3..] : KeyPrefix;
+            var firstThree = prefix.Length >= 3 ? prefix[..3] : prefix;
+            var suffix = string.IsNullOrWhiteSpace(KeySuffix) ? "???" : KeySuffix[^Math.Min(3, KeySuffix.Length)..];
+            return $"sk-{firstThree}***{suffix}";
+        }
+    }
+
+    public bool CanCopy => !string.IsNullOrWhiteSpace(PlainTextKey);
 
     public string CreateTimeDisplay => CreateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
 
@@ -158,6 +174,7 @@ public sealed record CreatedApiKeyDto(
     Guid UserId,
     string ClientId,
     string KeyPrefix,
+    string KeySuffix,
     DateTime CreateTime,
     DateTime? ExpireTime,
     string Status,

@@ -81,7 +81,7 @@ globalThis.resolveApiBaseUrl = async function resolveApiBaseUrl() {
     } catch {
     }
 
-    const fallbackApiBase = normalizeApiBaseUrl(globalThis.location.origin) || 'http://localhost:13255';
+    const fallbackApiBase = normalizeApiBaseUrl(globalThis.location.origin) || 'http://localhost:14255';
     globalThis.API_BASE_URL = fallbackApiBase;
     return fallbackApiBase;
 };

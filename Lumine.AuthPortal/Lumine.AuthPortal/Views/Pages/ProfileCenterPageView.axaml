@@ -30,6 +30,40 @@
       <Setter Property="Width" Value="18"/>
       <Setter Property="Height" Value="18"/>
     </Style>
+    <Style Selector="Button.api-key-row-icon-button">
+      <Setter Property="Width" Value="32"/>
+      <Setter Property="Height" Value="32"/>
+      <Setter Property="MinWidth" Value="32"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    </Style>
+    <Style Selector="Button.api-key-row-icon-button:pointerover">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.api-key-row-icon-button:pressed">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.api-key-row-icon-button:disabled">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+    </Style>
+    <Style Selector="Button.api-key-row-icon-button.api-key-delete">
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftForegroundBrush}"/>
+    </Style>
+    <Style Selector="Button.api-key-row-icon-button.api-key-delete:pointerover">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource DangerSoftHoverForegroundBrush}"/>
+    </Style>
   </UserControl.Styles>
 
   <Grid>
@@ -99,31 +133,49 @@
           </Grid>
 
           <Border Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="12" Padding="14" IsVisible="{Binding HasApiKeys}">
-            <ItemsControl ItemsSource="{Binding ApiKeys}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="model:ApiKeyDto">
-                  <Border BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,12" Margin="0,0,0,12">
-                    <Grid ColumnDefinitions="*,*,*,Auto" ColumnSpacing="12">
-                      <StackPanel Spacing="3">
-                        <TextBlock Text="{Binding KeyPrefix}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        <TextBlock Text="{Binding ClientId}" Classes="admin-hint"/>
-                      </StackPanel>
-                      <StackPanel Grid.Column="1" Spacing="3">
-                        <TextBlock Text="创建时间" Classes="admin-hint"/>
-                        <TextBlock Text="{Binding CreateTimeDisplay}" Foreground="{DynamicResource TextSecondaryBrush}"/>
-                      </StackPanel>
-                      <StackPanel Grid.Column="2" Spacing="3">
-                        <TextBlock Text="最近使用" Classes="admin-hint"/>
-                        <TextBlock Text="{Binding LastUsedTimeDisplay}" Foreground="{DynamicResource TextSecondaryBrush}"/>
-                      </StackPanel>
-                      <Button Grid.Column="3" Content="删除" Classes="admin-button admin-danger" Command="{Binding $parent[UserControl].DataContext.RequestDeleteApiKeyCommand}" CommandParameter="{Binding .}" IsVisible="{Binding !IsRevoked}" Padding="12,6" VerticalAlignment="Center"/>
-                    </Grid>
-                  </Border>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <StackPanel Spacing="8">
+              <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="12">
+                <TextBlock Text="KEY值" Classes="admin-hint"/>
+                <TextBlock Grid.Column="1" Text="最近使用" Classes="admin-hint"/>
+                <TextBlock Grid.Column="2" Text="操作" Classes="admin-hint"/>
+              </Grid>
+              <ItemsControl ItemsSource="{Binding ApiKeys}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="model:ApiKeyDto">
+                    <Border BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,10" Margin="0,0,0,2">
+                      <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="12">
+                        <TextBlock Text="{Binding MaskedKeyDisplay}"
+                                   FontFamily="Consolas"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding LastUsedTimeDisplay}"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="2">
+                          <Button Classes="api-key-row-icon-button"
+                                  Click="OnCopyApiKeyItemClick"
+                                  IsEnabled="{Binding CanCopy}"
+                                  ToolTip.Tip="复制 API-KEY">
+                            <PathIcon Data="{Binding $parent[UserControl].DataContext.ApiKeyCopyIconData}" Classes="admin-row-button-icon"/>
+                          </Button>
+                          <Button Classes="api-key-row-icon-button api-key-delete"
+                                  Command="{Binding $parent[UserControl].DataContext.RequestDeleteApiKeyCommand}"
+                                  CommandParameter="{Binding .}"
+                                  IsVisible="{Binding !IsRevoked}"
+                                  ToolTip.Tip="删除 API-KEY">
+                            <PathIcon Data="{Binding $parent[UserControl].DataContext.ApiKeyDeleteIconData}" Classes="admin-row-button-icon"/>
+                          </Button>
+                        </StackPanel>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
           </Border>
-          <TextBlock Text="暂未生成 API-KEY。生成后请立即复制完整 key，并不要写入代码仓库、截图或公开聊天。"
+          <TextBlock Text="暂未生成 API-KEY。生成后可在列表中随时复制完整 key，并不要写入代码仓库、截图或公开聊天。"
                      Foreground="{DynamicResource TextMutedBrush}"
                      TextWrapping="Wrap"
                      IsVisible="{Binding !HasApiKeys}"/>

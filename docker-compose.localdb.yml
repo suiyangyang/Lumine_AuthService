@@ -11,7 +11,7 @@ services:
       MYSQL_PASSWORD: ${LUMINE_AUTH_MYSQL_PASSWORD:?Set LUMINE_AUTH_MYSQL_PASSWORD in .env}
       MYSQL_ROOT_PASSWORD: ${LUMINE_AUTH_MYSQL_ROOT_PASSWORD:?Set LUMINE_AUTH_MYSQL_ROOT_PASSWORD in .env}
     ports:
-      - "${LUMINE_AUTH_MYSQL_PORT:-13307}:3306"
+      - "${LUMINE_AUTH_MYSQL_PORT:-14307}:3306"
     volumes:
       - lumine-auth-mysql-dev-data:/var/lib/mysql
     command:

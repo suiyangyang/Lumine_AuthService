@@ -17,7 +17,7 @@
 - 登录成功后会建立 `lumine-auth-session` Cookie，授权端点可复用 AuthPortal 的登录态。
 - 修改密码后，用户凭据版本发生变化，原有 access token 立即失效；AuthPortal 会清理当前会话、提示重新登录并回到登录页。
 - `Lumine.AuthPortal` 已包含登录、注册、授权确认、客户端管理、OIDC Discovery 与授权码联调页面。
-- `Lumine.AuthPortal` 的个人中心已包含 API-KEY 生成、删除和一次性复制弹窗。
+- `Lumine.AuthPortal` 的个人中心已包含 API-KEY 生成、列表复制和删除功能。
 - 服务会签发 `access_token`、`id_token` 和 `refresh_token`，但 `token` 端点当前只接受 `authorization_code`，尚未开放 `refresh_token` 续期。
 
 ## 当前端点
@@ -68,7 +68,7 @@
 }
 ```
 
-成功响应字段与 `/api/auth/login` 一致，使用同一套 access token claims 和 8 小时有效期；服务端不会为 API-KEY 换 token 请求建立 Portal Cookie。API-KEY 由用户在个人中心生成，完整值只返回一次，持久化时只保存哈希。
+成功响应字段与 `/api/auth/login` 一致，使用同一套 access token claims 和 8 小时有效期；服务端不会为 API-KEY 换 token 请求建立 Portal Cookie。API-KEY 由用户在个人中心生成，完整值会在 API-KEY 列表中返回以支持后续复制；服务端同时保存完整值和哈希值。
 
 ### 2. 授权码 + PKCE
 

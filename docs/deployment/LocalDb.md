@@ -6,7 +6,7 @@
 
 - 容器名：`lumine-auth-mysql-dev`
 - 数据库：从 `.env` 的 `LUMINE_AUTH_MYSQL_DATABASE` 读取
-- 主机端口：`13307`（可通过 `.env` 中的 `LUMINE_AUTH_MYSQL_PORT` 覆盖）
+- 主机端口：`14307`（可通过 `.env` 中的 `LUMINE_AUTH_MYSQL_PORT` 覆盖）
 - 应用账号：从 `.env` 的 `LUMINE_AUTH_MYSQL_USER` 读取
 - 应用密码：从 `.env` 的 `LUMINE_AUTH_MYSQL_PASSWORD` 读取
 - Root 密码：从 `.env` 的 `LUMINE_AUTH_MYSQL_ROOT_PASSWORD` 读取
@@ -16,7 +16,7 @@
 对应开发环境连接串：
 
 ```text
-server=localhost;port=13307;database=<LUMINE_AUTH_MYSQL_DATABASE>;user=<LUMINE_AUTH_MYSQL_USER>;password=<LUMINE_AUTH_MYSQL_PASSWORD>;
+server=localhost;port=14307;database=<LUMINE_AUTH_MYSQL_DATABASE>;user=<LUMINE_AUTH_MYSQL_USER>;password=<LUMINE_AUTH_MYSQL_PASSWORD>;
 ```
 
 首次运行前，复制 `.env.example` 为 `.env` 并填入本地密码：
@@ -72,6 +72,6 @@ docker compose -f .\docker-compose.localdb.yml down -v
 
 ## 说明
 
-- 本地开发容器使用宿主机 `13307` 端口映射到容器 `3306`；如需调整端口，同时修改 `.env` 中的 `LUMINE_AUTH_MYSQL_PORT`。
+- 本地开发容器使用宿主机 `14307` 端口映射到容器 `3306`；如需调整端口，同时修改 `.env` 中的 `LUMINE_AUTH_MYSQL_PORT`。
 - `Lumine.AuthServer` 启动时会自动执行 `Database.MigrateAsync()` 和 `AuthDataSeeder.SeedAsync()`
-- 如果使用 Visual Studio 的 `Container (Dockerfile)` 调试配置，服务容器会通过 `host.docker.internal:13307` 访问宿主机上的 MySQL 容器
+- 如果使用 Visual Studio 的 `Container (Dockerfile)` 调试配置，服务容器会通过 `host.docker.internal:14307` 访问宿主机上的 MySQL 容器
