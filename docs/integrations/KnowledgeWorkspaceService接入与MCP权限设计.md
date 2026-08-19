@@ -28,10 +28,11 @@
 
 | 建议权限 | 权限含义 | 适用工具 |
 | --- | --- | --- |
-| `knowledge.view` | 读取和检查知识库，不改变正式知识或运行时索引 | `list_directory`、`read_file`、`search_files`、`search_knowledge`、`get_file_metadata`、`get_maintenance_status`、`check_knowledge`；`sync_knowledge(mode="dry_run")` |
+| `knowledge.manufacturer.view` | 显式选择厂家后，只查询通用知识、该厂家页面和该厂家绑定的仪器；当前不绑定 Lumine 用户 | `read_me`、`list_manufacturers_mcp`、`query_manufacturer_knowledge_mcp`、`read_manufacturer_document_mcp` |
+| `knowledge.view` | 开发者读取和检查全知识库，不改变正式知识或运行时索引；KWS 内部自动包含厂家范围查询 | `browse_knowledge`、`read_document`、`get_document_relations`、`search_knowledge`、`get_maintenance_status`、`check_knowledge`、`validate_document`；`sync_knowledge(mode="dry_run")` |
 | `knowledge.manage` | 修改正式知识，或管理一次知识变更事务；自动包含 `knowledge.view` | `create_file`、`write_file`、`patch_file`、`move_file`、`delete_file`；`begin_transaction`、`get_transaction`、`preview_transaction`、`commit_transaction`、`rollback_transaction` |
 | `knowledge.maintenance` | 应用目录与索引对账，或重建运行时索引；自动包含 `knowledge.view` | `sync_knowledge(mode="apply")`、`rebuild_runtime_index` |
-| `knowledge.instruments.view` | 查询知识库仪器索引，不修改仪器元数据 | `query_instruments_mcp` |
+| `knowledge.instruments.view` | 开发者查询全局仪器索引、class、setup 和 evidence，不修改仪器元数据；KWS 内部自动包含厂家范围查询 | `query_instruments_mcp` |
 | `knowledge.instruments.manage` | 更新仪器 occurrence、JSON 注册表和 `all_indexes.sqlite`；自动包含仪器查询权限 | `update_instrument_metadata_mcp` |
 
 权限语义建议如下：
@@ -41,6 +42,7 @@
 - `knowledge.instruments.manage` 应同时分配 `knowledge.instruments.view`；仪器元数据更新会修改派生 JSON 索引和 `all_indexes.sqlite`，但不等同于普通知识文件写入。
 - `sync_knowledge` 是同一个工具的分级操作：`dry_run` 只需要 `knowledge.view`，`apply` 需要 `knowledge.maintenance`。
 - MCP 握手、`tools/list` 和传输层认证属于服务接入控制，不应另造一个业务权限；业务权限在工具调用时检查。
+- 当前厂家查询阶段不实现 Lumine 用户—厂家分配。部署端 `KWS_MCP_API_KEY` 只授予 KWS 本地 `knowledge.manufacturer.view`；它不能调用开发者全库 `search_knowledge`、`read_document` 或目录浏览。现有 Lumine `knowledge.view` / `knowledge.instruments.view` 在 KWS 内部自动获得厂家范围查询能力，因此本阶段不新增厂家用户或厂家角色种子。
 
 ## 3. Lumine 角色建议
 
@@ -55,6 +57,8 @@
 | `InstrumentMaintainer` | `knowledge.instruments.view`、`knowledge.instruments.manage` | 更新仪器元数据和派生索引 |
 
 这些角色名称只是建议。当前项目的实际角色由 `AuthSeedOptions` 和数据库种子决定，接入实现时应根据部署组织的角色体系选择是否新增。
+
+厂家终端用户角色不在本阶段范围内；在用户—厂家映射落地前，不创建仅凭调用方参数就代表厂家身份的 Lumine 角色。
 
 ## 4. KWS 当前认证能力和集成限制
 
