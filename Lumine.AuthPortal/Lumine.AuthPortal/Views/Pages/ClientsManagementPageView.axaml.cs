@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Lumine.AuthPortal.Services;
 using Lumine.AuthPortal.ViewModels.Pages;
 
 namespace Lumine.AuthPortal.Views.Pages;
@@ -20,17 +21,11 @@ public partial class ClientsManagementPageView : UserControl
             return;
         }
 
-        var topLevel = TopLevel.GetTopLevel(this);
-        if (topLevel?.Clipboard == null)
-        {
-            return;
-        }
-
-        await topLevel.Clipboard.SetTextAsync(text);
-
         if (DataContext is ClientsManagementPageViewModel viewModel)
         {
-            viewModel.StatusMessage = "内容已复制到剪贴板。";
+            viewModel.StatusMessage = await ClipboardService.TrySetTextAsync(this, text)
+                ? "内容已复制到剪贴板。"
+                : "复制失败，请检查浏览器剪贴板权限后重试。";
         }
     }
 

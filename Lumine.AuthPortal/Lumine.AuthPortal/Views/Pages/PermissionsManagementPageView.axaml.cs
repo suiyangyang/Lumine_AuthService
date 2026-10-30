@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Lumine.AuthPortal.Services;
 using Lumine.AuthPortal.ViewModels.Pages;
 
 namespace Lumine.AuthPortal.Views.Pages;
@@ -20,13 +21,7 @@ public partial class PermissionsManagementPageView : UserControl
             return;
         }
 
-        var topLevel = TopLevel.GetTopLevel(this);
-        if (topLevel?.Clipboard == null)
-        {
-            return;
-        }
-
-        await topLevel.Clipboard.SetTextAsync(text);
+        await ClipboardService.TrySetTextAsync(this, text);
     }
 
     private void PermissionSearchTextBox_OnKeyDown(object? sender, KeyEventArgs e)

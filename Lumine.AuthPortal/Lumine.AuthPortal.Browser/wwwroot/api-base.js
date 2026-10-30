@@ -43,6 +43,46 @@ globalThis.lumineAuthPortalTheme = {
     }
 };
 
+globalThis.lumineAuthPortalClipboard = {
+    writeText(text) {
+        const normalizedText = String(text ?? '');
+        if (!normalizedText) {
+            return Promise.resolve(false);
+        }
+
+        // Keep the synchronous fallback inside the original click gesture.
+        try {
+            const textarea = globalThis.document.createElement('textarea');
+            textarea.value = normalizedText;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-10000px';
+            textarea.style.top = '0';
+            textarea.style.opacity = '0';
+            globalThis.document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            const copied = globalThis.document.execCommand('copy');
+            textarea.remove();
+            if (copied) {
+                return Promise.resolve(true);
+            }
+        } catch {
+        }
+
+        try {
+            if (globalThis.navigator?.clipboard?.writeText) {
+                return globalThis.navigator.clipboard.writeText(normalizedText)
+                    .then(() => true)
+                    .catch(() => false);
+            }
+        } catch {
+        }
+
+        return Promise.resolve(false);
+    }
+};
+
 globalThis.resolveApiBaseUrl = async function resolveApiBaseUrl() {
     const params = new URLSearchParams(globalThis.location.search);
     const storageKey = 'lumine.authportal.apiBaseUrl';

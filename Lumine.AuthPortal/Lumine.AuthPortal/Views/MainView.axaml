@@ -601,6 +601,7 @@
                 BorderThickness="0"
                 Command="{Binding CloseApiKeyRevealDialogCommand}"/>
         <Border Classes="dialog-card"
+                ZIndex="1"
                 Width="620"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
@@ -651,6 +652,7 @@
                 BorderThickness="0"
                 Command="{Binding CancelDeleteApiKeyCommand}"/>
         <Border Classes="dialog-card"
+                ZIndex="1"
                 Width="560"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">

@@ -1,6 +1,7 @@
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Lumine.AuthPortal.Services;
 using Lumine.AuthPortal.ViewModels;
 using Lumine.AuthPortal.ViewModels.Pages;
 
@@ -24,16 +25,11 @@ public partial class MainView : UserControl
             return;
         }
 
-        var topLevel = TopLevel.GetTopLevel(this);
-        if (topLevel?.Clipboard == null)
-        {
-            return;
-        }
-
-        await topLevel.Clipboard.SetTextAsync(text);
         if (DataContext is MainViewModel { CurrentPage: ProfileCenterPageViewModel viewModel })
         {
-            viewModel.StatusMessage = "API-KEY 已复制到剪贴板，请妥善保管。";
+            viewModel.StatusMessage = await ClipboardService.TrySetTextAsync(this, text)
+                ? "API-KEY 已复制到剪贴板，请妥善保管。"
+                : "复制失败，请检查浏览器剪贴板权限后重试。";
         }
     }
 }
