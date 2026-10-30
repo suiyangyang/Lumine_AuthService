@@ -51,3 +51,6 @@ node_modules/
 # Local secrets
 .env
 *.local.json
+
+# Agent 会话运行数据
+/.omo/

@@ -24,6 +24,14 @@
 - 本地 MySQL 使用宿主机 `14307` 端口；root 密码只从 `.env` 的 `LUMINE_AUTH_MYSQL_ROOT_PASSWORD` 读取，不在本文件、其他文档或提交中记录明文。
 - `.env` 是本机私密配置，禁止提交；需要重置管理员密码时修改对应键后执行 `.\scripts\init-local-db.ps1 -ForceUpdateAdminPassword`。
 
+## 固定部署环境
+
+- 调试时固定使用 `http://localhost:13255`。
+- 正式服务器固定为 `192.168.1.100`；当用户说“部署到服务器”时，默认部署到该服务器的 Docker 环境。
+- 正式环境容器名固定为 `lumine-authserver` 和 `Lumine-auth-mysql`。
+- 重新部署必须保持现有宿主机端口号不变：AuthServer 使用 `13255`，MySQL 使用 `3307`；不得因重建容器修改端口映射。
+- 正式环境对外 issuer 为 `http://192.168.1.100:13255`。
+
 ## 常用验证
 
 在仓库根目录执行：
