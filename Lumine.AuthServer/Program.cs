@@ -20,6 +20,8 @@ using Microsoft.OpenApi.Models;
 using MySqlConnector;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 LoadLocalDotEnv();
 ApplyLocalMySqlConfiguration();
@@ -81,6 +83,23 @@ services.AddScoped<IAuthenticationAppService, AuthenticationAppService>();
 services.AddSingleton<IOidcSigningCredentialsService>(oidcSigningCredentialsService);
 services.Configure<OidcOptions>(builder.Configuration.GetSection(OidcOptions.SectionName));
 services.Configure<AuthSeedOptions>(builder.Configuration.GetSection(AuthSeedOptions.SectionName));
+services.Configure<SuperDogOptions>(builder.Configuration.GetSection(SuperDogOptions.SectionName));
+services.AddScoped<ManufacturerKeyProtector>();
+services.AddScoped<ProductionValidator>();
+services.AddScoped<SuperDogProductionService>();
+services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("SuperDogProduction", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? context.User.FindFirstValue("sub") ?? "anonymous",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 60, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+    options.OnRejected = async (context, ct) =>
+    {
+        context.HttpContext.Response.Headers.CacheControl = "no-store";
+        context.HttpContext.Response.Headers.RetryAfter = "60";
+        await context.HttpContext.Response.WriteAsJsonAsync(new { error = "rate_limited" }, ct);
+    };
+});
 services.AddScoped<AuthDataSeeder>();
 services.AddCors(options =>
 {
@@ -174,7 +193,10 @@ services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 services.AddScoped<IAuthorizationHandler, PermissionHandler>();
 services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
 
-services.AddAuthorization();
+services.AddAuthorization(options => options.AddPolicy("SuperDogProduction", policy => policy
+    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+    .RequireAuthenticatedUser()
+    .RequireClaim("aud", SuperDogOptions.ClientId)));
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(options =>
@@ -269,7 +291,9 @@ if (staticFileProvider is not null)
 }
 
 app.UseAuthentication();
+app.UseMiddleware<SuperDogRejectionAuditMiddleware>();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.MapGet("/config", (HttpRequest request, IOptions<AuthSeedOptions> seedOptions) =>
 {
     var envPort = ResolvePortOverride();

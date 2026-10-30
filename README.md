@@ -37,6 +37,7 @@ Lumine_AuthService/
 - [LocalDB 本地环境](docs/deployment/LocalDb.md)
 - [管理后台基础接口说明](docs/api/管理后台基础接口说明.md)
 - [第三方服务接入说明](docs/integrations/第三方服务接入说明.md)
+- [SuperDog4.1 生产接口](docs/integrations/SuperDog41生产接口.md)
 - [Knowledge Workspace Service 接入与 MCP 权限设计](docs/integrations/KnowledgeWorkspaceService接入与MCP权限设计.md)
 - [ReportMind 接入与 Docker 部署](docs/integrations/ReportMind接入与Docker部署.md)
 - [第三方最小服务示例](samples/Lumine.ThirdPartySample/README.md)

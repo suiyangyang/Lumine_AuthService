@@ -93,6 +93,14 @@ API-KEY 入口：
 - 修改授权码、token、scope、redirect uri、client secret 逻辑前，先读 `docs/auth/OAuth2.1-OIDC-Avalonia改造说明.md`。
 - 不要把演示客户端、签名凭据、scope 和 token 有效期改成隐式规则；配置或种子数据需要可追踪。
 
+## SuperDog4.1 生产接口边界
+
+生产接口位于既有 `Lumine.AuthServer` 的 `DongleLicensesController`，客户端为 `superdog41`（显示名 SuperDog4.1），非 PKCE；使用 Bearer、精确 audience、启用账号及实时数据库权限。`SuperDogProductionService` 处理厂家 KEY 和逐条生产登记，`ProductionValidator` 使用受控 vendor/公钥验签，`ManufacturerKeyProtector` 使用独立配置主密钥 AES-GCM 加密。MySQL 中 `ManufacturerKeys`、`ProductionRegistrations`、`DongleEntitlements` 分别约束厂家唯一 KEY、OperationId 幂等及硬件来源唯一资格。生产更新保留绑定状态及代次，后续激活业务需独立处理绑定。
+
+接口、权限、配置与验证入口见 [SuperDog4.1 生产接口](../integrations/SuperDog41生产接口.md)。协议快照 `Infrastructure/Services/DogProtocol.cs` 与客户端 Core 的 SD41/v1 编解码规则须同步维护；没有跨仓库绝对路径或项目依赖。
+
+生产顺序使用共享 `ProductionUpload.ProductionRevision`，由客户端生产事务固化，不使用 `WrittenAt` 或接收时间排序。`DongleEntitlement.ProductionRevision` 是并发令牌，只有更高修订更新当前厂家及摘要；旧修订仅登记历史。`ProductionRegistration` 的 `(EntitlementId, ProductionRevision)` 唯一约束防止不同操作占用同一修订。无法确定修订的存量资格停止更新，须受控核实原台账；生产修订与 SD41 `InfoVersion`、绑定代次相互独立。
+
 ## 前端边界
 
 `Lumine.AuthPortal` 负责后台壳、登录注册、权限守卫、用户/角色/权限/客户端管理页面和 OIDC 联调页面。

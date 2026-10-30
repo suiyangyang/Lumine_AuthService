@@ -28,6 +28,7 @@ namespace Lumine.AuthServer.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            SuperDogModel.Configure(modelBuilder);
 
             // User configuration
             modelBuilder.Entity<User>(b =>
@@ -198,6 +199,7 @@ namespace Lumine.AuthServer.Infrastructure
                 b.Property(item => item.CreateTime).IsRequired();
                 b.Property(item => item.Status).IsRequired().HasMaxLength(32);
                 b.HasIndex(item => item.KeyHash).IsUnique();
+                b.HasIndex(item => item.UserId);
                 b.HasIndex(item => new { item.UserId, item.Status });
                 b.HasIndex(item => item.ExpireTime);
                 b.HasOne(item => item.User)

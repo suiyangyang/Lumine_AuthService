@@ -49,10 +49,6 @@ namespace Lumine.AuthServer.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("varchar(16)");
 
-                    b.Property<string>("PlainTextKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
-
                     b.Property<string>("KeySuffix")
                         .IsRequired()
                         .HasMaxLength(3)
@@ -60,6 +56,10 @@ namespace Lumine.AuthServer.Migrations
 
                     b.Property<DateTime?>("LastUsedTime")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PlainTextKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -135,73 +135,6 @@ namespace Lumine.AuthServer.Migrations
                     b.ToTable("AuditLogEntries", (string)null);
                 });
 
-            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.PortalMenu", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("varchar(512)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("IconKey")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
-
-                    b.Property<bool>("IsEnabled")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("IsImplemented")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
-
-                    b.Property<string>("RequiredPermissionsValue")
-                        .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("varchar(2048)")
-                        .HasColumnName("RequiredPermissions");
-
-                    b.Property<string>("Route")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
-                    b.Property<string>("Section")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
-
-                    b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DisplayOrder");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
-
-                    b.HasIndex("Route")
-                        .IsUnique();
-
-                    b.ToTable("PortalMenus", (string)null);
-                });
-
             modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.AuthorizationCode", b =>
                 {
                     b.Property<Guid>("Id")
@@ -263,6 +196,94 @@ namespace Lumine.AuthServer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AuthorizationCodes", (string)null);
+                });
+
+            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.DongleEntitlement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<ulong>("ActivationSourceHardwareKeyId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<long>("BindingRevision")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BindingState")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<ushort>("ManufacturerId")
+                        .HasColumnType("smallint unsigned");
+
+                    b.Property<string>("PayloadDigest")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<int>("ProductionRevision")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
+                    b.Property<string>("VendorId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .UseCollation("utf8mb4_bin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VendorId", "ActivationSourceHardwareKeyId")
+                        .IsUnique();
+
+                    b.ToTable("DongleEntitlements", (string)null);
+                });
+
+            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.ManufacturerSecret", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyLookupHmac")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<ushort>("ManufacturerId")
+                        .HasColumnType("smallint unsigned");
+
+                    b.Property<string>("ProtectedKey")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("varchar(1024)");
+
+                    b.Property<string>("VendorId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .UseCollation("utf8mb4_bin");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KeyLookupHmac")
+                        .IsUnique();
+
+                    b.HasIndex("VendorId", "ManufacturerId")
+                        .IsUnique();
+
+                    b.ToTable("ManufacturerKeys", (string)null);
                 });
 
             modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.OidcClient", b =>
@@ -342,6 +363,125 @@ namespace Lumine.AuthServer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Permissions", (string)null);
+                });
+
+            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.PortalMenu", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IconKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsImplemented")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("RequiredPermissionsValue")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("varchar(2048)")
+                        .HasColumnName("RequiredPermissions");
+
+                    b.Property<string>("Route")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("Section")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DisplayOrder");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.HasIndex("Route")
+                        .IsUnique();
+
+                    b.ToTable("PortalMenus", (string)null);
+                });
+
+            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.ProductionRegistration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("EntitlementId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("MaterialHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("MaterialJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("OperationId")
+                        .IsRequired()
+                        .HasMaxLength(96)
+                        .HasColumnType("varchar(96)")
+                        .UseCollation("utf8mb4_bin");
+
+                    b.Property<int?>("ProductionRevision")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UploadedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UploadedBySubject")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("VendorId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .UseCollation("utf8mb4_bin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntitlementId", "ProductionRevision")
+                        .IsUnique();
+
+                    b.HasIndex("VendorId", "OperationId")
+                        .IsUnique();
+
+                    b.ToTable("ProductionRegistrations", (string)null);
                 });
 
             modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.RefreshToken", b =>
@@ -503,6 +643,17 @@ namespace Lumine.AuthServer.Migrations
                     b.ToTable("DbVersions", (string)null);
                 });
 
+            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.ApiKey", b =>
+                {
+                    b.HasOne("Lumine.AuthServer.Domain.Entities.User", "User")
+                        .WithMany("ApiKeys")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.AuthorizationCode", b =>
                 {
                     b.HasOne("Lumine.AuthServer.Domain.Entities.OidcClient", "Client")
@@ -522,17 +673,6 @@ namespace Lumine.AuthServer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.ApiKey", b =>
-                {
-                    b.HasOne("Lumine.AuthServer.Domain.Entities.User", "User")
-                        .WithMany("ApiKeys")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.OidcClientRedirectUri", b =>
                 {
                     b.HasOne("Lumine.AuthServer.Domain.Entities.OidcClient", "Client")
@@ -542,6 +682,17 @@ namespace Lumine.AuthServer.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.ProductionRegistration", b =>
+                {
+                    b.HasOne("Lumine.AuthServer.Domain.Entities.DongleEntitlement", "Entitlement")
+                        .WithMany()
+                        .HasForeignKey("EntitlementId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Entitlement");
                 });
 
             modelBuilder.Entity("Lumine.AuthServer.Domain.Entities.RefreshToken", b =>
